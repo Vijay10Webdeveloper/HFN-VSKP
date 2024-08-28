@@ -43,6 +43,7 @@ body {
 
 .header a.active {
   color: rgb(125, 193, 230);
+  /*color: white; */
 }
 
 .header-right {
