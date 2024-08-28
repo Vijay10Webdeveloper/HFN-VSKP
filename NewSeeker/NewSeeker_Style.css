@@ -41,7 +41,7 @@ body {
 }
 
 .header a.active {
-  background-color: rgb(102, 127, 134);
+  background-color: rgb(224, 123, 123);
   color: white;
 }
 
@@ -65,7 +65,7 @@ body {
       padding-bottom: 20px;
         justify-content: center;
         text-align: center;
-        background-color: rgb(113, 111, 74); 
+        background-color: azure;  
         font-family: Arial, Helvetica, sans-serif;                
     }
     #daychallenge90
@@ -124,9 +124,24 @@ body {
    {
      font-size: 8px;
    }
-
-   .kbbtn {
+   .btn > a:link, .btn > a:visited {
     max-width: 85px;
+    height:120px;
+    background-color: white;
+    color: black;
+    border: 2px solid green;
+    padding: 5px 5px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+  }
+  
+  .btn > a:hover, .btn > a:active {
+    background-color: green;
+    color: white;
+  }
+   .kbbtn {
+    max-width: 80px;
     height:120px;
     word-wrap: normal;
     transition: transform .2s;

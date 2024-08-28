@@ -42,7 +42,7 @@ body {
 }
 
 .header a.active {
-  background-color: rgb(102, 127, 134);
+  background-color: rgb(224, 123, 123);
   color: white;
 }
 
@@ -85,9 +85,9 @@ font-family: Arial, Helvetica, sans-serif;
 }
 #Centreaddress
 {
-  padding-top:20px;
-  padding-bottom:20px;
-  padding-left:20px;
+  padding-top:10px;
+  padding-bottom:10px;
+  padding-left:10px;
   background-color:rgb(149, 173, 176);
 }
 
