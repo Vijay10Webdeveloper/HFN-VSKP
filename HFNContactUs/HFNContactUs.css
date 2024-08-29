@@ -93,6 +93,10 @@ font-family: Arial, Helvetica, sans-serif;
 .card-body
 {
   text-align: center;
+  .card-link
+{
+  vertical-align: bottom;
+}
 }
 
 #footer

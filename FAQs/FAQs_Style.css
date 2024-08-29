@@ -1,3 +1,4 @@
+
 * {box-sizing: border-box;}
 
 body { 
@@ -40,12 +41,13 @@ body {
   color: rgb(35, 33, 33);
 }
 
-.header a.active {
-  color: rgb(125, 193, 230);
-}
 
 .header-right {
   float: right;
+}
+
+.header a.active {
+  color: rgb(125, 193, 230);
 }
 
 @media screen and (max-width: 500px) {
@@ -59,101 +61,40 @@ body {
     float: none;
   }
 }
-    #NSdailypractices
-    {    padding-top: 20px;
-      padding-bottom: 20px;
-        justify-content: center;
-        text-align: center;
-        background-color: azure;  
-        font-family: Arial, Helvetica, sans-serif;                
-    }
-    #daychallenge90
-    {    padding-top: 20px;
-        padding-bottom: 20px;
-        justify-content: center;
-        text-align: center;
-        background-color: azure; 
-        font-family: Arial, Helvetica, sans-serif;                
-    }
-    #NSdailypractices img
-    {
-      height:50px;
-      width:50px;
-      border-radius:50%;
-    }
+.collapsible {
+  background-color: #7f5847;
+  color: white;
+  cursor: pointer;
+  padding: 18px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 15px;
+}
 
-    #NSdailypractices h3
-    {
-     text-align: center;
-     font-family: Arial, Helvetica, sans-serif;
-    }
-   #NSdailypractices p 
-   {
-     font-size: 10px;
-   }
-   #NScoverimg
-   {
-    padding-top: 20px;
-    padding-bottom: 20px;
-     display:flex;
-     justify-content: center;
-     Position:relative; 
-   }
-   #daychallenge90 h3
-   {
-     text-align: center;
-   }
-   #NSlearning
-   {
-    padding-top: 20px;
-    padding-bottom: 20px;
-     justify-content: center;
-     text-align: center;
-     font-family: Arial, Helvetica, sans-serif;  
-     background-color:rgb(242, 242, 219);
-   }
-   #NSlearning img
-   {
-    height:50px;
-    max-width:50px;
-    border-radius: 50%;
-  }
+ .collapsible:hover {
+  background-color: #565fc0;
+}
 
-   #NSlearning p 
-   {
-     font-size: 8px;
-   }
-   .btn > a:link, .btn > a:visited {
-    max-width: 85px;
-    height:120px;
-    background-color: white;
-    color: black;
-    border: 2px solid green;
-    padding: 5px 5px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-  }
-  
-  .btn > a:hover, .btn > a:active {
-    background-color: green;
-    color: white;
-  }
-   .kbbtn {
-    max-width: 80px;
-    height:120px;
-    word-wrap: normal;
-    transition: transform .2s;
-    border-color:rgb(242, 242, 219);
-    background-color:rgb(242, 242, 219);
-  }
-  .kbbtn:hover {
-    -ms-transform: scale(1.5); /* IE 9 */
-    -webkit-transform: scale(1.5); /* Safari 3-8 */
-    transform: scale(1.5); 
-  }
+.collapsible:after {
+  content: '\002B';
+  color: white;
+  font-weight: bold;
+  float: right;
+  margin-left: 5px;
+}
 
-  #footer
+
+
+.content {
+  padding: 0 18px;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.2s ease-out;
+  background-color: #f1f1f1;
+}
+     #footer
   {
     background-color:whitesmoke;
   }
