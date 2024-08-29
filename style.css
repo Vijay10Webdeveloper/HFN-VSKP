@@ -95,6 +95,8 @@ body {
       
       text-indent:40px;
     }
+
+    #more {display: none;}
     #tstmonials
     {
       padding-top: 20px;
@@ -133,8 +135,8 @@ body {
       -webkit-transform: scale(1.5); /* Safari 3-8 */
       transform: scale(1.5); 
     }
-
-    #footer
+  
+    #footer 
     {
-      background-color:whitesmoke;
+      background-color: #4e70cf;
     }
