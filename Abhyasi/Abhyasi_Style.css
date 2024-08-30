@@ -93,9 +93,9 @@ body {
     }
     #Ablearning img
    {
-    height:85px;
-    width:85px;
-    border-radius:20%;
+    height:50px;
+    width:50px;
+    border-radius:50%;
   }
     #Ablearning h3
     {
@@ -122,7 +122,7 @@ body {
 
    
      .btn > a:link, .btn > a:visited {
-        max-width: 80px;
+        max-width: 100px;
         height:120x;
         background-color: white;
         color: black;
