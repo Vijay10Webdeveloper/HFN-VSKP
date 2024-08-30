@@ -147,8 +147,15 @@ body {
     transform: scale(1.5); 
   }
 
+  #footer 
+  {
+    background-color: #4e70cf;
+    display: flex;
+    justify-content:space-evenly;
+    padding: 20px;
+    a
+    {
+      color:white;
+    }
+  }
  
-#footer
-{
-  background-color: #4e70cf;
-}

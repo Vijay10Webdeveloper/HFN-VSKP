@@ -129,8 +129,15 @@ width:300px;
     transform: scale(1.5); 
   }
 
-
-#footer
-{
-  background-color: #4e70cf;
-}
+  #footer 
+  {
+    background-color: #4e70cf;
+    display: flex;
+    justify-content:space-evenly;
+    padding: 20px;
+    a
+    {
+      color:white;
+    }
+  }
+ 

@@ -135,8 +135,15 @@ span.psw {
       -webkit-transform: scale(1.5); /* Safari 3-8 */
       transform: scale(1.5); 
     }
-
-    #footer
+    #footer 
     {
       background-color: #4e70cf;
+      display: flex;
+      justify-content:space-evenly;
+      padding: 20px;
+      a
+      {
+        color:white;
+      }
     }
+   

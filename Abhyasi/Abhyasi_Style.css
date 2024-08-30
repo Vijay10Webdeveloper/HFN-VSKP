@@ -93,9 +93,9 @@ body {
     }
     #Ablearning img
    {
-    height:80px;
-    width:80px;
-    border-radius: 20%;
+    height:85px;
+    width:85px;
+    border-radius:20%;
   }
     #Ablearning h3
     {
@@ -144,9 +144,16 @@ body {
       transform: scale(1.5); 
     }
 
-    #footer
+    #footer 
     {
       background-color: #4e70cf;
+      display: flex;
+      justify-content:space-evenly;
+      padding: 20px;
+      a
+      {
+        color:white;
+      }
     }
    
   
