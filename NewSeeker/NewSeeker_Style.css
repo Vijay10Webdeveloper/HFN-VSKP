@@ -59,8 +59,16 @@ body {
     float: none;
   }
 }
+#NScoverimg
+   {
+    padding-top: 20px;
+    padding-bottom: 20px;
+     display:flex;
+     justify-content: center;
+     Position:relative; 
+   }
     #NSdailypractices
-    {    padding-top: 20px;
+    {      padding-top: 20px;
       padding-bottom: 20px;
         justify-content: center;
         text-align: center;
@@ -72,59 +80,47 @@ body {
         padding-bottom: 20px;
         justify-content: center;
         text-align: center;
+        font-family: Arial, Helvetica, sans-serif;  
         background-color: azure; 
-        font-family: Arial, Helvetica, sans-serif;                
     }
+    #NSlearning
+    {
+         padding-top: 20px;
+         padding-bottom: 20px;
+          justify-content:center;
+          text-align: center;
+          font-family: Arial, Helvetica, sans-serif;  
+          background-color:rgb(242, 242, 219);
+    }
+    #NSdailypractices p 
+    {
+      font-size: 7px;
+    }
+    #NSdaychallenge90 p 
+    {
+      font-size: 6px;
+    }
+    #NSlearning p 
+    {
+      font-size: 8px;
+    }
+
     #NSdailypractices img
     {
       height:50px;
       width:50px;
       border-radius:50%;
     }
-
-    #NSdailypractices h3
-    {
-     text-align: center;
-     font-family: Arial, Helvetica, sans-serif;
-    }
-   #NSdailypractices p 
-   {
-     font-size: 10px;
-   }
-   #NScoverimg
-   {
-    padding-top: 20px;
-    padding-bottom: 20px;
-     display:flex;
-     justify-content: center;
-     Position:relative; 
-   }
-   #daychallenge90 h3
-   {
-     text-align: center;
-   }
-   #NSlearning
-   {
-    padding-top: 20px;
-    padding-bottom: 20px;
-     justify-content: center;
-     text-align: center;
-     font-family: Arial, Helvetica, sans-serif;  
-     background-color:rgb(242, 242, 219);
-   }
+ 
    #NSlearning img
    {
     height:50px;
     max-width:50px;
-    border-radius: 50%;
+    border-radius:50%;
   }
-
-   #NSlearning p 
-   {
-     font-size: 8px;
-   }
+  
    .btn > a:link, .btn > a:visited {
-    max-width: 85px;
+    max-width: 100px;
     height:120px;
     background-color: white;
     color: black;
@@ -140,7 +136,7 @@ body {
     color: white;
   }
    .kbbtn {
-    max-width: 80px;
+    max-width: 100px;
     height:120px;
     word-wrap: normal;
     transition: transform .2s;

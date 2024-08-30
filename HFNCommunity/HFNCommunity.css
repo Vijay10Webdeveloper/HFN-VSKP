@@ -4,6 +4,7 @@
 body { 
   margin: 0;
   font-family: Arial, Helvetica, sans-serif;
+  height:auto;
 }
 
 
@@ -37,12 +38,12 @@ body {
 }
 
 .header a:hover {
-  color: rgb(125, 193, 230);
+  background-color: #ddd;
+  color: rgb(35, 33, 33);
 }
 
 .header a.active {
-  background-color: rgb(224, 123, 123);
-  color: white;
+  color: rgb(125, 193, 230);
 }
 
 .header-right {
