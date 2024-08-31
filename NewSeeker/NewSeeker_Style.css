@@ -64,7 +64,7 @@
 
   #flex-container > div
   {
-    margin:5px;
+    margin:10px;
   }
    .btn > a:link, .btn > a:visited {
     width: 120px;

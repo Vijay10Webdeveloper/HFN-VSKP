@@ -1,6 +1,4 @@
 
-* {box-sizing: border-box;}
-
  #Daajicoverimg
     {
       display:flex;
@@ -117,7 +115,7 @@
  
    #flex-container > div
    {
-     margin:5px;
+     margin:10px;
    }
 
    .kbbtn {
