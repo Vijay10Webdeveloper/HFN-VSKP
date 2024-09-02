@@ -47,17 +47,6 @@
       font-size: 10px
     }
 
-    #flex-container
-    {
-      display:flex;
-      flex-wrap:wrap;
-      justify-content: flex-start;
-    }
-    
-    #flex-container > div
-    {
-      margin:10px;
-    }
     .kbbtn {
       width: 120px;
       height:120px;
@@ -67,22 +56,33 @@
       background-color:rgb(242, 242, 219);
     }
 
+    #flex-container
+    {
+      display:flex;
+      flex-wrap:wrap;
+      justify-content: flex-start;
+    }
+  
+    #flex-container > div
+    {
+      margin:10px;
+    }
      .btn > a:link, .btn > a:visited {
-        max-width: 100px;
-        height:120x;
-        background-color: white;
-        color: black;
-        border: 2px solid green;
-        padding: 5px 5px;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-      }
-      
-      .btn > a:hover, .btn > a:active {
-        background-color: green;
-        color: white;
-      }
+      width: 100px;
+      height:120px;
+      background-color: white;
+      color: black;
+      border: 2px solid green;
+      padding: 5px 5px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+    }
+    
+    .btn > a:hover, .btn > a:active {
+      background-color: green;
+      color: white;
+    }
     
     .kbbtn:hover {
       -ms-transform: scale(1.5); /* IE 9 */
