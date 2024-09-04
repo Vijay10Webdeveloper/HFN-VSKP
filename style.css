@@ -9,7 +9,9 @@
         border: 1px solid black;
       }
 
-      .hide-me[aria-expanded="true"] {display: none;}
+      
+.hide-me[aria-expanded="true"] {display: none;}
+.hide-me-end[aria-expanded="false"] {display: none;}
       
      #Carsel
      {
