@@ -51,10 +51,9 @@ font-family: Arial, Helvetica, sans-serif;
   vertical-align: bottom;
 }
 
-#flex-container > div > div
+.card
 {
-  flex-wrap:wrap;
-  margin:2px;
+  margin:3px;
 }
 
 #footer 
