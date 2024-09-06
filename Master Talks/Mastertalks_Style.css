@@ -5,134 +5,37 @@
       justify-content: center;
       Position:relative;
     }
-   #MasterTalks
-   {
-     padding-top:20px;
-     padding-bottom:20px;
-     justify-content: center;
-     text-align: center;
-     background-color:rgb(242, 242, 219);
-   }
-   #MasterTalks img
-   {
-    height:80px;
-    width:80px;
-    border-radius: 50%;
-   }
  
-   #MasterTalks h3
-   {
-    text-align: center;
-    font-family: Arial, Helvetica, sans-serif;
-   }
- 
-   #MasterTalks p 
-   {
-     font-size: 12px
-   }
-   #CharijiTalks
-   {
-    padding-top:20px;
-     padding-bottom:20px;
-     justify-content: center;
-     text-align: center;
-     background-color:rgb(242, 242, 219);
-   }
-   #CharijiTalks img
-   {
-    height:80px;
-    width:80px;
-    border-radius: 50%;
-  }
- 
-   #CharijiTalks h3
-   {
-    text-align: center;
-    font-family: Arial, Helvetica, sans-serif;
-   }
- 
-   #CharijiTalks p 
-   {
-     font-size: 10px
-   }
-   #BabujiTalks
-   {
-    padding-top:20px;
-    padding-bottom:20px;
-     justify-content: center;
-     text-align: center;
-     background-color:rgb(242, 242, 219);
-   }
-   #BabujiTalks img
-   {
-    height:80px;
-    width:80px;
-    border-radius: 50%;
-  }
- 
-  #BabujiTalks h3
-   {
-    text-align: center;
-    font-family: Arial, Helvetica, sans-serif;
-   }
- 
-   #BabujiTalks p 
-   {
-     font-size: 10px
-   }
-   #LalajiTalks
-   {
-    padding-top:20px;
-     padding-bottom:20px;
-     justify-content: center;
-     text-align: center;
-     background-color:rgb(242, 242, 219);
-   }
-   #LalajiTalks img
-   {
-    height:80px;
-    width:80px;
-    border-radius: 50%;
-  }
- 
-  #LalajiTalks h3
-   {
-    text-align: center;
-    font-family: Arial, Helvetica, sans-serif;
-   }
- 
-   #LalajiTalks p 
-   {
-     font-size: 10px;
-   }
-
-   #flex-container
-   {
-     display:flex;
-     flex-wrap:wrap;
-     justify-content: flex-start;
-   }
- 
-   #flex-container > div
-   {
-     margin:10px;
-   }
 
    .kbbtn {
-    width:120px;
-    height:120px;
+    padding:10px;
     word-wrap: normal;
     transition: transform .2s;
-    border-color:rgb(242, 242, 219);
-    background-color:rgb(242, 242, 219);
-    
-  }
-  
+    border-color:rgb(242, 242, 219); 
+  } 
   .kbbtn:hover {
     -ms-transform: scale(1.5); /* IE 9 */
     -webkit-transform: scale(1.5); /* Safari 3-8 */
     transform: scale(1.5); 
   }
+  h3{
+    text-align: center;
+  }
 
-
- 
+  .youtube-carousel {
+    position: relative;
+    /*overflow-x:hidden;*/
+    overflow-y:hidden;
+    background-color:rgb(242, 242, 219);
+  }
+  
+  .carousel-container {
+    display: flex;
+    transition: transform 0.5s ease;
+  }
+  
+iframe
+{
+width:120px;
+height:90px;
+}
