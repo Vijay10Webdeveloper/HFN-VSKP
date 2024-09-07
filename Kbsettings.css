@@ -15,9 +15,9 @@
     margin-right: 0;
   }
   .kbbtn:hover {
-    -ms-transform: scale(1.5); /* IE 9 */
-    -webkit-transform: scale(1.5); /* Safari 3-8 */
-    transform: scale(1.5); 
+    -ms-transform: scale(1.2); /* IE 9 */
+    -webkit-transform: scale(1.2); /* Safari 3-8 */
+    transform: scale(1.2); 
   }
   h3{
     text-align: center;
@@ -53,10 +53,10 @@
   iframe
   {
   width:200px;
-  height:90px; 
+  height:150px; 
   }
   .kbtn {
-    width: 120px;
+    width: 100px;
     height:120px;
     word-wrap: normal;
     transition: transform .2s;
