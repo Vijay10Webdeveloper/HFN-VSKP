@@ -11,20 +11,7 @@ height:400px;
 width:300px;
 }
 
-   .kbbtn {
-    padding:10px;
-    word-wrap: normal;
-    transition: transform .2s;
-    border-color:rgb(242, 242, 219);
-  } 
-  .kbbtn:last-child {
-    margin-right: 0;
-  }
-  .kbbtn:hover {
-    -ms-transform: scale(1.5); /* IE 9 */
-    -webkit-transform: scale(1.5); /* Safari 3-8 */
-    transform: scale(1.5); 
-  }
+
   h3{
     text-align: center;
   }
