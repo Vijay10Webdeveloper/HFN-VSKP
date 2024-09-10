@@ -26,12 +26,12 @@ font-family: Arial, Helvetica, sans-serif;
 .card-title
 {
   justify-content: center;
-  background-color:#606b88;
 }
 
 .card-body
 {
   text-align: center;
+  background-color:#afc5e1;
 }
 .card-link
 {
