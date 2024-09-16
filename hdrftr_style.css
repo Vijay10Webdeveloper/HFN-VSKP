@@ -10,8 +10,9 @@ body {
 
 .header {
   overflow: hidden;
- /* background-color: #24272f;*/
- background-color: rgb(176, 181, 208);
+ background-color: #7289c9;
+/* background-color: rgb(176, 181, 208); */
+/* background-color: white;*/
   padding: 10px 10px;
   background-position: top;
 }
@@ -30,11 +31,11 @@ body {
 }
 
 .header .logo {
-  font-size: 25px;
+  font-size: 50px;
   font-weight: bold;
-  border-radius:50%;
+  /*border-radius:50%;*/
   height:80px;
-  width:80px;
+  width:120px;
   padding:1px;
 }
 
@@ -65,7 +66,7 @@ body {
 }
     #footer 
     {
-      background-color: rgb(176, 181, 208);
+      background-color: #7289c9;
       display: flex;
       justify-content:center;
       padding: 20px; 
@@ -73,6 +74,8 @@ body {
       {
         color: #3f2f18;
         margin:10px;
+        text-decoration: none;
+       
       }
     }
    
@@ -84,7 +87,7 @@ body {
       margin: 0;
       padding: 0;
       overflow: hidden;
-      background-color: rgb(176, 181, 208);
+      background-color: whitesmoke;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
       #nav-links ul {
@@ -94,6 +97,7 @@ body {
         display: flex;
         flex-wrap: wrap;
         justify-content: flex-end;
+        background-color: antiquewhite;
       }
       
       #nav-links li {
@@ -103,7 +107,7 @@ body {
       
       #nav-links a {
         text-decoration: none;
-        color: #48371f;
+        color: #352309;
       }
       
       #menu-icon {
@@ -121,8 +125,8 @@ body {
           display:block;
           float: right;
           font-size:40px;
-          padding-top:10px;
           margin-right:150px;
+          margin-bottom:150px;
         }
         
         #nav-links.vertical-links ul {
