@@ -16,8 +16,8 @@
         border-radius:10%;
         background-color: rgb(171, 181, 204);
       }  
-.hide-me[aria-expanded="true"] {display: none;}
-.hide-me-end[aria-expanded="false"] {display: none;}
+/*.hide-me[aria-expanded="true"] {display: none;}
+.hide-me-end[aria-expanded="false"] {display: none;} */
       
      #Carsel
      {
@@ -83,3 +83,6 @@
       margin:10px;
     }
 
+
+
+ 
