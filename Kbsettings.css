@@ -7,7 +7,7 @@
     h6
     {
         text-align: center;
-        color:chocolate;
+        color:rgb(48, 24, 6);
         word-wrap:normal;
     }
   } 
@@ -53,7 +53,7 @@
   iframe
   {
   width:200px;
-  height:150px; 
+  height:200px; 
   }
   .kbtn {
     width: 100px;
