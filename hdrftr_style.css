@@ -24,7 +24,7 @@ body {
   text-align: center;
   padding: 5px;
   text-decoration: none;
-  font-size: 18px; 
+  font-size: 14px; 
   line-height: 20px;
   border-radius: 4px;
 }
@@ -108,7 +108,7 @@ body {
       
       #nav-links a {
         text-decoration: none;
-        color: #a2992e;
+        color: #423e10;
         font-size: 12px;
       }
       
