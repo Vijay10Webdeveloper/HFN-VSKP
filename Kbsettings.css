@@ -5,10 +5,10 @@
     transition: transform .2s;
     border-color:rgb(242, 242, 219);
     h6
-    {
+    {   word-wrap:normal;
         text-align: center;
         color:rgb(48, 24, 6);
-        word-wrap:normal;
+        
     }
   } 
   .kbbtn:last-child {
@@ -41,13 +41,14 @@
     margin-bottom: 0;
   }
 
-  .youtube-container h6 {
+  .youtube-container > .carousel-container > .kbbtn h6 {
     bottom: 0;
     left: 0;
     width: 100%;
     text-align: center;
     background-color: #fff; /* Optional: add background color */
     padding: 10px; /* Optional: add padding */
+    word-wrap: normal;
   }
 
   iframe
