@@ -39,10 +39,26 @@
   {
     display:flex;
     flex-wrap:wrap;
-    justify-content: flex-start;
+    justify-content:flex-start;
     background-color: azure;
   }
 
+  @media (max-width: 768px)
+  {
+    #flex-container
+    {
+      display:flex;
+      flex-wrap:wrap;
+      justify-content:space-between;
+      background-color: azure;
+    }
+  }
+.container > .youtube-carousel
+{
+  display:flex;
+      flex-wrap:wrap;
+      justify-content:space-evenly;
+}
   #flex-container > div
   {
     margin:10px;

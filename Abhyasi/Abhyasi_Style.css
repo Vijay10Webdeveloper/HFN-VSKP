@@ -60,9 +60,25 @@
     {
       display:flex;
       flex-wrap:wrap;
-      justify-content: flex-start;
+      justify-content:flex-start;
     }
-  
+
+    @media (max-width: 768px)
+    {
+      #flex-container
+      {
+        display:flex;
+        flex-wrap:wrap;
+        justify-content:space-between;
+      }
+     
+    }
+    .container > .youtube-carousel
+    {
+      display:flex;
+          flex-wrap:wrap;
+          justify-content:space-evenly;
+    }
     #flex-container > div
     {
       margin:10px;
@@ -90,7 +106,3 @@
       transform: scale(1.5); 
     }
 
-   
-  
-  
-  /* Darker background on mouse-over */
