@@ -78,7 +78,13 @@
       margin:10px;
     }
 
-
+    #playbttn
+    {
+     color:black;
+     background-color:#8EACCD;
+     font-size:10px;
+     text-wrap:normal;
+    } 
 
 /*-----------------------------------------------------------------------------*/
 
