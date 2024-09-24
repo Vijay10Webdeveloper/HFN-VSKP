@@ -12,13 +12,13 @@ body {
   position:relative;
   overflow: hidden;
   border: solid black;
-  background-color:#D8A25E;
+  background-color:#e3b175;
   background-position: top;
 }
 
 #hdr1 , #hdr2
 {
-  background-color:#D8A25E;
+  background-color:#e3b175;
   padding:10px;
 }
 
@@ -97,7 +97,7 @@ body {
       margin: 15px;
       padding: 0;
       overflow: hidden;
-      background-color:#D8A25E;
+      background-color:#e3b175;
       /*box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);*/
     }
       #nav-links ul {
@@ -107,7 +107,7 @@ body {
         display: flex;
         flex-wrap: wrap;
         justify-content: flex-end;
-        background-color:#D8A25E;
+        background-color:#e3b175;
       }
       
       #nav-links li {
