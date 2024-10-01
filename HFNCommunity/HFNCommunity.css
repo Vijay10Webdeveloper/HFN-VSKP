@@ -7,7 +7,7 @@ background-color: azure;
 }
 #HFNCommunitycoverimg img
 {
-height:250px;
+height:400px;
 width:300px;
 }
    #KBHFNCommunity
@@ -51,6 +51,11 @@ width:300px;
        flex-wrap:wrap;
        justify-content:space-between;
      }
+     #HFNCommunitycoverimg img
+{
+height:250px;
+width:300px;
+}
    }
  
    #flex-container > div

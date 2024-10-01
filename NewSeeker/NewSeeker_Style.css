@@ -6,6 +6,11 @@
      justify-content: center;
      Position:relative; 
    }
+   #NScoverimg img
+   {
+     height:400px;
+     width:300px;
+   }
     #NSdailypractices
     {   
         justify-content: center;
@@ -51,6 +56,11 @@
       flex-wrap:wrap;
       justify-content:space-between;
       background-color: azure;
+    }
+    #NScoverimg img
+    {
+      height:250px;
+      width:300px;
     }
   }
 .container > .youtube-carousel

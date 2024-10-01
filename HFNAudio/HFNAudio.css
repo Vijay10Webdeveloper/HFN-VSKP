@@ -1,14 +1,23 @@
 
 * {box-sizing: border-box;}
+#HFNAudioimg img
+{
+height:400px;
+width:300px;
+}
+
+@media (max-width: 768px)
+{
+#HFNAudioimg img
+{
+height:250px;
+width:300px;
+}
+}
 
 #HFNAudiocoverimg
 {
 background-color: azure;
-}
-#HFNAudiocoverimg img
-{
-height:250px;
-width:300px;
 }
 
 

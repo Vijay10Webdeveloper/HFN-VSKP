@@ -6,7 +6,19 @@
       Position:relative;
     }
  
-
+    #Daajicoverimg img,#Charijicoverimg img,#Babujicoverimg img,#Lalajicoverimg img
+    {
+      height:400px;
+      width:300px;
+    }
+    @media (max-width: 768px)
+    {
+      #Daajicoverimg img,#Charijicoverimg img,#Babujicoverimg img,#Lalajicoverimg img
+      {
+        height:250px;
+        width:300px;
+      }
+    }
    .kbbtn {
     padding:10px;
     word-wrap: normal;

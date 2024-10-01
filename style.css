@@ -25,9 +25,18 @@
      }
      #Carsel img
      {
+      height:400px;
+      width:300px;
+     }
+     @media (max-width: 768px)
+     {
+     #Carsel img
+     {
       height:250px;
       width:300px;
      }
+    }
+
      #About
     {
       padding-top: 20px;

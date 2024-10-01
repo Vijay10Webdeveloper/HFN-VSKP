@@ -5,7 +5,7 @@
      }
      #Abcoverimg img
      {
-      height:250px;
+      height:400px;
       width:300px;
      }
      
@@ -71,7 +71,11 @@
         flex-wrap:wrap;
         justify-content:space-between;
       }
-     
+      #Abcoverimg img
+      {
+       height:250px;
+       width:300px;
+      }
     }
     .container > .youtube-carousel
     {

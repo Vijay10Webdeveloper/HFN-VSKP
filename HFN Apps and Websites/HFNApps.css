@@ -6,7 +6,7 @@ background-color: azure;
 }
 #HFNAppscoverimg img
 {
-height:250px;
+height:400px;
 width:300px;
 }
 
@@ -69,6 +69,11 @@ width:300px;
       flex-wrap:wrap;
       justify-content:space-between;
     }
+    #HFNAppscoverimg img
+{
+height:250px;
+width:300px;
+}
   }
 #flex-container > div
 {

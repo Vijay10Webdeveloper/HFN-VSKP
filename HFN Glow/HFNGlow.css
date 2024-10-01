@@ -7,6 +7,12 @@
   justify-content:flex-start;
 }
 
+#HFNGlowcoverimg img
+{
+height:400px;
+width:300px;
+}
+
 @media (max-width: 768px)
 {
   #flex-container
@@ -15,6 +21,11 @@
     flex-wrap:wrap;
     justify-content:space-between;
   }
+  #HFNGlowcoverimg img
+{
+height:250px;
+width:300px;
+}
 }
 
 #flex-container > div
@@ -28,7 +39,7 @@ background-color: azure;
 }
 #HFNGlowcoverimg img
 {
-height:250px;
+height:400px;
 width:300px;
 }
 
