@@ -8,7 +8,7 @@ body {
 }
 
 .header {
-  display: flex;
+  display: block;
   position:relative;
   overflow: hidden;
   border: solid black;
@@ -21,6 +21,8 @@ body {
   background-color:#e3b175;
   padding:10px;
 }
+
+
 
 .header a {
   float: left;
