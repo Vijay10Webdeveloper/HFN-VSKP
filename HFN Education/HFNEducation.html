@@ -181,5 +181,16 @@ document.getElementById('menu-icon').addEventListener('click', function() {
 });
 
 </script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+      // Check if the current URL has the '.html' extension
+      if (window.location.pathname.endsWith('.html')) {
+          // Remove the '.html' from the URL
+          var cleanUrl = window.location.pathname.replace('.html', '');
+          // Redirect to the clean URL without '.html'
+          window.history.replaceState(null, null, cleanUrl);
+      }
+  });
+  </script>
 </body>
 </html>

@@ -180,7 +180,7 @@ function googleTranslateElementInit() {
          <h6><b>Student Idea</b></h6>  
         </div>
         <div class="kbbtn">
-          <iframe id="youtube-iframe" src="https://www.youtube.com/embed/s9axbjwaHcM?si=7TKDnQeu9R_oc_6g&amp;controls=0" frameborder="0" allowfullscreen></iframe>
+          <iframe id="youtube-iframe" src="https://www.youtube.com/embed/s9axbjwaHcM?si=e8SYWfJBmAXmzxP8&amp;controls=0" frameborder="0" allowfullscreen></iframe>
           <h6><b>Kanha Shanti Vanam by Rama Raavi</b></h6>  
         </div>
         <div class="kbbtn">
@@ -221,5 +221,17 @@ document.getElementById('menu-icon').addEventListener('click', function() {
 
 </script>
 
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Check if the current URL has the '.html' extension
+    if (window.location.pathname.endsWith('.html')) {
+        // Remove the '.html' from the URL
+        var cleanUrl = window.location.pathname.replace('.html', '');
+        // Redirect to the clean URL without '.html'
+        window.history.replaceState(null, null, cleanUrl);
+    }
+});
+</script>
 </body>
 </html>
