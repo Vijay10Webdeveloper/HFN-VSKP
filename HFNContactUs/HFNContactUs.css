@@ -28,9 +28,13 @@ font-family: Arial, Helvetica, sans-serif;
   justify-content: center;
 }
 
-.card-body
+.card-body 
 {
   text-align: center;
+  background-color:#afc5e1;
+}
+div.mycontainer
+{
   background-color:#afc5e1;
 }
 .card-link
@@ -57,3 +61,4 @@ font-family: Arial, Helvetica, sans-serif;
     color:white;
   }
 }
+
