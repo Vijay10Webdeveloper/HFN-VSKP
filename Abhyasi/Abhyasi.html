@@ -2,156 +2,612 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=<device-width>, initial-scale=1.0">
-      <title>Heartfulness Vizag</title>
-      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-      <link href="./Abhyasi_Style.css" rel="stylesheet">
-      <link href="../hdrftr_style.css" rel="stylesheet">
-      <link href="../Kbsettings.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heartfulness Vizag - Abhyasis</title>
+    <meta name="description" content="90 days of Heartfulness Practice for Adepts - Knowledge base with master talks, yoga, retreats, and spiritual resources">
     
+    <!-- Preload critical resources -->
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" as="style">
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" as="style">
+    
+    <!-- CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-color: #8B4513;
+            --secondary-color: #e3b175;
+            --accent-color: #2c5530;
+            --text-dark: #333;
+            --text-light: #666;
+            --bg-light: #f8f9fa;
+            --shadow: 0 2px 10px rgba(0,0,0,0.1);
+            --border-radius: 8px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        /* Header Styles */
+        .header {
+            background: white;
+            padding: 1rem 0;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .logo {
+            max-height: 60px;
+            width: auto;
+            transition: var(--transition);
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        /* Navigation */
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #nav-links {
+            display: flex;
+            transition: var(--transition);
+        }
+
+        #nav-links ul {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            gap: 2rem;
+        }
+
+        #nav-links a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        #nav-links a:hover,
+        #nav-links a.active {
+            background: var(--secondary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--primary-color);
+        }
+
+        /* Hero Section */
+        .hero-section {
+            position: relative;
+            margin: 2rem 0;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .hero-image {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            filter: brightness(0.8);
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(139, 69, 19, 0.8), rgba(44, 85, 48, 0.6));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+        }
+
+        .hero-content h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        /* Main Content */
+        .content-section {
+            background: white;
+            margin: 2rem 0;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+
+        .section-title {
+            color: var(--primary-color);
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: var(--secondary-color);
+            border-radius: 2px;
+        }
+
+        /* Download Section */
+        .download-section {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .motivation-text {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            margin-bottom: 2rem;
+            font-style: italic;
+        }
+
+        .download-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            text-decoration: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+        }
+
+        .download-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            color: white;
+        }
+
+        .download-btn i {
+            font-size: 1.2rem;
+        }
+
+        /* Knowledge Base Grid */
+        .knowledge-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .knowledge-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            text-align: center;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+            border: 1px solid #eee;
+        }
+
+        .knowledge-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .knowledge-card img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 50%;
+            margin-bottom: 1rem;
+            border: 3px solid var(--secondary-color);
+            transition: var(--transition);
+        }
+
+        .knowledge-card:hover img {
+            transform: scale(1.1);
+        }
+
+        .knowledge-card a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .knowledge-card p {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin: 0;
+        }
+
+        /* Info Banner */
+        .info-banner {
+            background: linear-gradient(135deg, var(--secondary-color), #f4d03f);
+            color: var(--text-dark);
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            text-align: center;
+            margin-bottom: 2rem;
+            font-weight: 600;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--primary-color);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+
+        .footer-links a:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+
+        /* Loading Animation */
+        .loading {
+            opacity: 0;
+            animation: fadeIn 0.6s ease-in-out forwards;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
+
+            #nav-links {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: white;
+                box-shadow: var(--shadow);
+                transform: translateY(-100%);
+                opacity: 0;
+                visibility: hidden;
+                transition: var(--transition);
+            }
+
+            #nav-links.active {
+                transform: translateY(0);
+                opacity: 1;
+                visibility: visible;
+            }
+
+            #nav-links ul {
+                flex-direction: column;
+                padding: 1rem;
+                gap: 0.5rem;
+            }
+
+            .hero-content h1 {
+                font-size: 2rem;
+            }
+
+            .download-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .knowledge-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 1rem;
+            }
+
+            .footer-links {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+
+        /* Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Focus styles for accessibility */
+        button:focus,
+        a:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+    </style>
 </head>
 <body>
-  <!----------------------------------------------------------------------------------------------------->
-  <div class="container pt-1" >
-    <div class="header">
-      <div class="row">
-        <div class="col-sm-8">
-      <img src="../Images/advancing-in-love-black.png" class="logo" alt="Heartfulness" style="margin-top: 2px;">  
-      </div>
-      <div class="col-sm-4">
-      <i class="fa fa-bars" id="menu-icon"></i>
-      <nav id="nav-links" >
-        <ul>
-          <li><a class="active" href="../Home/Home.html"><b>HOME</b></a></li>
-          <li><a href="../NewSeeker/Newseekers.html"><b>NEW SEEKERS</b></a></li>
-          <li><a href="../Abhyasi/Abhyasi.html"><b>ABHYASIS</b></a></li>
-        </ul>
-      </nav>
-    </div>
-    </div>
-  </div>
-  </div>
-<!------------------------------------------------------------------------------------------------>
-<div class="container">
-  <section id="Abcoverimg" >
-    <img src="../Images/Masters of Sahaj Marg.jpeg" class="d-block w-100" alt="Ashram">
-  </section>
-</div>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="nav-container">
+                <div>
+                    <img src="../Images/advancing-in-love-black.png" class="logo" alt="Heartfulness Logo">
+                </div>
+                <button class="menu-toggle" id="menu-toggle" aria-label="Toggle navigation menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <nav id="nav-links" role="navigation">
+                    <ul>
+                        <li><a href="../Home/Home.html">HOME</a></li>
+                        <li><a href="../NewSeeker/Newseekers.html">NEW SEEKERS</a></li>
+                        <li><a class="active" href="../Abhyasi/Abhyasi.html">ABHYASIS</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
 
-<div class="container">  
-  <section  id="hdr1">
-  <h3>90days of Heartfulness Practice(Adepts)</h3> </section>
-</div>
-  <div class="container">
-   <div class="youtube-carousel"> 
-    <p>Motivation is what gets you started. Habit is what keeps you going.With any opportunity, we get motivated. We get inspired. We are now part of the big motivation wave.</p>
-     <div class="btn"><a href="https://cdn-prod.heartfulness.org/hfn/files/2019/90-day-HFN-practice-Adepts.pdf" target=”_blank”  download="Tracker">
-      <i class="fa fa-download"></i>
-      Download Practices for Adepts </a> 
-    </div>
-    <div class="btn"><a href="https://cdn-prod.heartfulness.org/hfn/files/2019/My-Daily-Tracker-90DayOfHeartfulness.pdf" target=”_blank”  download="Tracker">
-      <i class="fa fa-download"></i>
-      Download 90days Tracker </a> 
-    </div>
-    <div class="btn"><a href="https://cdn-prod.heartfulness.org/hfn/files/2019/HFN-Practices-Infographic.pdf" target=”_blank”  download="Tracker">
-      <i class="fa fa-download"></i>
-      Download HFN Infographic  </a> 
-    </div>
-   </div>
-</div>
-
-<!------------------------------------------------------------------------------------------------------->
-<div class="container">  
-  <section  id="hdr1"> 
-       <h3>Knowledge Base</h3> 
-       <div>
-        <h6 style="background-color:#e3b175"><center>(Click the icons below to view more information)</center></h6>
-      </div>
-      </section>
-</div>
+    <!-- Hero Section -->
     <div class="container">
-      <section id="Ablearning" >
-       <div id="flex-container"> 
-        <div class="kbbtn">
-          <a href="../Master Talks/MasterTalks.html" target=”_blank” > <img src="../Images/SahajmargMasters.jpeg" alt="Meditation Benefits"></a> 
-          <p><b>Master's Talks</b> </p> 
-        </div>
-        <div class="kbbtn">
-          <a href="../HFN Yoga/HFNYoga.html" target=”_blank” > <img src="../Images/Heartfulness Yoga.jpeg" alt="Heartfulness Yoga"></a> 
-          <p><b>Yoga</b> </p> 
-        </div>
-        <div class="kbbtn">
-          <a href="../HFN Retreats/HFNRetreats.html" target=”_blank” > <img src="../Images/HFNRetreat.jpeg" alt="Heartfulness Retreats"></a> 
-          <p><b>Retreats</b> </p> 
-        </div>
-        <div class="kbbtn">
-          <a href="../HFN Education/HFNEducation.html" target=”_blank” > <img src="../Images/HFN Education.png" alt="Heartfulness Education"></a> 
-          <p><b>Education</b> </p>
-        </div>
-        <div class="kbbtn">
-          <a href="../HFNMusic/HFNMusic.html" target=”_blank” > <img src="../HFNMusic/HFNMusic.png" alt="Heartfulness Music"></a> 
-          <p><b>Music</b> </p>
-        </div>
-        <div class="kbbtn">
-          <a href="../HFNCommunity/HFNCommunity.html" target=”_blank” > <img src="../Images/HFNCommunity.png" alt="Heartfulness Community"></a> 
-          <p><b>Community</b> </p>
-        </div>
-        <div class="kbbtn">
-          <a href="../HFN Youth/HFNYouth.html" target=”_blank” > <img src="../Images/HFN Youth.png" alt="Heartfulness Youth"></a> 
-          <p><b>Youth</b> </p> 
-        </div>
-        <div class="kbbtn">
-          <a href="../HFN Glow/HFNGlow.html" target=”_blank” > <img src="../Images/Glow Webinar Series.png" alt="Heartfulness Glow"></a> 
-          <p><b>Glow</b> </p> 
-        </div>
-        <div class="kbbtn">
-          <a href="../HFN Apps and Websites/HFNApps.html" target=”_blank” > <img src="../Images/Apps and Websites.png" alt="Heartfulness Apps & Websites"></a> 
-          <p><b>Apps/Weblinks</b> </p> 
-        </div>
-        <div class="kbbtn" > <!--</div>style="visibility:hidden"> -->
-          <a href="../HFNAudio/HFNAudio.html" target=”_blank” > <img src="../Images/HFNAudio.png" alt="Heartfulness Audio"></a> 
-          <p><b>Audio Books</b> </p> 
-        </div>
-  </section>
-</div>
+        <section class="hero-section loading">
+            <img src="../Images/Masters of Sahaj Marg.jpeg" class="hero-image" alt="Masters of Sahaj Marg">
+            <div class="hero-overlay">
+                <div class="hero-content">
+                    <h1>Abhyasis Knowledge Portal</h1>
+                    <p>Deepen your spiritual journey with comprehensive resources</p>
+                </div>
+            </div>
+        </section>
+    </div>
 
-<!------------------------------------------------------------------------------------------------------>
+    <!-- Main Content -->
+    <div class="container">
+        <!-- 90 Days Practice Section -->
+        <section class="content-section loading">
+            <h2 class="section-title">90 Days of Heartfulness Practice (Adepts)</h2>
+            <div class="download-section">
+                <p class="motivation-text">
+                    "Motivation is what gets you started. Habit is what keeps you going. With any opportunity, we get motivated. We get inspired. We are now part of the big motivation wave."
+                </p>
+                <div class="download-buttons">
+                    <a href="https://cdn-prod.heartfulness.org/hfn/files/2019/90-day-HFN-practice-Adepts.pdf" 
+                       class="download-btn" target="_blank" rel="noopener" download="Adepts-Practice">
+                        <i class="fas fa-download"></i>
+                        Practices for Adepts
+                    </a>
+                    <a href="https://cdn-prod.heartfulness.org/hfn/files/2019/My-Daily-Tracker-90DayOfHeartfulness.pdf" 
+                       class="download-btn" target="_blank" rel="noopener" download="90Day-Tracker">
+                        <i class="fas fa-calendar-check"></i>
+                        90 Days Tracker
+                    </a>
+                    <a href="https://cdn-prod.heartfulness.org/hfn/files/2019/HFN-Practices-Infographic.pdf" 
+                       class="download-btn" target="_blank" rel="noopener" download="HFN-Infographic">
+                        <i class="fas fa-chart-bar"></i>
+                        HFN Infographic
+                    </a>
+                </div>
+            </div>
+        </section>
 
-<div class="container pt-2 pb-2">
-  <section id="footer">
-    <a href="../HFNContactUs/HFNContactUs.html" ><b>CONTACT US</b></a>
-    <a href="../FAQs/FAQs.html"><b>FAQs</b></a>
-  </section>
-  </div>
-  
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-<script>
-document.getElementById('menu-icon').addEventListener('click', function() {
-  var navLinks = document.getElementById('nav-links');
-  var menuIcon = document.getElementById('menu-icon');
-  
-  if (navLinks.classList.contains('vertical-links')) {
-    navLinks.classList.remove('vertical-links');
-    menuIcon.classList.remove('fa-times');
-    menuIcon.classList.add('fa-bars');
-  } else {
-    navLinks.classList.add('vertical-links');
-    menuIcon.classList.remove('fa-bars');
-    menuIcon.classList.add('fa-times');
-  }
-});
-</script>
-<script>
-  document.addEventListener("DOMContentLoaded", function() {
-      // Check if the current URL has the '.html' extension
-      if (window.location.pathname.endsWith('.html')) {
-          // Remove the '.html' from the URL
-          var cleanUrl = window.location.pathname.replace('.html', '');
-          // Redirect to the clean URL without '.html'
-          window.history.replaceState(null, null, cleanUrl);
-      }
-  });
-  </script>
+        <!-- Knowledge Base Section -->
+        <section class="content-section loading">
+            <h2 class="section-title">Knowledge Base</h2>
+            <div class="info-banner">
+                <i class="fas fa-info-circle"></i>
+                Click the cards below to explore our comprehensive spiritual resources
+            </div>
+            <div class="knowledge-grid">
+                <div class="knowledge-card">
+                    <a href="../Master Talks/MasterTalks.html" target="_blank" rel="noopener">
+                        <img src="../Images/SahajmargMasters.jpeg" alt="Sahaj Marg Masters">
+                        <p>Master's Talks</p>
+                    </a>
+                </div>
+                <div class="knowledge-card">
+                    <a href="../HFN Yoga/HFNYoga.html" target="_blank" rel="noopener">
+                        <img src="../Images/Heartfulness Yoga.jpeg" alt="Heartfulness Yoga">
+                        <p>Yoga</p>
+                    </a>
+                </div>
+                <div class="knowledge-card">
+                    <a href="../HFN Retreats/HFNRetreats.html" target="_blank" rel="noopener">
+                        <img src="../Images/HFNRetreat.jpeg" alt="Heartfulness Retreats">
+                        <p>Retreats</p>
+                    </a>
+                </div>
+                <div class="knowledge-card">
+                    <a href="../HFN Education/HFNEducation.html" target="_blank" rel="noopener">
+                        <img src="../Images/HFN Education.png" alt="Heartfulness Education">
+                        <p>Education</p>
+                    </a>
+                </div>
+                <div class="knowledge-card">
+                    <a href="../HFNMusic/HFNMusic.html" target="_blank" rel="noopener">
+                        <img src="../HFNMusic/HFNMusic.png" alt="Heartfulness Music">
+                        <p>Music</p>
+                    </a>
+                </div>
+                <div class="knowledge-card">
+                    <a href="../HFNCommunity/HFNCommunity.html" target="_blank" rel="noopener">
+                        <img src="../Images/HFNCommunity.png" alt="Heartfulness Community">
+                        <p>Community</p>
+                    </a>
+                </div>
+                <div class="knowledge-card">
+                    <a href="../HFN Youth/HFNYouth.html" target="_blank" rel="noopener">
+                        <img src="../Images/HFN Youth.png" alt="Heartfulness Youth">
+                        <p>Youth</p>
+                    </a>
+                </div>
+                <div class="knowledge-card">
+                    <a href="../HFN Glow/HFNGlow.html" target="_blank" rel="noopener">
+                        <img src="../Images/Glow Webinar Series.png" alt="Heartfulness Glow">
+                        <p>Glow</p>
+                    </a>
+                </div>
+                <div class="knowledge-card">
+                    <a href="../HFN Apps and Websites/HFNApps.html" target="_blank" rel="noopener">
+                        <img src="../Images/Apps and Websites.png" alt="Heartfulness Apps">
+                        <p>Apps/Weblinks</p>
+                    </a>
+                </div>
+                <div class="knowledge-card">
+                    <a href="../HFNAudio/HFNAudio.html" target="_blank" rel="noopener">
+                        <img src="../Images/HFNAudio.png" alt="Heartfulness Audio">
+                        <p>Audio Books</p>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-links">
+                <a href="../HFNContactUs/HFNContactUs.html">
+                    <i class="fas fa-envelope"></i> Contact Us
+                </a>
+                <a href="../FAQs/FAQs.html">
+                    <i class="fas fa-question-circle"></i> FAQs
+                </a>
+            </div>
+            <div style="margin-top: 1rem; color: rgba(255,255,255,0.8);">
+                <p>&copy; 2024 Heartfulness Vizag. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" 
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" 
+            crossorigin="anonymous"></script>
+    
+    <script>
+        // Mobile menu toggle
+        document.getElementById('menu-toggle').addEventListener('click', function() {
+            const navLinks = document.getElementById('nav-links');
+            const icon = this.querySelector('i');
+            
+            navLinks.classList.toggle('active');
+            
+            if (navLinks.classList.contains('active')) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times');
+            } else {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            }
+        });
+
+        // Smooth loading animation
+        document.addEventListener('DOMContentLoaded', function() {
+            const loadingElements = document.querySelectorAll('.loading');
+            loadingElements.forEach((el, index) => {
+                setTimeout(() => {
+                    el.style.animationDelay = `${index * 0.2}s`;
+                }, 100);
+            });
+
+            // Clean URL (remove .html extension)
+            if (window.location.pathname.endsWith('.html')) {
+                const cleanUrl = window.location.pathname.replace('.html', '');
+                window.history.replaceState(null, null, cleanUrl);
+            }
+        });
+
+        // Add smooth scrolling for internal links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Lazy loading for images
+        if ('IntersectionObserver' in window) {
+            const imageObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        if (img.dataset.src) {
+                            img.src = img.dataset.src;
+                            img.removeAttribute('data-src');
+                            observer.unobserve(img);
+                        }
+                    }
+                });
+            });
+
+            document.querySelectorAll('img[data-src]').forEach(img => {
+                imageObserver.observe(img);
+            });
+        }
+    </script>
 </body>
 </html>
