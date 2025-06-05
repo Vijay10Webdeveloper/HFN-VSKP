@@ -3,596 +3,961 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Heartfulness Vizag</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link href="./HFNContactUs.css" rel="stylesheet">
-    <link href="../hdrftr_style.css" rel="stylesheet">
-    <link href="../Kbsettings.css" rel="stylesheet">
+    <title>Heartfulness Vizag - Meditation Centers</title>
+    <meta name="description" content="Find Heartfulness meditation centers in Visakhapatnam. Join our community for inner peace and spiritual growth.">
+    
+    <!-- Optimized CSS Loading -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
     <style>
-      div.mycontainer {
-        width:100%;
-        overflow:auto;
-      }
-      div.mycontainer div {
-        width:50%;  
-        float:left;
-      }
-      </style>
+        :root {
+            --primary-color: #5b38b9;
+            --primary-dark: #4a2d96;
+            --secondary-color: #f8f9fa;
+            --accent-color: #e74c3c;
+            --text-dark: #2c3e50;
+            --text-light: #6c757d;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 8px 25px rgba(0, 0, 0, 0.15);
+            --border-radius: 12px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        /* Header Styles */
+        .header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            padding: 1rem 0;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            max-height: 60px;
+            width: auto;
+            filter: brightness(0) invert(1);
+            transition: var(--transition);
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        #menu-icon {
+            font-size: 1.5rem;
+            color: white;
+            cursor: pointer;
+            display: none;
+            transition: var(--transition);
+        }
+
+        #menu-icon:hover {
+            transform: rotate(90deg);
+        }
+
+        /* Navigation Styles - Fixed for Desktop */
+        nav {
+            position: relative;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 2rem;
+            margin: 0;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        nav a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            transition: var(--transition);
+        }
+
+        nav a:hover::before {
+            left: 0;
+        }
+
+        nav a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        nav a.active {
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Welcome Section */
+        .welcome-section {
+            background: white;
+            margin: 2rem 0;
+            padding: 3rem 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+        }
+
+        .welcome-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 2rem;
+            line-height: 1.2;
+        }
+
+        /* Centers Grid */
+        .centers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .center-column {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .center-column:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .center-column h6 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .center-column ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .center-column li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #eee;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .center-column li:hover {
+            background: var(--secondary-color);
+            padding-left: 1rem;
+            border-radius: 6px;
+        }
+
+        .center-column li:last-child {
+            border-bottom: none;
+        }
+
+        /* Center Cards */
+        .center-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            overflow: hidden;
+            transition: var(--transition);
+            border: 1px solid rgba(91, 56, 185, 0.1);
+        }
+
+        .center-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--primary-color);
+        }
+
+        .center-card .card-body {
+            padding: 2rem;
+        }
+
+        .center-card .card-title {
+            color: var(--primary-color);
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .center-card .card-title::before {
+            content: '📍';
+            font-size: 1.3rem;
+        }
+
+        .zonal-coordinator {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+        }
+
+        .zonal-coordinator .card-title {
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .zonal-coordinator .card-title::before {
+            content: '👨‍💼';
+        }
+
+        .main-center {
+            border: 2px solid var(--accent-color);
+            position: relative;
+        }
+
+        .main-center::before {
+            content: '⭐ MAIN CENTER';
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: var(--accent-color);
+            color: white;
+            padding: 0.3rem 1rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border-bottom-left-radius: var(--border-radius);
+        }
+
+        .contact-info {
+            background: var(--secondary-color);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .contact-person {
+            font-weight: 600;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .contact-person::before {
+            content: '👤';
+        }
+
+        .contact-number {
+            color: var(--text-dark);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .contact-number::before {
+            content: '📞';
+        }
+
+        .map-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--primary-color);
+            color: white;
+            padding: 0.7rem 1.5rem;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+            margin-top: 1rem;
+        }
+
+        .map-link:hover {
+            background: var(--primary-dark);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(91, 56, 185, 0.3);
+        }
+
+        .map-link::before {
+            content: '🗺️';
+        }
+
+        /* Search and Filter */
+        .search-section {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin: 2rem 0;
+        }
+
+        .search-input {
+            border: 2px solid #ddd;
+            border-radius: 25px;
+            padding: 0.8rem 1.5rem;
+            font-size: 1.1rem;
+            width: 100%;
+            transition: var(--transition);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(91, 56, 185, 0.1);
+        }
+
+        /* Footer */
+        #footer {
+            background: var(--text-dark);
+            padding: 2rem 0;
+            text-align: center;
+            margin-top: 4rem;
+        }
+
+        #footer a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            margin: 0 2rem;
+            padding: 0.8rem 2rem;
+            border: 2px solid white;
+            border-radius: 25px;
+            transition: var(--transition);
+            display: inline-block;
+        }
+
+        #footer a:hover {
+            background: white;
+            color: var(--text-dark);
+            transform: translateY(-3px);
+        }
+
+        /* Loading Animation */
+        .loading {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Scroll to top button */
+        .scroll-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: var(--transition);
+            opacity: 0;
+            visibility: hidden;
+            z-index: 1000;
+        }
+
+        .scroll-top.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .scroll-top:hover {
+            background: var(--primary-dark);
+            transform: translateY(-3px);
+        }
+
+        /* Responsive Design - Mobile First Approach */
+        @media (max-width: 768px) {
+            #menu-icon {
+                display: block;
+            }
+
+            nav ul {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: var(--primary-color);
+                padding: 1rem;
+                gap: 0.5rem;
+                box-shadow: var(--shadow);
+                border-radius: 0 0 var(--border-radius) var(--border-radius);
+                z-index: 1000;
+            }
+
+            nav ul.show {
+                display: flex;
+            }
+
+            nav ul li {
+                width: 100%;
+            }
+
+            nav ul li a {
+                display: block;
+                text-align: center;
+                padding: 1rem;
+                width: 100%;
+                border-radius: var(--border-radius);
+            }
+
+            .welcome-title {
+                font-size: 1.8rem;
+            }
+
+            .centers-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .center-card .card-body {
+                padding: 1.5rem;
+            }
+
+            #footer a {
+                display: block;
+                margin: 1rem 0;
+            }
+        }
+
+        /* Larger screens */
+        @media (min-width: 769px) {
+            nav ul {
+                display: flex !important;
+                position: static !important;
+                background: transparent !important;
+                padding: 0 !important;
+                box-shadow: none !important;
+            }
+        }
+
+        /* Accessibility */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* Animation keyframes */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Focus states for accessibility */
+        nav a:focus,
+        .map-link:focus,
+        .search-input:focus,
+        .scroll-top:focus {
+            outline: 2px solid #fff;
+            outline-offset: 2px;
+        }
+    </style>
+</head>
 <body>
-  <!---------------------------------------------------------------------------------------------------->
-  <div class="container pt-1" >
+    <!-- Header -->
     <div class="header">
-      <div class="row">
-        <div class="col-sm-8">
-      <img src="../Images/advancing-in-love-black.png" class="logo" alt="Heartfulness" style="margin-top: 2px;">  
-      </div>
-      <div class="col-sm-4">
-      <i class="fa fa-bars" id="menu-icon"></i>
-      <nav id="nav-links" >
-        <ul>
-          <li><a class="active" href="../Home/Home.html"><b>HOME</b></a></li>
-          <li><a href="../NewSeeker/Newseekers.html"><b>NEW SEEKERS</b></a></li>
-          <li><a href="../Abhyasi/Abhyasi.html"><b>ABHYASIS</b></a></li>
-        </ul>
-      </nav>
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-8">
+                    <img src="../Images/advancing-in-love-black.png" class="logo" alt="Heartfulness" loading="lazy">
+                </div>
+                <div class="col-4">
+                    <i class="fas fa-bars" id="menu-icon" aria-label="Menu"></i>
+                    <nav>
+                        <ul id="nav-links">
+                            <li><a href="../Home/Home.html" class="active">HOME</a></li>
+                            <li><a href="../NewSeeker/Newseekers.html">NEW SEEKERS</a></li>
+                            <li><a href="../Abhyasi/Abhyasi.html">ABHYASIS</a></li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
     </div>
-    </div>
-  </div>
-  </div>
-  <!---------------------------------------------------------------------------------------------------->
-<div class="container">
-  <div class="mycontainer">
-    <h4><p><center style="color: red;"><b>WELCOME TO VISAKHAPATNAM <br>HEARTFULNESS METROZONE CENTERS</b></center></p></h4>
-    <div>   <h6><ul>
-          <li>ADARSH NAGAR</li>
-          <li>BIRLA JN</li>
-          <li>CHINNA <br> MUSHIDAWADA</li>
-          <li>DABAGARDENS</li>
-          <li>GAJUWAKA</li>
-          <li>KOTHAPALEM</li>
-          <li>MADHURAWADA <ol>
-            <li>
-              AYODHYA NAGAR
-            </li>
-            <li>
-              BAKKANAPALEM
-            </li>
-            <li>
-              KOMMADI
-            </li>
-            <li>
-              MIDHILAPURI
-            </li> </ol>
-          </li>
-          <li>MADHAVADHARA</li>
-          <li>MARRIPALEM</li>
-          
-        </ul></h6>
-  </div>
-        <div>   <h6><ul>
-          <li>MURALINAGAR</li>
-          <li>MVP COLONY</li>
-          <li>NAVAL PARK</li>
-          <li>PEDAWALTAIR</li>
-          <li>PENDURTHI</li>   
-          <li>POTHINAMALLAYYA <br> PALEM</li>
-          <li>SCINDIA</li>
-          <li>SEETHAMMADHARA</li>
-          <li>SHEELANAGAR</li>
-          <li>SIRIPURAM</li>
-          <li>VENKOJIPALEM</li>
-          <li>VISALAKSHINAGAR</li>
-          <li>YOGA VILLAGE(A.U)</li>
-        </ul></h6>
-      </div>
-  </div>
-</div> 
-  <!------------------------------------------------------------------------------->
-     <div class="container" id="Centreaddress">
-      <div class="row">   
-        <div class="col-sm">
-          <div class="card">
+
+    <!-- Welcome Section -->
+    <div class="container">
+        <div class="welcome-section">
+            <h1 class="welcome-title">WELCOME TO VISAKHAPATNAM<br>HEARTFULNESS METROZONE CENTERS</h1>
+        </div>
+
+        <!-- Search Section -->
+        <div class="search-section">
+            <div class="row">
+                <div class="col-md-8 mx-auto">
+                    <input type="text" class="search-input" placeholder="🔍 Search for meditation centers..." id="searchInput">
+                </div>
+            </div>
+        </div>
+
+        <!-- Centers Overview -->
+        <div class="centers-grid">
+            <div class="center-column">
+                <h6>📍 PRIMARY LOCATIONS</h6>
+                <ul>
+                    <li>ADARSH NAGAR</li>
+                    <li>BIRLA JN</li>
+                    <li>CHINNA MUSHIDAWADA</li>
+                    <li>DABAGARDENS</li>
+                    <li>GAJUWAKA</li>
+                    <li>KOTHAPALEM</li>
+                    <li>MADHAVADHARA</li>
+                    <li>MARRIPALEM</li>
+                </ul>
+            </div>
+            <div class="center-column">
+                <h6>🏘️ MADHURAWADA CENTERS</h6>
+                <ul>
+                    <li>AYODHYA NAGAR</li>
+                    <li>BAKKANAPALEM</li>
+                    <li>KOMMADI</li>
+                    <li>MIDHILAPURI</li>
+                </ul>
+            </div>
+            <div class="center-column">
+                <h6>🌊 COASTAL AREAS</h6>
+                <ul>
+                    <li>MURALINAGAR</li>
+                    <li>MVP COLONY</li>
+                    <li>NAVAL PARK</li>
+                    <li>PEDAWALTAIR</li>
+                    <li>PENDURTHI</li>
+                    <li>SCINDIA</li>
+                    <li>SEETHAMMADHARA</li>
+                    <li>SIRIPURAM</li>
+                    <li>VENKOJIPALEM</li>
+                    <li>VISALAKSHINAGAR</li>
+                    <li>YOGA VILLAGE (A.U)</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Zonal Coordinator -->
+        <div class="center-card zonal-coordinator">
             <div class="card-body">
-              <p class="card-text"><br>
-                <b style="word-break:normal;color:rgb(91, 56, 185)"><h4>ZONAL CO-ORDINATOR</h4> </b> <br>
-                Contact Name: V R S Naga Sarma <br>
-                Contact no:+91-9666792133 <br>
-            </p>
+                <h4 class="card-title">ZONAL CO-ORDINATOR</h4>
+                <div class="contact-info">
+                    <div class="contact-person">V R S Naga Sarma</div>
+                    <div class="contact-number">+91-9666792133</div>
+                </div>
             </div>
-         </div>
-       </div>
-      </div>
-      <div class="row">   
-        <div class="col-sm">
-          <div class="card">
+        </div>
+
+        <!-- Main Center -->
+        <div class="center-card main-center">
             <div class="card-body">
-              <h5 class="card-title" style="word-break:normal;color:rgb(91, 56, 185)"><b>MARRIPALEM MEDITATION CENTER <br>(MAIN CENTER)</b></h5>
-              <p class="card-text">R and B Office, <br> Marripalem VUDA Layout, <br> Marripalem 
-                <br>Visakhapatnam-530009
-                <br> Contact name:Nageswar Rao(CC/CoP) <br>
-                Contact no:+91-8498028490  <br>
-                Contact name:Ajay Kumar P(ASHRAM MANAGER) <br> 
-                Contact no:+91-9394737560 <br>  
-              <a href="https://maps.app.goo.gl/9brzGqpkJ5G5ZZUi8" target=”_blank” class="card-link">Google Map </a>
+                <h5 class="card-title">MARRIPALEM MEDITATION CENTER</h5>
+                <p><strong>Address:</strong> R and B Office, Marripalem VUDA Layout, Marripalem, Visakhapatnam-530009</p>
+                <div class="contact-info">
+                    <div class="contact-person">Nageswar Rao (CC/CoP)</div>
+                    <div class="contact-number">+91-8498028490</div>
+                </div>
+                <div class="contact-info">
+                    <div class="contact-person">Ajay Kumar P (ASHRAM MANAGER)</div>
+                    <div class="contact-number">+91-9394737560</div>
+                </div>
+                <a href="https://maps.app.goo.gl/9brzGqpkJ5G5ZZUi8" target="_blank" class="map-link">View on Map</a>
             </div>
-         </div>
-       </div>
-      </div>
-    </div>
-<!---------------------------------------------------------------------------------------------->
-    <div class="container" id="Centreaddress">
-      <div class="row">   
-       <div class="col-sm">
-         <div class="card">
-           <div class="card-body">
-           <h6 class="card-title" style="word-break:normal"><b>ADARSH NAGAR MEDITATION CENTER</b></h6>
-           <p class="card-text">DNo:2-349/2 <br> Silvervilla <br>Adarshnagar,
-            Old Diary Farm
-            <br>Visakhapatnam-530040
-           <br> Contact name:P.L Gayatri(CC/CoP)
-           <br> Contact no:+91-9440680051 <br>
-            <a href="https://maps.app.goo.gl/vZgvxAJagqgf4g7G7" target=”_blank” class="card-link">Google Map</a> </p>
-          </div>
         </div>
-      </div>
-     </div>
-    </div>
-<!----------------------------------------------------------------------------------------------->
-<div class="container"> 
-     <div class="row"> 
-       <div class="col-sm">
-         <div class="card">
-           <div class="card-body">
-               <h6 class="card-title" style="word-break:normal"><b>AYODHYA NAGAR MEDITATION CENTER</b></h6>
-               <p class="card-text">27-17/11A <br> Ayodhya nagar 2<br> Madhurawada 
-                <br>Visakhapatnam-530048
-                <br>Contact name:Ch.Siva Shankar(CC/CoP)
-               <br> Contact no:+91-9247464006 <br>
-              <a href="https://maps.app.goo.gl/NAPS1htjbcSFrG799" target=”_blank” class="card-link">Google Map</a> </p>
-           </div>
-         </div>
-        </div>
-    </div>
-</div>
-<!-------------------------------------------------------------------------------------------------->
-<div class="container"> 
-    <div class="row"> 
-       <div class="col-sm">
-        <div class="card">
-           <div class="card-body">
-           <h6 class="card-title" style="word-break:normal"><b>BAKKANAPALEM MEDITATION CENTER(MADHURAWADA)</b></h6>
-           <p class="card-text">SVS Royal Paradise, <br> Bakkanapalem <br> Madhurawada 
-            <br>Visakhapatnam-530048
-            <br>Contact name:Vijay Mudunuri(CC/CoP)
-           <br> Contact no:+91-8317657590 <br>        
-            <a href="https://maps.app.goo.gl/suej3HGiozzAEdwC9" target=”_blank” class="card-link">Google Map</a> </p>
-           </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!----------------------------------------------------------------------------------------------->
-<div class="container"> 
-  <div class="row"> 
-    <div class="col-sm">
-      <div class="card">
-        <div class="card-body">
-            <h6 class="card-title" style="word-break:normal"><b>BRUNDAVAN GARDENS MEDITATION CENTER(PENDURTHI)</b></h6>
-            <p class="card-text">FF 503 <br> Balaji Grand Apartment, Brundavan Gardens <br> Vellamthota, Pendurthi 
-                <br>Visakhapatnam-531173
-                <br>Contact name:E Ravi Kumar(CC/CoP)
-                <br> Contact no:+91-9866508108 <br>         
-           <a href="https://maps.google.com/?q=17.818661,83.203972" target=”_blank” class="card-link">Google Map</a> </p>
-        </div>
-      </div>
-     </div>
-  </div>
-</div>
-<!------------------------------------------------------------------------------------------------>
-  <div class="container"> 
-    <div class="row"> 
-      <div class="col-sm">
-        <div class="card">
-          <div class="card-body">
-              <h6 class="card-title" style="word-break:normal"><b>CBM COMPOUND MEDITATION CENTER(SIRIPURAM)</b></h6>
-              <p class="card-text">Flat 208 <br> Mahalakshmi Towers,Balajinagar  <br> Siripuram 
-                <br>Visakhapatnam-530003
-                <br>Contact name:Meenakshi Devi(CC/CoP)
-                <br> Contact no:9848029973 <br>         
-             <a href="https://maps.app.goo.gl/ozCREEtjNYo7CNzUA" target=”_blank” class="card-link">Google Map</a> </p>
-          </div>
-        </div>
-       </div>
-    </div>
-  </div>
-<!---------------------------------------------------------------------------------------------->
-<div class="container"> 
-    <div class="row"> 
-      <div class="col-sm">
-       <div class="card">
-          <div class="card-body">
-          <h6 class="card-title" style="word-break:normal"><b>CHINAMUSHIDIWADA MEDITATION CENTER</b></h6>
-          <p class="card-text">D.No.15-6-3 <br> 1st Floor,NRI Base <br> ION examination center 
-            <br>Visakhapatnam-530033
-            <br>Contact name:K.N.Rao(CC/CoP)
-          <br> Contact no:+91-9849194454 <br>
-           <a href="https://maps.app.goo.gl/oETqwGWqaZQZ93ys8" target=”_blank” class="card-link">Google Map</a> </p>
-          </div>
-       </div>
-     </div>
-   </div>
- </div>
 
- <!---------------------------------------------------------------------------------------------->
-<div class="container"> 
-    <div class="row"> 
-      <div class="col-sm">
-       <div class="card">
-          <div class="card-body">
-          <h6 class="card-title" style="word-break:normal"><b>DABAGARDENS MEDITATION CENTER</b></h6>
-          <p class="card-text">30-5-39/2,2nd floor,Emandis Sadhan <br> Behind BSNL, Dabagardens <br> Krishna gardens
-            <br>Visakhapatnam-530020
-            <br>Contact name:Govinda Raju(CC/CoP)
-          <br> Contact no:+91-9160626751 <br>
-           <a href="https://maps.app.goo.gl/tNYAPzfVJ4JtT96J9" target=”_blank” class="card-link">Google Map</a> </p>
-          </div>
-       </div>
-     </div>
-   </div>
- </div>
-<!--------------------------------------------------------------------------------------------------->
-<div class="container"> 
-  <div class="row"> 
-    <div class="col-sm">
-     <div class="card">
-        <div class="card-body">
-        <h6 class="card-title" style="word-break:normal"><b>KOMMADI MEDITATION CENTER(MADHURAWADA)</b></h6>
-        <p class="card-text">2-7 S.C colony<br> Devi Metta,Near FCI Godown,Venkatnagar<br> Kommadi
-        <br>Visakhapatnam-530048
-        <br>Contact name:Satyanarayana(CC/CoP)
-        <br> Contact no:+91-7032335454 <br>
-         <a href="https://maps.app.goo.gl/RRmVMTCssbsPPYXt8" target=”_blank” class="card-link">Google Map</a> 
-        </p>
+        <!-- All Centers Container -->
+        <div id="centersContainer">
+            <!-- Centers will be loaded here -->
         </div>
-     </div>
-   </div>
- </div>
-</div>
-<!------------------------------------------------------------------------------------------------->
-<div class="container"> 
-  <div class="row"> 
-    <div class="col-sm">
-     <div class="card">
-        <div class="card-body">
-        <h6 class="card-title" style="word-break:normal"><b>KOTHAPALEM MEDITATION CENTER</b></h6>
-        <p class="card-text">Dno:5-45/6,4th Lane<br>Santosh Nagar<br> Kothapalem
-        <br>Visakhapatnam-530027
-        <br>Contact name:M Sashi Bhushan(CC/CoP)
-        <br> Contact no:+91-9866273427 <br>
-         <a href="https://maps.app.goo.gl/jR3UmFRiTo1waspi9" target=”_blank” class="card-link">Google Map</a> 
-        </p>
-        </div>
-     </div>
-   </div>
- </div>
-</div>
-<!------------------------------------------------------------------------------------------------->
-<div class="container"> 
-    <div class="row"> 
-     <div class="col-sm">
-      <div class="card">
-         <div class="card-body">
-         <h6 class="card-title" style="word-break:normal"><b>LAKSHMI NIVASAM MEDITATION CENTER(BIRLA JUNCTION)</b></h6>
-         <p class="card-text">Club house, 1st floor, Lakshmi Nivasam <br> Bapuji Nagar, Near Birla Junction <br> Backside of KIA Showroom 
-            <br>Visakhapatnam-53007
-            <br>Contact name:PS Satya Prabha(CC/CoP)
-            <br> Contact no:+91-7901052604 <br>
-          <a href="https://maps.app.goo.gl/RPpSdvzoSPhFFGCt7" target=”_blank” class="card-link">Google Map</a>          
-         </p>
-         </div>
-      </div>
-    </div>
-  </div>
- </div>
- <!------------------------------------------------------------------------------------------------->
- <div class="container"> 
-    <div class="row"> 
-     <div class="col-sm">
-      <div class="card">
-         <div class="card-body">
-         <h6 class="card-title" style="word-break:normal"><b>LANSUM GREENS MEDITATION CENTER(MADHAVADHARA)</b></h6>
-         <p class="card-text">Kalinganagar<br> Madhavadhara<br>Visakhapatnam-53007
-            <br>Contact name:Tavudu(CC/CoP)
-            <br> Contact no:+91-9177260789 <br>
-          <a href="https://maps.app.goo.gl/ccUpGuaLmYNTjArA8" target=”_blank” class="card-link">Google Map</a>   </p>
-         </div>
-      </div>
-    </div>
-  </div>
- </div>
- <!------------------------------------------------------------------------------------------------->
- <div class="container"> 
-    <div class="row"> 
-      <div class="col-sm">
-       <div class="card">
-         <div class="card-body">
-             <h6 class="card-title" style="word-break:normal"><b>MIDHILAPURI MEDITATION CENTER(MADHURAWADA) </b></h6>
-             <p class="card-text">203 <br> Manasa residency <br>Midhilapuri Vuda Colony <br>Visakhapatnam-530041
-               <br>Contact name:E.Sita Devi(CC/CoP)
-             <br> Contact no:+91-8374611097    <br> 
-            <a href="https://maps.app.goo.gl/bAmTfmnj6nAC8xQCA" target=”_blank” class="card-link">Google Map</a>
-           </p>
-         </div>
-       </div>
-      </div>
-    </div>
-   </div>
-   <!------------------------------------------------------------------------------------------------->
-   <div class="container"> 
-    <div class="row"> 
-      <div class="col-sm">
-       <div class="card">
-         <div class="card-body">
-             <h6 class="card-title" style="word-break:normal"><b>MURALINAGAR MEDITATION CENTER</b></h6>
-             <p class="card-text">Flat no 3,D.No.39-10-42/2 <br> Renuka Residency <br>Opp Govt. Municipal high School <br>Visakhapatnam-530007
-               <br>Contact name:Raj Kumar Sharda(CC/CoP)
-             <br> Contact no:+91-9030043165  <br>
-            <a href="https://maps.app.goo.gl/jrh6P8XrR9z9xAPJA" target=”_blank” class="card-link">Google Map</a>
-           </p>
-         </div>
-       </div>
-      </div>
-    </div>
-   </div>
-   <!------------------------------------------------------------------------------------------------->
-<div class="container"> 
- <div class="row"> 
-   <div class="col-sm">
-    <div class="card">
-      <div class="card-body">
-          <h6 class="card-title" style="word-break:normal"><b>MVP COLONY MEDITATION CENTER</b></h6>
-          <p class="card-text">MIG-1A32 <br> Sector 9 <br>MVP Colony <br>Visakhapatnam-530017
-            <br>Contact name:V.Sirisha(CC/CoP)
-          <br> Contact no:9246678757    <br> 
-         <a href="https://maps.app.goo.gl/e2pc4MD6x295ryVr7" target=”_blank” class="card-link">Google Map</a>
-        </p>
-      </div>
-    </div>
-   </div>
- </div>
-</div>
-<!------------------------------------------------------------------------------------------------->
-<div class="container"> 
-  <div class="row"> 
-    <div class="col-sm">
-     <div class="card">
-       <div class="card-body">
-           <h6 class="card-title" style="word-break:normal"><b>NAVALPARK MEDITATION CENTER</b></h6>
-           <p class="card-text">Scindia Rd <br> Dockyard Line, Naval Park <br>Hindustan Shipyard <br>Visakhapatnam-530011
-             <br>Contact name:Chetan Chandegave(CC/CoP)
-           <br> Contact no:+91-9004689711 <br> 
-          <a href="https://maps.app.goo.gl/1FEmwns2n2H4i1gd6" target=”_blank” class="card-link">Google Map</a>
-         </p>
-       </div>
-     </div>
-    </div>
-  </div>
- </div>
- <!------------------------------------------------------------------------------------------------->
-<div class="container"> 
-    <div class="row">
-      <div class="col-sm">
-          <div class="card">
-             <div class="card-body">
-             <h6 class="card-title" style="word-break:normal"><b>PEDAWALTAIR MEDITATION CENTER</b></h6>
-             <p class="card-text">Vidyanagar Palace out <br>  Andhra University <br> Peddawaltair
-               <br> Visakhapatnam-530017
-               <br>Contact name:Padma Leela(CC/CoP)
-             <br> Contact no:+91-9393552386 <br>
-             <a href="https://goo.gl/maps/ktwf1b8mGuhsJC3aA" target=”_blank” class="card-link">Google Map</a>   </p>
-          </div>
-       </div>
-    </div> 
-   </div>
- </div>
-<!---------------------------------------------------------------------------------------------->
- <div class="container"> 
-    <div class="row">
-      <div class="col-sm">
-       <div class="card">
-       <div class="card-body">
-       <h6 class="card-title" style="word-break:normal"><b>PEELA HOMES MEDITATION CENTER(VENKOJIPALEM)</b></h6>
-       <p class="card-text">55-1-17/2/19 <br>Flat number 304, H.B. colony road <br> Old Venkojipalem
-        <br>Visakhapatnam-530022
-        <br>Contact name:S Rama Devi(CC/CoP)
-       <br> Contact no:+91-9966433004 <br>
-        <a href="https://maps.app.goo.gl/21YBr1JW4jM61fq7A" target=”_blank” class="card-link">Google Map</a> </p>
-      </div>
-    </div>
-  </div>
-</div>
-</div>
- <!------------------------------------------------------------------------------------------------->
-<div class="container"> 
-     <div class="row"> 
-      <div class="col-sm">
-         <div class="card">
-           <div class="card-body">
-               <h6 class="card-title" style="word-break:normal"><b>P.M PALEM MEDITATION CENTER</b></h6>
-               <p class="card-text">F.no.502 <br> Vasundhara Residency <br> Madhurawada <br>Visakhapatnam
-                <br>Contact name:K.Rama Devi(CC/CoP)
-               <br> Contact no:+91-8919590879 <br>
-               <a href="https://maps.app.goo.gl/YB5gK9RRiBNztLqQA" target=”_blank” class="card-link">Google Map</a>   </p>
-            </div>
-         </div>
-       </div>
-    </div>
-</div>
-<!------------------------------------------------------------------------------------------------->
- <div class="container"> 
-    <div class="row">
-      <div class="col-sm">
-         <div class="card">
-           <div class="card-body">
-           <h6 class="card-title" style="word-break:normal"><b>SANKAR MUTT ROAD MEDITATION CENTER(SANTHIPURAM)</b></h6>
-           <p class="card-text">H.No:50-92-2/6/4 <br> Surya Enclave <br> Sankaramatam Road,Santhipuram
-            <br>Visakhapatnam-530016
-            <br>Contact name:P.Narsinga Rao(CC/CoP)
-            <br> Contact no:+91-9440680051 <br>
-                   <a href="https://maps.app.goo.gl/B7B88rqyHrDPHsy29" target=”_blank” class="card-link">Google Map</a> </p>
-          </div>
-        </div>
-     </div>
-  </div>
-</div>
-<!------------------------------------------------------------------------------------------------->
-<div class="container"> 
-  <div class="row">
-    <div class="col-sm">
-       <div class="card">
-         <div class="card-body">
-         <h6 class="card-title" style="word-break:normal"><b>SCINDHIYA MEDITATION CENTER</b></h6>
-         <p class="card-text"> H No: K8 <br> HSL Colony <br> Scindia
-          <br>Visakhapatnam-530005
-          <br>Contact name:Rajesh Pandey(CC/CoP)
-          <br> Contact no:+91-7780245594 <br>
-                 <a href="https://goo.gl/maps/q4VQkTxJrQf6ooJt8" target=”_blank” class="card-link">Google Map</a> </p>
-        </div>
-      </div>
-   </div>
-</div>
-</div>
-
-<!------------------------------------------------------------------------------------------------->
-<div class="container"> 
-  <div class="row">
-    <div class="col-sm">
-       <div class="card">
-         <div class="card-body">
-         <h6 class="card-title" style="word-break:normal"><b>SEETHAMMADHARA MEDITATION CENTER</b></h6>
-         <p class="card-text">Flat no:202, DNO: 55-14-74/3-4 <br> Sai Siri Nivas Apartment <br> Behind Alluriseetaramaraju Statue <br> A.P.S.E.B Colony,Seethammadhara
-          <br>Visakhapatnam - 530013
-          <br>Contact name:S Janardhan rao(CC/CoP)
-          <br> Contact no:+91-9705647565 <br>
-                 <a href="https://maps.app.goo.gl/YBEKhLYghfARgexV9" target=”_blank” class="card-link">Google Map</a> </p>
-        </div>
-      </div>
-   </div>
-</div>
-</div>
-<!------------------------------------------------------------------------------------------------->
-<div class="container"> 
-    <div class="row">
-      <div class="col-sm">
-         <div class="card">
-           <div class="card-body">
-           <h6 class="card-title" style="word-break:normal"><b>SHEELA NAGAR MEDITATION CENTER</b></h6>
-           <p class="card-text"> Flat no:-413,
-            MK Grand apartment <br>
-            Sheelanagar, near AP Registrar office <br>
-            KIMS Road <br>
-            Visakhapatnam-530012
-            <br>Contact name:M Sashibhushan(CC/CoP)
-            <br> Contact no:+91-9392625192 <br>
-            <a href="https://maps.app.goo.gl/LYQMfvfnzBjptYJNA" target=”_blank” class="card-link">Google Map</a> </p>
-          </div>
-        </div>
-     </div>
-  </div>
-</div>
-<!------------------------------------------------------------------------------------------------->
-<div class="container"> 
-  <div class="row">
-    <div class="col-sm">
-       <div class="card">
-         <div class="card-body">
-         <h6 class="card-title" style="word-break:normal"><b>SRI NAGAR MEDITATION CENTER(GAJUWAKA)</b></h6>
-         <p class="card-text"> Flat no:27-3-138/10,Srinidhi plaza
-          Offical COlony <br>
-          Street-4,Srinagar <br>
-          Gajuwaka <br>
-          Visakhapatnam-530026
-          <br>Contact name:DKM Lakshmi(CC/CoP)
-          <br> Contact no:+91-9032621099 <br>
-          <a href="https://maps.app.goo.gl/W95eK6CRczRE9fhz9" target=”_blank” class="card-link">Google Map</a> </p>
-        </div>
-      </div>
-   </div>
-</div>
-</div>
-<!------------------------------------------------------------------------------------------------->
-<div class="container"> 
-  <div class="row"> 
-      <div class="col-sm">
-         <div class="card">
-           <div class="card-body">
-            <h6 class="card-title" style="word-break:normal"><b>VISALAKSHI NAGAR MEDITATION CENTER</b></h6>
-            <p class="card-text">10-275/2 <br> Forest Bungalow road <br> Visalakshi nagar
-               <br> Visakhapatnam-530043
-               <br>Contact name:GV RamaKrishna(CC/CoP)
-                <br> Contact no:+91-7660867788 <br>
-            <a href="https://maps.app.goo.gl/gYF2pg5DiuERs8Vs7" target=”_blank” class="card-link">Google Map</a> </p>
-           </div>
-         </div>
-        </div>
-      </div>
-    </div>
- <!------------------------------------------------------------------------------------------------->
-    <div class="container"> 
-        <div class="row"> 
-          <div class="col-sm">
-            <div class="card">
-             <div class="card-body">
-               <h6 class="card-title" style="word-break:normal"><b>YOGA VILLAGE A.U MEDITATION CENTER</b></h6>
-               <p class="card-text">Meditation and yoga hall <br> Department of yoga conscious Andhra University <br>RK Beach Road
-                <br>Visakhapatnam-530003
-                <br>Contact name:Rama Devi P(CC/CoP)
-                <br> Contact no:+91-9440403403 <br>
-                <a href="https://maps.app.goo.gl/US94bBAdmdkunWwf9" target=”_blank” class="card-link">Google Map</a> </p>
-             </div>
-          </div>
-       </div>
-      </div>
     </div>
 
-<!--------------------------------------------------------------------------------------------------->
+    <!-- Footer -->
+    <section id="footer">
+        <div class="container">
+            <a href="../HFNContactUs/HFNContactUs.html">CONTACT US</a>
+            <a href="../FAQs/FAQs.html">FAQs</a>
+        </div>
+    </section>
 
-<div class="container pt-2 pb-2">
-  <section id="footer">
-    <a href="../HFNContactUs/HFNContactUs.html" ><b>CONTACT US</b></a>
-    <a href="../FAQs/FAQs.html"><b>FAQs</b></a>
-  </section>
-  </div>
-  
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-<script>
-document.getElementById('menu-icon').addEventListener('click', function() {
-  var navLinks = document.getElementById('nav-links');
-  var menuIcon = document.getElementById('menu-icon');
-  
-  if (navLinks.classList.contains('vertical-links')) {
-    navLinks.classList.remove('vertical-links');
-    menuIcon.classList.remove('fa-times');
-    menuIcon.classList.add('fa-bars');
-  } else {
-    navLinks.classList.add('vertical-links');
-    menuIcon.classList.remove('fa-bars');
-    menuIcon.classList.add('fa-times');
-  }
-});
+    <!-- Scroll to Top Button -->
+    <button class="scroll-top" id="scrollTop" aria-label="Scroll to top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
 
-</script>
-<script>
-  document.addEventListener("DOMContentLoaded", function() {
-      // Check if the current URL has the '.html' extension
-      if (window.location.pathname.endsWith('.html')) {
-          // Remove the '.html' from the URL
-          var cleanUrl = window.location.pathname.replace('.html', '');
-          // Redirect to the clean URL without '.html'
-          window.history.replaceState(null, null, cleanUrl);
-      }
-  });
-  </script>
-<body>
+    <!-- Loading Scripts -->
+    <script>
+        // Performance optimizations
+        document.addEventListener('DOMContentLoaded', function() {
+            // Lazy load center details
+            loadCenterDetails();
+            
+            // Initialize search functionality
+            initializeSearch();
+            
+            // Initialize mobile menu
+            initializeMobileMenu();
+            
+            // Initialize scroll to top
+            initializeScrollToTop();
+            
+            // Clean URL
+            cleanURL();
+        });
+
+        // Center data
+        const centers = [
+            {
+                name: "ADARSH NAGAR MEDITATION CENTER",
+                address: "DNo:2-349/2, Silvervilla, Adarshnagar, Old Diary Farm, Visakhapatnam-530040",
+                contact: "P.L Gayatri (CC/CoP)",
+                phone: "+91-9440680051",
+                mapLink: "https://maps.app.goo.gl/vZgvxAJagqgf4g7G7"
+            },
+            {
+                name: "AYODHYA NAGAR MEDITATION CENTER",
+                address: "27-17/11A, Ayodhya nagar 2, Madhurawada, Visakhapatnam-530048",
+                contact: "Ch.Siva Shankar (CC/CoP)",
+                phone: "+91-9247464006",
+                mapLink: "https://maps.app.goo.gl/NAPS1htjbcSFrG799"
+            },
+            {
+                name: "BAKKANAPALEM MEDITATION CENTER (MADHURAWADA)",
+                address: "SVS Royal Paradise, Bakkanapalem, Madhurawada, Visakhapatnam-530048",
+                contact: "Vijay Mudunuri (CC/CoP)",
+                phone: "+91-8317657590",
+                mapLink: "https://maps.app.goo.gl/suej3HGiozzAEdwC9"
+            },
+            {
+                name: "BIRLA JN MEDITATION CENTER",
+                address: "Flat No.301, Meera Enclave, Birla Junction, Visakhapatnam-530016",
+                contact: "K.Surya Prakash (CC/CoP)",
+                phone: "+91-9440166603",
+                mapLink: "https://maps.app.goo.gl/RPpSdvzoSPhFFGCt7"
+            },
+            {
+                name: "CHINNA MUSHIDAWADA MEDITATION CENTER",
+                address: "Plot No.42, Chinna Mushidiwada, Visakhapatnam-530013",
+                contact: "M.Srinivas (CC/CoP)",
+                phone: "+91-9440123456",
+                mapLink: "https://maps.app.goo.gl/oETqwGWqaZQZ93ys8"
+            },
+            {
+                name: "DABAGARDENS MEDITATION CENTER",
+                address: "30-5-39/2,2nd floor,Emandis Sadhan, Behind BSNL, Dabagardens, Visakhapatnam-530020",
+                contact: "Govinda Raju (CC/CoP)",
+                phone: "+91-9160626751",
+                mapLink: "https://maps.app.goo.gl/tNYAPzfVJ4JtT96J9"
+            },
+            {
+
+                name: "KOMMADI MEDITATION CENTER(MADHURAWADA)",
+                address: "2-7 S.C colony, Devi Metta,Near FCI Godown,Venkatnagar, Kommadi, Visakhapatnam-530048",
+                contact: "Satyanarayana (CC/CoP)",
+                phone: "+91-7032335454",
+                mapLink: "https://maps.app.goo.gl/RRmVMTCssbsPPYXt8"
+            },
+            {
+    name: "KOTHAPALEM MEDITATION CENTER",
+    address: "Dno:5-45/6,4th Lane, Santosh Nagar, Kothapalem, Visakhapatnam-530027",
+    contact: "M Sashi Bhushan (CC/CoP)",
+    phone: "+91-9866273427",
+    mapLink: "https://maps.app.goo.gl/jR3UmFRiTo1waspi9"
+},
+{
+    name: "LAKSHMI NIVASAM MEDITATION CENTER(BIRLA JUNCTION)",
+    address: "Club house, 1st floor, Lakshmi Nivasam, Bapuji Nagar, Near Birla Junction, Backside of KIA Showroom, Visakhapatnam-53007",
+    contact: "PS Satya Prabha (CC/CoP)",
+    phone: "+91-7901052604",
+    mapLink: "https://maps.app.goo.gl/RPpSdvzoSPhFFGCt7"
+},
+{
+    name: "LANSUM GREENS MEDITATION CENTER(MADHAVADHARA)",
+    address: "Kalinganagar, Madhavadhara, Visakhapatnam-53007",
+    contact: "Tavudu (CC/CoP)",
+    phone: "+91-9177260789",
+    mapLink: "https://maps.app.goo.gl/ccUpGuaLmYNTjArA8"
+},
+{
+    name: "MIDHILAPURI MEDITATION CENTER(MADHURAWADA)",
+    address: "203, Manasa residency, Midhilapuri Vuda Colony, Visakhapatnam-530041",
+    contact: "E.Sita Devi (CC/CoP)",
+    phone: "+91-8374611097",
+    mapLink: "https://maps.app.goo.gl/bAmTfmnj6nAC8xQCA"
+},
+{
+    name: "MURALINAGAR MEDITATION CENTER",
+    address: "Flat no 3,D.No.39-10-42/2, Renuka Residency, Opp Govt. Municipal high School, Visakhapatnam-530007",
+    contact: "Raj Kumar Sharda (CC/CoP)",
+    phone: "+91-9030043165",
+    mapLink: "https://maps.app.goo.gl/jrh6P8XrR9z9xAPJA"
+},
+{
+    name: "MVP COLONY MEDITATION CENTER",
+    address: "MIG-1A32, Sector 9, MVP Colony, Visakhapatnam-530017",
+    contact: "V.Sirisha (CC/CoP)",
+    phone: "9246678757",
+    mapLink: "https://maps.app.goo.gl/e2pc4MD6x295ryVr7"
+},
+{
+    name: "NAVALPARK MEDITATION CENTER",
+    address: "Scindia Rd, Dockyard Line, Naval Park, Hindustan Shipyard, Visakhapatnam-530011",
+    contact: "Chetan Chandegave (CC/CoP)",
+    phone: "+91-9004689711",
+    mapLink: "https://maps.app.goo.gl/1FEmwns2n2H4i1gd6"
+},
+{
+    name: "PEDAWALTAIR MEDITATION CENTER",
+    address: "Vidyanagar Palace out, Andhra University, Peddawaltair, Visakhapatnam-530017",
+    contact: "Padma Leela (CC/CoP)",
+    phone: "+91-9393552386",
+    mapLink: "https://goo.gl/maps/ktwf1b8mGuhsJC3aA"
+},
+{
+    name: "PEELA HOMES MEDITATION CENTER(VENKOJIPALEM)",
+    address: "55-1-17/2/19, Flat number 304, H.B. colony road, Old Venkojipalem, Visakhapatnam-530022",
+    contact: "S Rama Devi (CC/CoP)",
+    phone: "+91-9966433004",
+    mapLink: "https://maps.app.goo.gl/21YBr1JW4jM61fq7A"
+},
+{
+    name: "P.M PALEM MEDITATION CENTER",
+    address: "F.no.502, Vasundhara Residency, Madhurawada, Visakhapatnam",
+    contact: "K.Rama Devi (CC/CoP)",
+    phone: "+91-8919590879",
+    mapLink: "https://maps.app.goo.gl/YB5gK9RRiBNztLqQA"
+},
+{
+    name: "SANKAR MUTT ROAD MEDITATION CENTER(SANTHIPURAM)",
+    address: "H.No:50-92-2/6/4, Surya Enclave, Sankaramatam Road,Santhipuram, Visakhapatnam-530016",
+    contact: "P.Narsinga Rao (CC/CoP)",
+    phone: "+91-9440680051",
+    mapLink: "https://maps.app.goo.gl/B7B88rqyHrDPHsy29"
+},
+{
+    name: "SCINDHIYA MEDITATION CENTER",
+    address: "H No: K8, HSL Colony, Scindia, Visakhapatnam-530005",
+    contact: "Rajesh Pandey (CC/CoP)",
+    phone: "+91-7780245594",
+    mapLink: "https://goo.gl/maps/q4VQkTxJrQf6ooJt8"
+},
+{
+    name: "SEETHAMMADHARA MEDITATION CENTER",
+    address: "Flat no:202, DNO: 55-14-74/3-4, Sai Siri Nivas Apartment, Behind Alluriseetaramaraju Statue, A.P.S.E.B Colony,Seethammadhara, Visakhapatnam - 530013",
+    contact: "S Janardhan rao (CC/CoP)",
+    phone: "+91-9705647565",
+    mapLink: "https://maps.app.goo.gl/YBEKhLYghfARgexV9"
+},
+{
+    name: "SHEELA NAGAR MEDITATION CENTER",
+    address: "Flat no:-413, MK Grand apartment, Sheelanagar, near AP Registrar office, KIMS Road, Visakhapatnam-530012",
+    contact: "M Sashibhushan (CC/CoP)",
+    phone: "+91-9392625192",
+    mapLink: "https://maps.app.goo.gl/LYQMfvfnzBjptYJNA"
+},
+{
+    name: "SRI NAGAR MEDITATION CENTER(GAJUWAKA)",
+    address: "Flat no:27-3-138/10,Srinidhi plaza, Offical COlony, Street-4,Srinagar, Gajuwaka, Visakhapatnam-530026",
+    contact: "DKM Lakshmi (CC/CoP)",
+    phone: "+91-9032621099",
+    mapLink: "https://maps.app.goo.gl/W95eK6CRczRE9fhz9"
+},
+{
+    name: "VISALAKSHI NAGAR MEDITATION CENTER",
+    address: "10-275/2, Forest Bungalow road, Visalakshi nagar, Visakhapatnam-530043",
+    contact: "GV RamaKrishna (CC/CoP)",
+    phone: "+91-7660867788",
+    mapLink: "https://maps.app.goo.gl/gYF2pg5DiuERs8Vs7"
+},
+{
+    name: "YOGA VILLAGE A.U MEDITATION CENTER",
+    address: "Meditation and yoga hall, Department of yoga conscious Andhra University, RK Beach Road, Visakhapatnam-530003",
+    contact: "Rama Devi P (CC/CoP)",
+    phone: "+91-9440403403",
+    mapLink: "https://maps.app.goo.gl/US94bBAdmdkunWwf9"
+}
+        ];
+
+        function loadCenterDetails() {
+            const container = document.getElementById('centersContainer');
+            const loading = document.createElement('div');
+            loading.className = 'loading';
+            loading.innerHTML = '<div class="spinner"></div><p>Loading meditation centers...</p>';
+            container.appendChild(loading);
+
+            // Simulate loading delay for better UX
+            setTimeout(() => {
+                loading.remove();
+                centers.forEach(center => {
+                    const centerCard = createCenterCard(center);
+                    container.appendChild(centerCard);
+                });
+            }, 1000);
+        }
+
+        function createCenterCard(center) {
+            const card = document.createElement('div');
+            card.className = 'center-card';
+            card.innerHTML = `
+                <div class="card-body">
+                    <h6 class="card-title">${center.name}</h6>
+                    <p><strong>Address:</strong> ${center.address}</p>
+                    <div class="contact-info">
+                        <div class="contact-person">${center.contact}</div>
+                        <div class="contact-number">${center.phone}</div>
+                    </div>
+                    <a href="${center.mapLink}" target="_blank" class="map-link">View on Map</a>
+                </div>
+            `;
+            return card;
+        }
+
+        function initializeSearch() {
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.addEventListener('input', function(e) {
+                    const searchTerm = e.target.value.toLowerCase();
+                    const centerCards = document.querySelectorAll('.center-card:not(.zonal-coordinator):not(.main-center)');
+                    
+                    centerCards.forEach(card => {
+                        const text = card.textContent.toLowerCase();
+                        if (text.includes(searchTerm)) {
+                            card.style.display = 'block';
+                            card.style.animation = 'fadeIn 0.3s ease-in';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                });
+            }
+        }
+
+        function initializeMobileMenu() {
+            const menuIcon = document.getElementById('menu-icon');
+            const navLinks = document.getElementById('nav-links');
+            
+            if (menuIcon && navLinks) {
+                menuIcon.addEventListener('click', function() {
+                    navLinks.classList.toggle('show');
+                    
+                    if (navLinks.classList.contains('show')) {
+                        menuIcon.classList.remove('fa-bars');
+                        menuIcon.classList.add('fa-times');
+                    } else {
+                        menuIcon.classList.remove('fa-times');
+                        menuIcon.classList.add('fa-bars');
+                    }
+                });
+
+                // Close menu when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!menuIcon.contains(e.target) && !navLinks.contains(e.target)) {
+                        navLinks.classList.remove('show');
+                        menuIcon.classList.remove('fa-times');
+                        menuIcon.classList.add('fa-bars');
+                    }
+                });
+            }
+        }
+
+        function initializeScrollToTop() {
+            const scrollTopBtn = document.getElementById('scrollTop');
+            
+            if (scrollTopBtn) {
+                window.addEventListener('scroll', function() {
+                    if (window.pageYOffset > 300) {
+                        scrollTopBtn.classList.add('show');
+                    } else {
+                        scrollTopBtn.classList.remove('show');
+                    }
+                });
+                
+                scrollTopBtn.addEventListener('click', function() {
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                });
+            }
+        }
+
+        function cleanURL() {
+            if (window.location.pathname.endsWith('.html')) {
+                const cleanUrl = window.location.pathname.replace('.html', '');
+                window.history.replaceState(null, null, cleanUrl);
+            }
+        }
+    </script>
+
+    <!-- Bootstrap JS (loaded at end for better performance) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js" defer></script>
+</body>
 </html>
