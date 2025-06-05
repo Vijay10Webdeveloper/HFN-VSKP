@@ -178,6 +178,41 @@
             margin-bottom: 3rem;
         }
 
+        /* Horizontal Carousel for Daily Practices */
+        .daily-practices-carousel {
+            display: flex;
+            overflow-x: auto;
+            gap: 1.5rem;
+            padding: 1rem 0;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent-color) var(--light-bg);
+        }
+
+        .daily-practices-carousel::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .daily-practices-carousel::-webkit-scrollbar-track {
+            background: var(--light-bg);
+            border-radius: 4px;
+        }
+
+        .daily-practices-carousel::-webkit-scrollbar-thumb {
+            background: var(--accent-color);
+            border-radius: 4px;
+        }
+
+        .daily-practices-carousel::-webkit-scrollbar-thumb:hover {
+            background: var(--secondary-color);
+        }
+
+        .daily-practices-carousel .video-card {
+            flex: 0 0 320px;
+            min-width: 320px;
+        }
+
         .video-card {
             background: var(--white);
             border-radius: var(--border-radius);
@@ -286,12 +321,51 @@
             overflow: hidden;
             box-shadow: var(--shadow);
             transition: var(--transition);
+            position: relative;
         }
 
         .playlist-card:hover {
             transform: translateY(-5px);
             box-shadow: var(--shadow-hover);
         }
+
+        .playlist-card a {
+            display: block;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .playlist-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+
+        .playlist-card:hover .playlist-image {
+            transform: scale(1.05);
+        }
+
+        .playlist-card::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            opacity: 0;
+            transition: var(--transition);
+            pointer-events: none;
+        }
+
+        .playlist-card:hover::after {
+            opacity: 1;
+            box-shadow : var(--shadow-hover);
+        }     
+    
 
         .playlist-image {
             width: 100%;
@@ -391,6 +465,11 @@
                 grid-template-columns: 1fr;
             }
 
+            .daily-practices-carousel .video-card {
+                flex: 0 0 280px;
+                min-width: 280px;
+            }
+
             .download-buttons {
                 flex-direction: column;
                 align-items: center;
@@ -456,7 +535,7 @@
     <!-- Daily Practices Section -->
     <section class="section">
         <h2 class="section-title">Guided Daily Practices</h2>
-        <div class="video-grid">
+        <div class="daily-practices-carousel">
             <div class="video-card lazy-load">
                 <div class="video-wrapper">
                     <iframe data-src="https://www.youtube.com/embed/bFlUx1cYOhQ?si=P5SoiYh65rm-7hFk" loading="lazy" allowfullscreen></iframe>
@@ -542,12 +621,14 @@
             Click the videos below to explore our comprehensive knowledge base
         </div>
         
-        <div class="video-grid">
+        <div class="daily-practices-carousel">
             <div class="video-card lazy-load">
                 <div class="playlist-card">
-                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjMzQ0OTVlIi8+Cjx0ZXh0IHg9IjE1MCIgeT0iMTAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSJ3aGl0ZSIgZm9udC1zaXplPSIxOCI+OTAgRGF5IENoYWxsZW5nZTwvdGV4dD4KPC9zdmc+" alt="90 Day Challenge" class="playlist-image">
+                    <a href="https://www.youtube.com/playlist?list=PLa8gvTHECIMo6TrBdh9Y7eS8pCMZbxJiG" target="_blank">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjMzQ0OTVlIi8+Cjx0ZXh0IHg9IjE1MCIgeT0iMTAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSJ3aGl0ZSIgZm9udC1zaXplPSIxOCI+OTAgRGF5IENoYWxsZW5nZTwvdGV4dD4KPHN2ZyB4PSIxMzAiIHk9IjgwIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0id2hpdGUiPgo8cGF0aCBkPSJNOCAydjEwbDUuNS01LjVMOCAyeiIvPgo8L3N2Zz4KPC9zdmc+" alt="90 Day Challenge" class="playlist-image">
+                    </a>
                 </div>
-                <div class="video-title">90 Day Challenge</div>
+                <div class="video-title">90 Day Challenge Playlist</div>
             </div>
             
             <div class="video-card lazy-load">
@@ -570,13 +651,83 @@
                 </div>
                 <div class="video-title">3 To-Do's for Effective Meditation</div>
             </div>
+            
+            <div class="video-card lazy-load">
+                <div class="video-wrapper">
+                    <iframe data-src="https://www.youtube.com/embed/e6BkPebxyFs?si=vsymu6Uz7F37oJky" loading="lazy" allowfullscreen></iframe>
+                </div>
+                <div class="video-title">Anger Management Tips</div>
+            </div>
+            
+            <div class="video-card lazy-load">
+                <div class="video-wrapper">
+                    <iframe data-src="https://www.youtube.com/embed/molDO-D4nm0?si=45wvUg1rwSlQFwRO" loading="lazy" allowfullscreen></iframe>
+                </div>
+                <div class="video-title">How to Advance Your Spiritual Journey?</div>
+            </div>
+            
+            <div class="video-card lazy-load">
+                <div class="video-wrapper">
+                    <iframe data-src="https://www.youtube.com/embed/cDF1glqFVjw?si=lBEthBf56RlJVF5O" loading="lazy" allowfullscreen></iframe>
+                </div>
+                <div class="video-title">Kanha Shanti Vanam Hyderabad</div>
+            </div>
+            
+            <div class="video-card lazy-load">
+                <div class="video-wrapper">
+                    <iframe data-src="https://www.youtube.com/embed/Z_9GHTFs6Uk?si=U61x081SY6FsoTMi" loading="lazy" allowfullscreen></iframe>
+                </div>
+                <div class="video-title">The Heartfulness Life At Kanha Shanti Vanam</div>
+            </div>
+            
+            <div class="video-card lazy-load">
+                <div class="video-wrapper">
+                    <iframe data-src="https://www.youtube.com/embed/videoseries?si=uqz0UYHl5Z3XFfW_&list=PL1QpxVYcCuCaDIn21q_s50E3MWZokMg8y" loading="lazy" allowfullscreen></iframe>
+                </div>
+                <div class="video-title">Global Spirituality Mahotsav</div>
+            </div>
+            
+            <div class="video-card lazy-load">
+                <div class="video-wrapper">
+                    <iframe data-src="https://www.youtube.com/embed/KRV80ZB78V8?si=pkRqgOsc1umw57e3" loading="lazy" allowfullscreen></iframe>
+                </div>
+                <div class="video-title">Heartfulness Initiatives</div>
+            </div>
+            
+            <div class="video-card lazy-load">
+                <div class="video-wrapper">
+                    <iframe data-src="https://www.youtube.com/embed/bQYZyUs-ZNE?si=7gAbe4XqxuZuconE" loading="lazy" allowfullscreen></iframe>
+                </div>
+                <div class="video-title">Athletes and Meditation</div>
+            </div>
+            
+            <div class="video-card lazy-load">
+                <div class="video-wrapper">
+                    <iframe data-src="https://www.youtube.com/embed/_ld5iZeWHec?si=_RbSOpyzqq6Bi7hs" loading="lazy" allowfullscreen></iframe>
+                </div>
+                <div class="video-title">AntahKarana Suddhi (Mental Detox)</div>
+            </div>
+            
+            <div class="video-card lazy-load">
+                <div class="video-wrapper">
+                    <iframe data-src="https://www.youtube.com/embed/1blfhkoPslo?si=Th8rmGT-T1sLgihq" loading="lazy" allowfullscreen></iframe>
+                </div>
+                <div class="video-title">Best Way to Remove Stress</div>
+            </div>
+            
+            <div class="video-card lazy-load">
+                <div class="video-wrapper">
+                    <iframe data-src="https://www.youtube.com/embed/_NCxkYzlh_I?si=1uvb6DgjcL7gN-_b" loading="lazy" allowfullscreen></iframe>
+                </div>
+                <div class="video-title">Do You Need a Guru?</div>
+            </div>
         </div>
     </section>
 
     <!-- Footer -->
     <footer class="footer">
-        <a href="#">CONTACT US</a>
-        <a href="#">FAQs</a>
+        <a href="../HFNContactUs/HFNContactUs.html">CONTACT US</a>
+        <a href="../FAQs/FAQs.html">FAQs</a>
     </footer>
 
     <script>
