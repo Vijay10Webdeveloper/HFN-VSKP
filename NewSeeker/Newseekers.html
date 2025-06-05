@@ -2,243 +2,658 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=<device-width>, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Heartfulness Vizag</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link href="./NewSeeker_Style.css" rel="stylesheet">
-    <link href="../hdrftr_style.css" rel="stylesheet">
-    <link href="../Kbsettings.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #e74c3c;
+            --accent-color: #f39c12;
+            --light-bg: #ecf0f1;
+            --dark-bg: #34495e;
+            --text-color: #2c3e50;
+            --light-text: #7f8c8d;
+            --white: #ffffff;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 8px 15px rgba(0, 0, 0, 0.2);
+            --border-radius: 12px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        /* Header Styles */
+        .header {
+            background: var(--white);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            height: 50px;
+            transition: var(--transition);
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-menu a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .nav-menu a:hover,
+        .nav-menu a.active {
+            background: linear-gradient(135deg, var(--secondary-color), var(--accent-color));
+            color: var(--white);
+            transform: translateY(-2px);
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-color);
+            cursor: pointer;
+        }
+
+        /* Hero Section */
+        .hero {
+            position: relative;
+            height: 60vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border-radius: var(--border-radius);
+            margin: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .hero-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.7);
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(44, 62, 80, 0.8), rgba(231, 76, 60, 0.6));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero-text {
+            text-align: center;
+            color: var(--white);
+            z-index: 2;
+        }
+
+        .hero-text h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            animation: fadeInUp 1s ease-out;
+        }
+
+        /* Section Styles */
+        .section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(135deg, var(--secondary-color), var(--accent-color));
+            border-radius: 2px;
+        }
+
+        /* Video Grid */
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .video-card {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .video-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+        }
+
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .video-title {
+            padding: 1rem;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-color);
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            text-align: center;
+        }
+
+        /* Download Section */
+        .download-section {
+            background: linear-gradient(135deg, var(--primary-color), var(--dark-bg));
+            color: var(--white);
+            border-radius: var(--border-radius);
+            padding: 3rem;
+            margin: 3rem 0;
+            text-align: center;
+        }
+
+        .download-section h3 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .download-section p {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .download-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, var(--secondary-color), var(--accent-color));
+            color: var(--white);
+            text-decoration: none;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+            color: var(--white);
+        }
+
+        .download-btn i {
+            font-size: 1.2rem;
+        }
+
+        /* Knowledge Base */
+        .knowledge-notice {
+            background: linear-gradient(135deg, var(--accent-color), #e67e22);
+            color: var(--white);
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            text-align: center;
+            margin-bottom: 2rem;
+            font-weight: 600;
+        }
+
+        .playlist-card {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .playlist-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .playlist-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+
+        .playlist-card:hover .playlist-image {
+            transform: scale(1.05);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--primary-color);
+            color: var(--white);
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+
+        .footer a {
+            color: var(--white);
+            text-decoration: none;
+            margin: 0 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+
+        .footer a:hover {
+            background: var(--secondary-color);
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        /* Loading Skeleton */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-menu {
+                position: fixed;
+                top: 80px;
+                left: -100%;
+                width: 100%;
+                height: calc(100vh - 80px);
+                background: var(--white);
+                flex-direction: column;
+                align-items: center;
+                justify-content: flex-start;
+                padding-top: 2rem;
+                transition: var(--transition);
+                box-shadow: var(--shadow);
+            }
+
+            .nav-menu.active {
+                left: 0;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .hero-text h1 {
+                font-size: 2rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .video-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .download-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .download-btn {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+
+        /* Performance Optimizations */
+        .video-wrapper {
+            background: var(--light-bg);
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="20" fill="none" stroke="%23ddd" stroke-width="2"/><path d="M40 35 L65 50 L40 65 Z" fill="%23666"/></svg>');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 60px;
+        }
+
+        /* Intersection Observer for lazy loading */
+        .lazy-load {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: var(--transition);
+        }
+
+        .lazy-load.loaded {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
 </head>
 <body>
-  <!------------------------------------------------------------------------------------------------------->
-  <div class="container pt-1" >
-    <div class="header">
-      <div class="row">
-        <div class="col-sm-8">
-      <img src="../Images/advancing-in-love-black.png" class="logo" alt="Heartfulness" style="margin-top: 2px;">  
-      </div>
-      <div class="col-sm-4">
-      <i class="fa fa-bars" id="menu-icon"></i>
-      <nav id="nav-links" >
-        <ul>
-          <li><a class="active" href="../Home/Home.html"><b>HOME</b></a></li>
-          <li><a href="../NewSeeker/Newseekers.html"><b>NEW SEEKERS</b></a></li>
-          <li><a href="../Abhyasi/Abhyasi.html"><b>ABHYASIS</b></a></li>
-        </ul>
-      </nav>
-    </div>
-    </div>
-  </div>
-  </div>
-  <!------------------------------------------------------------------------------------------------------>
-  <div class="container">
-  <section id="NScoverimg" >
-    <img src="../Images/NSdailymeditation.jpeg" class="d-block w-100" alt="Ashram">
-  </section>
-</div>
-</div>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <img src="../Images/advancing-in-love-black.png" alt="Heartfulness" class="logo">
+            
+            <nav>
+                <ul class="nav-menu" id="nav-menu">
+                    <li><a href="#" class="active">HOME</a></li>
+                    <li><a href="#">NEW SEEKERS</a></li>
+                    <li><a href="#">ABHYASIS</a></li>
+                </ul>
+                <button class="menu-toggle" id="menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </nav>
+        </div>
+    </header>
 
-   <div class="container">  
-    <section  id="hdr1">
-        <h3>Guided Daily Practices</h3> </section>
-    </div>
-      <div class="container">
-        <div class="youtube-carousel"> 
-          <div class="carousel-container">
-            <div class="kbbtn">
-              <iframe id="youtube-iframe" src="https://www.youtube.com/embed/bFlUx1cYOhQ?si=P5SoiYh65rm-7hFk&amp;controls=0" frameborder="0" allowfullscreen ></iframe>
-              <h6><b>Guided Relaxation(Telugu)</b></h6>  
+    <!-- Hero Section -->
+    <section class="hero">
+        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwMCIgaGVpZ2h0PSI2MDAiIHZpZXdCb3g9IjAgMCAxMjAwIDYwMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGRlZnM+CjxsaW5lYXJHcmFkaWVudCBpZD0iZ3JhZGllbnQiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgo8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojNjc0MWQ5O3N0b3Atb3BhY2l0eToxIiAvPgo8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNlNzRjM2M7c3RvcC1vcGFjaXR5OjEiIC8+CjwvbGluZWFyR3JhZGllbnQ+CjwvZGVmcz4KPHJlY3Qgd2lkdGg9IjEyMDAiIGhlaWdodD0iNjAwIiBmaWxsPSJ1cmwoI2dyYWRpZW50KSIvPgo8L3N2Zz4=" alt="Meditation" class="hero-image">
+        <div class="hero-overlay">
+            <div class="hero-text">
+                <h1>Guided Daily Practices</h1>
             </div>
-            <div class="kbbtn">
-              <iframe id="youtube-iframe" src="https://www.youtube.com/embed/VajzTDv942Q?si=xtkMQNceVpyyFrHI&amp;controls=0" frameborder="0" allowfullscreen ></iframe>
-              <h6><b>Guided Meditation(Telugu)</b></h6>  
-            </div>
-          <div class="kbbtn">
-              <iframe id="youtube-iframe" src="https://www.youtube.com/embed/a4a0Xd3Bwmw?si=Z3tGXzWeQ1Z9VTCM&amp;controls=0" frameborder="0" allowfullscreen ></iframe>
-              <h6><b>Guided Cleaning(Telugu)</b></h6>  
-          </div>
-          <div class="kbbtn">
-            <iframe id="youtube-iframe" src="https://www.youtube.com/embed/OYotQzp7Tp4?si=wQD0evhlWIMwYF7q&amp;controls=0" frameborder="0" allowfullscreen ></iframe>
-            <h6><b>Guided Prayer Meditation(Telugu)</b></h6>  
-          </div>
-          <div class="kbbtn">
-            <iframe id="youtube-iframe" src="https://www.youtube.com/embed/3pLhetYsHfQ?si=-yARBgm824jCM7Wu&amp;controls=0" frameborder="0" allowfullscreen ></iframe>
-            <h6><b>Guided Meditation(English)</b></h6>  
-          </div>
-          <div class="kbbtn">
-            <iframe id="youtube-iframe" src="https://www.youtube.com/embed/7o4elxFJkrc?si=E8Qb0iY-Afd6ilIe&amp;controls=0" frameborder="0" allowfullscreen ></iframe>
-            <h6><b>Guided Cleaning(English)</b></h6>  
-          </div>
-          <div class="kbbtn">
-            <iframe id="youtube-iframe" src="https://www.youtube.com/embed/6KrbdvLYCL8?si=dWJWRaHrZJeV-tUz&amp;controls=0" frameborder="0" allowfullscreen ></iframe>
-            <h6><b>Guided Prayer Meditation(English)</b></h6>  
-          </div> 
-        <div class="kbbtn">
-          <iframe id="youtube-iframe" src="https://www.youtube.com/embed/Q5vzU4Z_q0g?si=nlaeakXai5ojTRRc&amp;controls=0" frameborder="0" allowfullscreen ></iframe>
-          <h6><b>Remove Emotional Patterns</b></h6>  
         </div>
-        <div class="kbbtn">
-          <iframe id="youtube-iframe" src="https://www.youtube.com/embed/LPSubCt6TOE?si=bJLm66lroJXi0d2y&amp;controls=0" frameborder="0" allowfullscreen ></iframe>
-          <h6><b>How to Sleep Fast(Telugu)</b></h6>  
-        </div>
-        <div class="kbbtn">
-          <iframe id="youtube-iframe" src="https://www.youtube.com/embed/RUZ3hyEQahQ?si=4EqDcMBjg4WNKMOl&amp;controls=0" frameborder="0" allowfullscreen ></iframe>
-          <h6><b>Stress Detox(Telugu)</b></h6>  
-        </div>
-        <div class="kbbtn">
-          <iframe id="youtube-iframe" src="https://www.youtube.com/embed/C6eK2Gj5BWg?si=iG81gY-tlNFDOJyV&amp;controls=0" frameborder="0" allowfullscreen ></iframe>
-          <h6><b>Remove Emotional Patterns(Telugu)</b></h6>  
-        </div>
-        <div class="kbbtn">
-          <iframe id="youtube-iframe" src="https://www.youtube.com/embed/gFnHjskgd2A?si=rzhluplzs45vDuup&amp;controls=0" frameborder="0" allowfullscreen ></iframe>
-          <h6><b>Remove Troubling Habits and Sleep Better(Telugu)</b></h6>  
-        </div>
-        <div class="kbbtn">
-          <iframe id="youtube-iframe" src="https://www.youtube.com/embed/dA_g_-zyLsA?si=2s3RkKfQlnv1xzV5&amp;controls=0" frameborder="0" allowfullscreen ></iframe>
-          <h6><b>Anger Detox(Telugu)</b></h6>  
-        </div>
-        <div class="kbbtn">
-          <iframe id="youtube-iframe" src="https://www.youtube.com/embed/KwsXoQZSQQs?si=bQcZvIOjWr83867a&amp;controls=0" frameborder="0" allowfullscreen ></iframe>
-          <h6><b>Point A Meditation</b></h6>  
-        </div>
-        <div class="kbbtn">
-          <iframe id="youtube-iframe" src="https://www.youtube.com/embed/whAPUAlL6hE?si=97z12id_lVZHanIm&amp;controls=0" frameborder="0" allowfullscreen ></iframe>
-          <h6><b>Point B Cleaning</b></h6>  
-        </div>      
-</div>
-</div>
-</div>
-<div class="container">  
-  <section  id="hdr1">
-      <h3>90days of Heartfulness Practice</h3> </section>
-</div>
-      <div class="container">
-       <div class="youtube-carousel"> 
-        <p>Motivation is what gets you started. Habit is what keeps you going.With any opportunity, we get motivated. We get inspired. We are now part of the big motivation wave.</p>
-         <div class="btn"><a href="https://cdn-prod.heartfulness.org/hfn/files/2019/90-day-HFN-practice-Core-Practices.pdf" target=”_blank”  download="Tracker">
-          <i class="fa fa-download"></i>
-          Download Core Practices </a>
-         </div>
-          <div class="btn"><a href="https://cdn-prod.heartfulness.org/hfn/files/2019/My-Daily-Tracker-90DayOfHeartfulness.pdf" target=”_blank”  download="Tracker">
-          <i class="fa fa-download"></i>
-         Download 90days Tracker </a>
-         </div>
-         <div class="btn"><a href="https://cdn-prod.heartfulness.org/hfn/files/2019/HFN-Practices-Infographic.pdf" target=”_blank”  download="Infographic">
-          <i class="fa fa-download"></i>
-         Download HFN Infographic </a>
-        </div>
-     </div>
-  </div>
+    </section>
 
-<div class="container">  
-  <section  id="hdr1">
-  <h3>Knowledge Base</h3> 
-  <div>
-    <h6 style="background-color:#e3b175"><center>(Click the below icons to view all videos)</center></h6>
-  </div>
-</section>
-</div>
-<div class="container"> 
-  <div class="youtube-carousel"> 
-    <div class="carousel-container">
-      <div class="kbbtn">
-        <a href="https://www.youtube.com/playlist?list=PLa8gvTHECIMo6TrBdh9Y7eS8pCMZbxJiG">
-          <img src="./90day Challenge.png" alt="" style="width:200px; height:200px;">
-        </a>
-        <h6><b>90 day challenge</b></h6>  
-         </div>
-      <div class="kbbtn">
-      <iframe id="youtube-iframe" src="https://www.youtube.com/embed/_WMDAlX9rEI?si=zPB4xkl1QetXLIpS&amp;controls=0" frameborder="0" allowfullscreen></iframe>
-      <h6><b>STRESS MANAGEMENT MEDIDATION</b></h6>  
-       </div> 
-        <div class="kbbtn">
-        <iframe id="youtube-iframe" src="https://www.youtube.com/embed/0_Sr9LyVdbQ?si=he9a7KeTbJepKVNW&amp;controls=0" frameborder="0" allowfullscreen></iframe>
-        <h6><b>How to meditate the right way? </b></h6>
-      </div>
-       <div class="kbbtn">
-       <iframe id="youtube-iframe" src="https://www.youtube.com/embed/rs1uc27CBI4?si=sk_Ush5h2E2mAMKX&amp;controls=0" frameborder="0" allowfullscreen></iframe>
-       <h6><b>3 to-do's for effective meditation </b></h6>
-      </div>
-      <div class="kbbtn">
-        <iframe id="youtube-iframe" src="https://www.youtube.com/embed/e6BkPebxyFs?si=vsymu6Uz7F37oJky&amp;controls=0" frameborder="0" allowfullscreen ></iframe>
-        <h6><b>Anger Management Tips</b></h6>  
-      </div>
-      <div class="kbbtn">
-        <iframe id="youtube-iframe" src="https://www.youtube.com/embed/molDO-D4nm0?si=45wvUg1rwSlQFwRO&amp;controls=0" frameborder="0" allowfullscreen></iframe>
-        <h6><b>How to advance your spiritual journey?</b></h6>
-      </div>
-      <div class="kbbtn">
-        <iframe id="youtube-iframe" src="https://www.youtube.com/embed/cDF1glqFVjw?si=lBEthBf56RlJVF5O&amp;controls=0"  frameborder="0" allowfullscreen></iframe>
-        <h6><b>Kanha Shanti Vanam Hyderabad </b></h6>
-      </div>
-      <div class="kbbtn">
-        <iframe id="youtube-iframe" src="https://www.youtube.com/embed/Z_9GHTFs6Uk?si=U61x081SY6FsoTMi&amp;controls=0"  frameborder="0" allowfullscreen></iframe>
-        <h6><b>The Heartfulness Life At Kanha Shanti Vanam </b></h6>
-      </div>
-      <div class="kbbtn">
-        <iframe id="youtube-iframe" src="https://www.youtube.com/embed/videoseries?si=uqz0UYHl5Z3XFfW_&amp;controls=0&amp;list=PL1QpxVYcCuCaDIn21q_s50E3MWZokMg8y"  frameborder="0" allowfullscreen></iframe>
-        <h6><b>Global Spirituality Mahotsav</b></h6>
-      </div>
-      <div class="kbbtn">
-        <iframe id="youtube-iframe" src="https://www.youtube.com/embed/KRV80ZB78V8?si=pkRqgOsc1umw57e3&amp;controls=0"  frameborder="0" allowfullscreen></iframe>
-        <h6><b>Heartfulness Initiatives</b></h6>
-      </div>
-      <div class="kbbtn">
-        <iframe id="youtube-iframe" src="https://www.youtube.com/embed/bQYZyUs-ZNE?si=7gAbe4XqxuZuconE&amp;controls=0"  frameborder="0" allowfullscreen></iframe>
-        <h6><b>Athletes and Meditation</b></h6>
-      </div>
-      <div class="kbbtn">
-        <iframe id="youtube-iframe" src="https://www.youtube.com/embed/_ld5iZeWHec?si=_RbSOpyzqq6Bi7hs&amp;controls=0" frameborder="0" allowfullscreen ></iframe>
-        <h6><b>AntahKarana Suddhi(Mental Detox)</b></h6>  
-      </div>
-      <div class="kbbtn">
-      <iframe id="youtube-iframe" src="https://www.youtube.com/embed/1blfhkoPslo?si=Th8rmGT-T1sLgihq&amp;controls=0" frameborder="0" allowfullscreen ></iframe>
-      <h6><b>Best Way to remove Stress</b></h6>  
-    </div>
-    <div class="kbbtn">
-      <iframe id="youtube-iframe" src="https://www.youtube.com/embed/_NCxkYzlh_I?si=1uvb6DgjcL7gN-_b&amp;controls=0" frameborder="0" allowfullscreen></iframe>
-      <h6><b>Do you need a Guru?</b></h6>  
-    </div>
-    </div>
-    </div>
-  </div>
-<!---------------------------------------------------------------------------------------------------------->
-  
-<div class="container pt-2 pb-2">
-  <section id="footer">
-    <a href="../HFNContactUs/HFNContactUs.html" ><b>CONTACT US</b></a>
-    <a href="../FAQs/FAQs.html"><b>FAQs</b></a>
-  </section>
-  </div>
-    
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-  <script>
-  document.getElementById('menu-icon').addEventListener('click', function() {
-    var navLinks = document.getElementById('nav-links');
-    var menuIcon = document.getElementById('menu-icon');
-    
-    if (navLinks.classList.contains('vertical-links')) {
-      navLinks.classList.remove('vertical-links');
-      menuIcon.classList.remove('fa-times');
-      menuIcon.classList.add('fa-bars');
-    } else {
-      navLinks.classList.add('vertical-links');
-      menuIcon.classList.remove('fa-bars');
-      menuIcon.classList.add('fa-times');
-    }
-  });
-  </script>
-  <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        // Check if the current URL has the '.html' extension
+    <!-- Daily Practices Section -->
+    <section class="section">
+        <h2 class="section-title">Guided Daily Practices</h2>
+        <div class="video-grid">
+            <div class="video-card lazy-load">
+                <div class="video-wrapper">
+                    <iframe data-src="https://www.youtube.com/embed/bFlUx1cYOhQ?si=P5SoiYh65rm-7hFk" loading="lazy" allowfullscreen></iframe>
+                </div>
+                <div class="video-title">Guided Relaxation (Telugu)</div>
+            </div>
+            
+            <div class="video-card lazy-load">
+                <div class="video-wrapper">
+                    <iframe data-src="https://www.youtube.com/embed/VajzTDv942Q?si=xtkMQNceVpyyFrHI" loading="lazy" allowfullscreen></iframe>
+                </div>
+                <div class="video-title">Guided Meditation (Telugu)</div>
+            </div>
+            
+            <div class="video-card lazy-load">
+                <div class="video-wrapper">
+                    <iframe data-src="https://www.youtube.com/embed/a4a0Xd3Bwmw?si=Z3tGXzWeQ1Z9VTCM" loading="lazy" allowfullscreen></iframe>
+                </div>
+                <div class="video-title">Guided Cleaning (Telugu)</div>
+            </div>
+            
+            <div class="video-card lazy-load">
+                <div class="video-wrapper">
+                    <iframe data-src="https://www.youtube.com/embed/OYotQzp7Tp4?si=wQD0evhlWIMwYF7q" loading="lazy" allowfullscreen></iframe>
+                </div>
+                <div class="video-title">Guided Prayer Meditation (Telugu)</div>
+            </div>
+            
+            <div class="video-card lazy-load">
+                <div class="video-wrapper">
+                    <iframe data-src="https://www.youtube.com/embed/3pLhetYsHfQ?si=-yARBgm824jCM7Wu" loading="lazy" allowfullscreen></iframe>
+                </div>
+                <div class="video-title">Guided Meditation (English)</div>
+            </div>
+            
+            <div class="video-card lazy-load">
+                <div class="video-wrapper">
+                    <iframe data-src="https://www.youtube.com/embed/7o4elxFJkrc?si=E8Qb0iY-Afd6ilIe" loading="lazy" allowfullscreen></iframe>
+                </div>
+                <div class="video-title">Guided Cleaning (English)</div>
+            </div>
+            
+            <div class="video-card lazy-load">
+                <div class="video-wrapper">
+                    <iframe data-src="https://www.youtube.com/embed/6KrbdvLYCL8?si=dWJWRaHrZJeV-tUz" loading="lazy" allowfullscreen></iframe>
+                </div>
+                <div class="video-title">Guided Prayer Meditation (English)</div>
+            </div>
+            
+            <div class="video-card lazy-load">
+                <div class="video-wrapper">
+                    <iframe data-src="https://www.youtube.com/embed/Q5vzU4Z_q0g?si=nlaeakXai5ojTRRc" loading="lazy" allowfullscreen></iframe>
+                </div>
+                <div class="video-title">Remove Emotional Patterns</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 90 Days Practice Section -->
+    <section class="download-section">
+        <h3>90 Days of Heartfulness Practice</h3>
+        <p>Motivation is what gets you started. Habit is what keeps you going. With any opportunity, we get motivated. We get inspired. We are now part of the big motivation wave.</p>
+        <div class="download-buttons">
+            <a href="https://cdn-prod.heartfulness.org/hfn/files/2019/90-day-HFN-practice-Core-Practices.pdf" target="_blank" class="download-btn">
+                <i class="fas fa-download"></i>
+                Download Core Practices
+            </a>
+            <a href="https://cdn-prod.heartfulness.org/hfn/files/2019/My-Daily-Tracker-90DayOfHeartfulness.pdf" target="_blank" class="download-btn">
+                <i class="fas fa-download"></i>
+                Download 90 Days Tracker
+            </a>
+            <a href="https://cdn-prod.heartfulness.org/hfn/files/2019/HFN-Practices-Infographic.pdf" target="_blank" class="download-btn">
+                <i class="fas fa-download"></i>
+                Download HFN Infographic
+            </a>
+        </div>
+    </section>
+
+    <!-- Knowledge Base Section -->
+    <section class="section">
+        <h2 class="section-title">Knowledge Base</h2>
+        <div class="knowledge-notice">
+            Click the videos below to explore our comprehensive knowledge base
+        </div>
+        
+        <div class="video-grid">
+            <div class="video-card lazy-load">
+                <div class="playlist-card">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjMzQ0OTVlIi8+Cjx0ZXh0IHg9IjE1MCIgeT0iMTAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSJ3aGl0ZSIgZm9udC1zaXplPSIxOCI+OTAgRGF5IENoYWxsZW5nZTwvdGV4dD4KPC9zdmc+" alt="90 Day Challenge" class="playlist-image">
+                </div>
+                <div class="video-title">90 Day Challenge</div>
+            </div>
+            
+            <div class="video-card lazy-load">
+                <div class="video-wrapper">
+                    <iframe data-src="https://www.youtube.com/embed/_WMDAlX9rEI?si=zPB4xkl1QetXLIpS" loading="lazy" allowfullscreen></iframe>
+                </div>
+                <div class="video-title">Stress Management Meditation</div>
+            </div>
+            
+            <div class="video-card lazy-load">
+                <div class="video-wrapper">
+                    <iframe data-src="https://www.youtube.com/embed/0_Sr9LyVdbQ?si=he9a7KeTbJepKVNW" loading="lazy" allowfullscreen></iframe>
+                </div>
+                <div class="video-title">How to Meditate the Right Way?</div>
+            </div>
+            
+            <div class="video-card lazy-load">
+                <div class="video-wrapper">
+                    <iframe data-src="https://www.youtube.com/embed/rs1uc27CBI4?si=sk_Ush5h2E2mAMKX" loading="lazy" allowfullscreen></iframe>
+                </div>
+                <div class="video-title">3 To-Do's for Effective Meditation</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <a href="#">CONTACT US</a>
+        <a href="#">FAQs</a>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        const menuToggle = document.getElementById('menu-toggle');
+        const navMenu = document.getElementById('nav-menu');
+        const menuIcon = menuToggle.querySelector('i');
+
+        menuToggle.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+            menuIcon.classList.toggle('fa-bars');
+            menuIcon.classList.toggle('fa-times');
+        });
+
+        // Lazy loading for videos
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px 0px 50px 0px',
+            threshold: 0.1
+        };
+
+        const videoObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const iframe = entry.target.querySelector('iframe[data-src]');
+                    if (iframe) {
+                        iframe.src = iframe.dataset.src;
+                        iframe.removeAttribute('data-src');
+                    }
+                    entry.target.classList.add('loaded');
+                    videoObserver.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        // Observe all lazy-load elements
+        document.querySelectorAll('.lazy-load').forEach(el => {
+            videoObserver.observe(el);
+        });
+
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Performance optimization: Remove .html from URLs
         if (window.location.pathname.endsWith('.html')) {
-            // Remove the '.html' from the URL
-            var cleanUrl = window.location.pathname.replace('.html', '');
-            // Redirect to the clean URL without '.html'
+            const cleanUrl = window.location.pathname.replace('.html', '');
             window.history.replaceState(null, null, cleanUrl);
         }
-    });
+
+        // Add loading animation
+        window.addEventListener('load', () => {
+            document.body.classList.add('loaded');
+        });
+
+        // Preload critical resources
+        const preloadResources = [
+            'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css'
+        ];
+
+        preloadResources.forEach(url => {
+            const link = document.createElement('link');
+            link.rel = 'preload';
+            link.as = 'style';
+            link.href = url;
+            document.head.appendChild(link);
+        });
     </script>
 </body>
 </html>
