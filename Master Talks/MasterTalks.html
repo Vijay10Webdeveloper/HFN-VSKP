@@ -2,475 +2,901 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=<device-width>, initial-scale=1.0">
-    <title>heartfulness vizag</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heartfulness Vizag - Knowledge Base</title>
+    <meta name="description" content="Comprehensive knowledge base with spiritual master talks, meditation guidance, and Heartfulness resources">
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" as="style">
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" as="style">
+    
+    <!-- CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link href="./Mastertalks_Style.css" rel="stylesheet">
-    <link href="../hdrftr_style.css" rel="stylesheet">
-    <link href="../Kbsettings.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-color: #8B4513;
+            --secondary-color: #e3b175;
+            --accent-color: #2c5530;
+            --text-dark: #333;
+            --text-light: #666;
+            --bg-light: #f8f9fa;
+            --shadow: 0 2px 10px rgba(0,0,0,0.1);
+            --border-radius: 8px;
+            --transition: all 0.3s ease;
+        }
 
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        /* Header Styles */
+        .header {
+            background: white;
+            padding: 1rem 0;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .logo {
+            max-height: 60px;
+            width: auto;
+            transition: var(--transition);
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        /* Navigation */
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #nav-links {
+            display: flex;
+            transition: var(--transition);
+        }
+
+        #nav-links ul {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            gap: 2rem;
+        }
+
+        #nav-links a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        #nav-links a:hover,
+        #nav-links a.active {
+            background: var(--secondary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--primary-color);
+        }
+
+        /* Hero Section for Masters */
+        .master-hero {
+            position: relative;
+            margin: 2rem 0;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .master-hero img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            filter: brightness(0.8);
+        }
+
+        .master-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(139, 69, 19, 0.8), rgba(44, 85, 48, 0.6));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+        }
+
+        .master-overlay h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        /* Knowledge Base Section */
+        .knowledge-section {
+            background: white;
+            margin: 2rem 0;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+
+        .section-title {
+            color: var(--primary-color);
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: var(--secondary-color);
+            border-radius: 2px;
+        }
+
+        .info-banner {
+            background: linear-gradient(135deg, var(--secondary-color), #f4d03f);
+            color: var(--text-dark);
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            text-align: center;
+            margin-bottom: 2rem;
+            font-weight: 600;
+        }
+
+        /* Video Player Carousel */
+        .video-carousel {
+            position: relative;
+            margin: 2rem 0;
+        }
+
+        .carousel-container {
+            display: flex;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            gap: 1rem;
+            padding: 1rem 0;
+            scrollbar-width: thin;
+            scrollbar-color: var(--secondary-color) #f1f1f1;
+        }
+
+        .carousel-container::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .carousel-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .carousel-container::-webkit-scrollbar-thumb {
+            background: var(--secondary-color);
+            border-radius: 4px;
+        }
+
+        .video-card {
+            flex: 0 0 300px;
+            background: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .video-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .video-thumbnail {
+            position: relative;
+            width: 100%;
+            height: 180px;
+            overflow: hidden;
+        }
+
+        .video-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+
+        .video-card:hover .video-thumbnail img {
+            transform: scale(1.05);
+        }
+
+        .play-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.7);
+            color: white;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .video-card:hover .play-overlay {
+            background: rgba(139, 69, 19, 0.9);
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+
+        .video-info {
+            padding: 1rem;
+        }
+
+        .video-title {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin: 0;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        /* Navigation arrows */
+        .carousel-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            z-index: 10;
+        }
+
+        .carousel-nav:hover {
+            background: var(--accent-color);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .carousel-nav.prev {
+            left: -20px;
+        }
+
+        .carousel-nav.next {
+            right: -20px;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--primary-color);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+
+        .footer-links a:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+
+        /* Loading Animation */
+        .loading {
+            opacity: 0;
+            animation: fadeIn 0.6s ease-in-out forwards;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
+
+            #nav-links {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: white;
+                box-shadow: var(--shadow);
+                transform: translateY(-100%);
+                opacity: 0;
+                visibility: hidden;
+                transition: var(--transition);
+            }
+
+            #nav-links.active {
+                transform: translateY(0);
+                opacity: 1;
+                visibility: visible;
+            }
+
+            #nav-links ul {
+                flex-direction: column;
+                padding: 1rem;
+                gap: 0.5rem;
+            }
+
+            .master-overlay h2 {
+                font-size: 1.5rem;
+            }
+
+            .video-card {
+                flex: 0 0 250px;
+            }
+
+            .carousel-nav {
+                display: none;
+            }
+
+            .footer-links {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+
+        /* Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        button:focus,
+        a:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+    </style>
 </head>
 <body>
-  <div class="container pt-1" >
-    <div class="header">
-      <div class="row">
-        <div class="col-sm-8">
-      <img src="../Images/advancing-in-love-black.png" class="logo" alt="Heartfulness" style="margin-top: 2px;">  
-      </div>
-      <div class="col-sm-4">
-      <i class="fa fa-bars" id="menu-icon"></i>
-      <nav id="nav-links" >
-        <ul>
-          <li><a class="active" href="../Home/Home.html"><b>HOME</b></a></li>
-          <li><a href="../NewSeeker/Newseekers.html"><b>NEW SEEKERS</b></a></li>
-          <li><a href="../Abhyasi/Abhyasi.html"><b>ABHYASIS</b></a></li>
-        </ul>
-      </nav>
-    </div>
-    </div>
-  </div>
-  </div>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="nav-container">
+                <div>
+                    <img src="../Images/advancing-in-love-black.png" class="logo" alt="Heartfulness Logo">
+                </div>
+                <button class="menu-toggle" id="menu-toggle" aria-label="Toggle navigation menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <nav id="nav-links" role="navigation">
+                    <ul>
+                        <li><a href="../Home/Home.html">HOME</a></li>
+                        <li><a href="../NewSeeker/Newseekers.html">NEW SEEKERS</a></li>
+                        <li><a href="../Abhyasi/Abhyasi.html">ABHYASIS</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
 
-  <!---------------------------------------------------------------------------------------------------->
+   <!-- Daaji Master Section -->
     <div class="container">
-        <section id="Daajicoverimg" >
-          <img src="../Images/DaajiMaster.jpeg" class="d-block w-100" alt="Daaji">
+        <section class="master-hero loading">
+            <img src="../Images/DaajiMaster.jpeg" alt="Daaji Master">
+            <div class="master-overlay">
+                <h2>Daaji Master's Teachings</h2>
+            </div>
         </section>
-       
+
+        <section class="knowledge-section loading">
+            <h3 class="section-title">Knowledge Base</h3>
+            <div class="info-banner">
+                <i class="fas fa-play-circle"></i>
+                Click on any video card to watch the complete playlist
+            </div>
+            
+            <div class="video-carousel">
+                <div class="carousel-container" id="daaji-carousel">
+                    <div class="video-card" onclick="openPlaylist('https://www.youtube.com/playlist?list=PLVtsn31CI8rkeXPdBTMpPvrRYi5WOq_V_')">
+                        <div class="video-thumbnail">
+                            <img src="../Master Talks/Truth Eternal.png" alt="Truth Eternal" loading="lazy">
+                            <div class="play-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <p class="video-title">Truth Eternal (Telugu)</p>
+                        </div>
+                    </div>
+                    
+                    <div class="video-card" onclick="openPlaylist('https://www.youtube.com/playlist?list=PLVHdwJKXkG6BemkWFsHkmj_fHlrzfuWEX')">
+                        <div class="video-thumbnail">
+                            <img src="../Master Talks/Truth Eternal(English).png" alt="Truth Eternal English" loading="lazy">
+                            <div class="play-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <p class="video-title">Truth Eternal (English)</p>
+                        </div>
+                    </div>
+                    
+                    <div class="video-card" onclick="openPlaylist('https://www.youtube.com/playlist?list=PLVtsn31CI8rkIzPQN2DpvM5Jnc6n8rP4A')">
+                        <div class="video-thumbnail">
+                            <img src="../Master Talks/Ten Maxims Daaji.png" alt="Ten Maxims Daaji" loading="lazy">
+                            <div class="play-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <p class="video-title">Ten Maxims by Daaji (Telugu)</p>
+                        </div>
+                    </div>
+                    
+                    <div class="video-card" onclick="openPlaylist('https://www.youtube.com/playlist?list=PL1QpxVYcCuCYtRiUo4AoWOZALqkwZUNhT')">
+                        <div class="video-thumbnail">
+                            <img src="../Master Talks/Ten Maxims Daaji(English).png" alt="Ten Maxims English" loading="lazy">
+                            <div class="play-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <p class="video-title">Ten Maxims by Daaji (English)</p>
+                        </div>
+                    </div>
+                    
+                    <div class="video-card" onclick="openPlaylist('https://www.youtube.com/playlist?list=PLVtsn31CI8rn29q8-Fwjeml-lrNqR_Osx')">
+                        <div class="video-thumbnail">
+                            <img src="../Master Talks/HFN Communication.png" alt="HFN Communication" loading="lazy">
+                            <div class="play-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <p class="video-title">HFN Communication (Telugu)</p>
+                        </div>
+                    </div>
+                    
+                    <div class="video-card" onclick="openPlaylist('https://www.youtube.com/playlist?list=PLckJJewlqklOavZyCgdThmugCfdt6X1h1')">
+                        <div class="video-thumbnail">
+                            <img src="../Master Talks/HFN Communication(Eng).png" alt="HFN Communication English" loading="lazy">
+                            <div class="play-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <p class="video-title">HFN Communication (English)</p>
+                        </div>
+                    </div>
+                    
+                    <div class="video-card" onclick="openPlaylist('https://www.youtube.com/playlist?list=PLVtsn31CI8rkcb4wY6Zli8e7_kT1T4rML')">
+                        <div class="video-thumbnail">
+                            <img src="../Master Talks/Mahatmulu-Vari Bodhanalu.png" alt="Mahatmulu Vari Bodhanalu" loading="lazy">
+                            <div class="play-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <p class="video-title">Mahatmulu Vari Bodhanalu</p>
+                        </div>
+                    </div>
+                    
+                    <div class="video-card" onclick="openPlaylist('https://www.youtube.com/playlist?list=PLVtsn31CI8rli8sCkceVDKKiA8pXL7evy')">
+                        <div class="video-thumbnail">
+                            <img src="../Master Talks/Daaji on Lalaji Maharaju.png" alt="Daaji on Lalaji" loading="lazy">
+                            <div class="play-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <p class="video-title">Daaji on Lalaji Maharaju</p>
+                        </div>
+                    </div>
+                    
+                    <div class="video-card" onclick="openPlaylist('https://www.youtube.com/playlist?list=PLVtsn31CI8rkBEzi2Fb9EDFOZbFY7iAfd')">
+                        <div class="video-thumbnail">
+                            <img src="../Master Talks/Sandesa Kiranam.png" alt="Sandesa Kiranam" loading="lazy">
+                            <div class="play-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <p class="video-title">Sandesa Kiranam</p>
+                        </div>
+                    </div>
+                    
+                    <div class="video-card" onclick="openPlaylist('https://www.youtube.com/playlist?list=PLVtsn31CI8rmvozzhL55ly9MrVaKV7_X5')">
+                        <div class="video-thumbnail">
+                            <img src="../Master Talks/Anger to Love.png" alt="Anger to Love" loading="lazy">
+                            <div class="play-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <p class="video-title">From Anger to Love</p>
+                        </div>
+                    </div>
+                    
+                    <div class="video-card" onclick="openPlaylist('https://www.youtube.com/playlist?list=PLVtsn31CI8rlf5cd-3_xqEIYHuAaE_oYe')">
+                        <div class="video-thumbnail">
+                            <img src="../Master Talks/Dil Se with Daaji.png" alt="Dil Se with Daaji" loading="lazy">
+                            <div class="play-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <p class="video-title">Dil Se with Daaji</p>
+                        </div>
+                    </div>
+                    
+                    <div class="video-card" onclick="openPlaylist('https://www.youtube.com/playlist?list=PLVtsn31CI8rlVWfIILkOW0aMkAHx1Mzx2')">
+                        <div class="video-thumbnail">
+                            <img src="../Master Talks/The Art of Removing and Creating Habits.png" alt="The Art of Removing and Creating Habits" loading="lazy">
+                            <div class="play-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <p class="video-title">The Art of Removing and Creating Habits</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
     </div>
-<div class="container">  
-  <section  id="hdr1"> 
-  <h3>Knowledge Base</h3> 
-  <div>
-    <h6 style="background-color:#e3b175"><center>(Click the below icons to view all videos)</center></h6>
-  </div>
+
+    <!-- Chariji Master Section -->
+    <div class="container">
+        <section class="master-hero loading">
+            <img src="../Images/Chariji Master.jpeg" alt="Chariji Master">
+            <div class="master-overlay">
+                <h2>Chariji Master's Teachings</h2>
+            </div>
+        </section>
+
+        <section class="knowledge-section loading">
+            <h3 class="section-title">Knowledge Base</h3>
+            <div class="info-banner">
+                <i class="fas fa-play-circle"></i>
+                Click on any video card to watch the complete playlist
+            </div>
+            
+            <div class="video-carousel">
+                <div class="carousel-container" id="chariji-carousel">
+                    <div class="video-card" onclick="openPlaylist('https://www.youtube.com/playlist?list=PLVtsn31CI8rll0ySLeBkUgu11ZKnEe1x9')">
+                        <div class="video-thumbnail">
+                            <img src="../Master Talks/Chariji's First meeting with babuji.png" alt="Chariji's First Meeting with Babuji" loading="lazy">
+                            <div class="play-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <p class="video-title">Chariji's First Meeting with Babuji</p>
+                        </div>
+                    </div>
+                    
+                    <div class="video-card" onclick="openPlaylist('https://www.youtube.com/playlist?list=PLVtsn31CI8rl0uGmxTwK-z7S9i1CpOwdI')">
+                        <div class="video-thumbnail">
+                            <img src="../Master Talks/AV NEW 2025.png" alt="Antarvani New 2025" loading="lazy">
+                            <div class="play-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <p class="video-title">Antarvani New 2025</p>
+                        </div>
+                    </div>
+                    
+                    <div class="video-card" onclick="openPlaylist('https://www.youtube.com/playlist?list=PLVtsn31CI8rnaI8QkLo3S6CHol4IB3g5n')">
+                        <div class="video-thumbnail">
+                            <img src="../Master Talks/Antarvani.png" alt="Antarvani" loading="lazy">
+                            <div class="play-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <p class="video-title">Antarvani</p>
+                        </div>
+                    </div>
+                    
+                    <div class="video-card" onclick="openPlaylist('https://www.youtube.com/playlist?list=PLjnLIw_Swei2D1JUFcf-3elhwmyblH5Ia')">
+                        <div class="video-thumbnail">
+                            <img src="../Master Talks/Chariji Maharaj Talks.png" alt="Chariji Maharaj Talks" loading="lazy">
+                            <div class="play-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <p class="video-title">Chariji Maharaj Talks</p>
+                        </div>
+                    </div>
+                    
+                    <div class="video-card" onclick="openPlaylist('https://www.youtube.com/playlist?list=PLVtsn31CI8rksfWtwxHKKPws6P8pkXsR0')">
+                        <div class="video-thumbnail">
+                            <img src="../Master Talks/Charijis 97th Birth Anniversary.png" alt="Chariji's 97th Birth Anniversary" loading="lazy">
+                            <div class="play-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <p class="video-title">Chariji's 97th Birth Anniversary</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Babuji Master Section -->
+    <div class="container">
+        <section class="master-hero loading">
+            <img src="../Images/Babuji.jpeg" alt="Babuji Master">
+            <div class="master-overlay">
+                <h2>Babuji Master's Teachings</h2>
+            </div>
+        </section>
+
+        <section class="knowledge-section loading">
+            <h3 class="section-title">Knowledge Base</h3>
+            <div class="info-banner">
+                <i class="fas fa-play-circle"></i>
+                Click on any video card to watch the complete playlist
+            </div>
+            
+            <div class="video-carousel">
+                 <div class="carousel-container" id="babuji-carousel">
+                    <div class="video-card" onclick="openPlaylist('https://www.youtube.com/playlist?list=PLVtsn31CI8rkOsOiI3b42_xQGEygSR8em')">
+                        <div class="video-thumbnail">
+                            <img src="./Babuji Maharaj.png" alt="Babuji Maharaj" loading="lazy">
+                            <div class="play-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <p class="video-title">Babuji Maharaj</p>
+                        </div>
+                    </div>
+                    
+                    <div class="video-card" onclick="openPlaylist('https://www.youtube.com/playlist?list=PLVtsn31CI8rkIQeUZDtMuqPlV2zvfMgEE')">
+                        <div class="video-thumbnail">
+                            <img src="./Babuji 125 years Celebrations.png" alt="Babuji 125 Years Celebrations" loading="lazy">
+                            <div class="play-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <p class="video-title">Babuji 125 Years Celebrations</p>
+                        </div>
+                    </div>
+                    
+                    <div class="video-card" onclick="openPlaylist('https://www.youtube.com/playlist?list=PLVtsn31CI8rlxFL8HiefNy-9bdkH4AM-E')">
+                        <div class="video-thumbnail">
+                            <img src="./Ruthavani NEW 2025.png" alt="Ruthavani New 2025" loading="lazy">
+                            <div class="play-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                             <p class="video-title">Ruthavani NEW 2025</p>
+                        </div>
+                    </div>
+
+                     <div class="video-card" onclick="openPlaylist('https://www.youtube.com/playlist?list=PLVtsn31CI8rkOxANPYDYAOFPr9hqRV2pw')">
+                        <div class="video-thumbnail">
+                            <img src="./Rutavaani.png" alt="Ruthavani" loading="lazy">
+                            <div class="play-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                             <p class="video-title">Ruthavani</p>
+                        </div>
+                    </div>
+
+                <div class="video-card" onclick="openPlaylist('https://www.youtube.com/playlist?list=PLVtsn31CI8rmO0bBiHMmV-62Yo0K8SbRv')">
+                    <div class="video-thumbnail">
+                        <img src="./Sandesa Malika.png" alt="Sandesa Malika" loading="lazy">
+                        <div class="play-overlay">
+                            <i class="fas fa-play"></i>
+                        </div>
+                    </div>
+                    <div class="video-info">
+                        <p class="video-title">Sandesa Malika</p>
+                    </div>
+                </div>
+                
+                <div class="video-card" onclick="openPlaylist('https://www.youtube.com/playlist?list=PLVtsn31CI8rnxDwpTy937aWNZCv_8d4nI')">
+                    <div class="video-thumbnail">
+                        <img src="./Beloved Remembered-Babuji Maharaj.png" alt="Beloved Remembered-Babuji Maharaj" loading="lazy">
+                        <div class="play-overlay">
+                            <i class="fas fa-play"></i>
+                        </div>
+                    </div>
+                    <div class="video-info">
+                        <p class="video-title">Beloved Remembered-Babuji Maharaj</p>
+                    </div>
+                </div>
+                
+                <div class="video-card" onclick="openPlaylist('https://www.youtube.com/playlist?list=PLVtsn31CI8rli0lkWNY8djGaY_TI3gaJK')">
+                    <div class="video-thumbnail">
+                        <img src="./Divya Sudha Dhara.png" alt="Divya Sudha Dhara" loading="lazy">
+                        <div class="play-overlay">
+                            <i class="fas fa-play"></i>
+                        </div>
+                    </div>
+                    <div class="video-info">
+                        <p class="video-title">Divya Sudha Dhara</p>
+                    </div>
+                </div>
+                
+                <div class="video-card" onclick="openPlaylist('https://www.youtube.com/playlist?list=PLVtsn31CI8rmgL1B6A8kKIZ5-C7YRYVOV')">
+                    <div class="video-thumbnail">
+                        <img src="./Life of Babuji.png" alt="Life of Babuji" loading="lazy">
+                        <div class="play-overlay">
+                            <i class="fas fa-play"></i>
+                        </div>
+                    </div>
+                    <div class="video-info">
+                        <p class="video-title">Life of Babuji</p>
+                    </div>
+                </div>
+                
+                <div class="video-card" onclick="openPlaylist('https://www.youtube.com/playlist?list=PL1QpxVYcCuCaQv84_NfpSa1T46macgp8s')">
+                    <div class="video-thumbnail">
+                        <img src="./Life of Babuji(Hindi).png" alt="Life of Babuji (Hindi)" loading="lazy">
+                        <div class="play-overlay">
+                            <i class="fas fa-play"></i>
+                        </div>
+                    </div>
+                    <div class="video-info">
+                        <p class="video-title">Life of Babuji (Hindi)</p>
+                    </div>
+                </div>
+                
+                <div class="video-card" onclick="openPlaylist('https://www.youtube.com/playlist?list=PLVtsn31CI8rnbzkx6esreLoU1IBbRFUbB')">
+                    <div class="video-thumbnail">
+                        <img src="./Babujis Contemporaries.png" alt="Babuji's Contemporaries" loading="lazy">
+                        <div class="play-overlay">
+                            <i class="fas fa-play"></i>
+                        </div>
+                    </div>
+                    <div class="video-info">
+                        <p class="video-title">Babuji's Contemporaries</p>
+                    </div>
+                </div>
+            </div>
+        </div>
 </section>
-</div>
-<div class="container"> 
-<div class="youtube-carousel pt-1">
-   <div class="carousel-container">
-    <div class="kbbtn">
-      <a href="https://www.youtube.com/playlist?list=PLVtsn31CI8rkeXPdBTMpPvrRYi5WOq_V_">
-        <img src="./Truth Eternal.png" alt="" style="width:200px; height:200px;">
-      </a> 
     </div>
-     <div class="kbbtn">
-      <a href="https://www.youtube.com/playlist?list=PLVHdwJKXkG6BemkWFsHkmj_fHlrzfuWEX">
-        <img src="./Truth Eternal(English).png" alt="" style="width:200px; height:200px;">  
-      </a>
-      </div>
-    <div class="kbbtn">
-    <a href="https://www.youtube.com/playlist?list=PLVtsn31CI8rkIzPQN2DpvM5Jnc6n8rP4A">
-      <img src="./Ten Maxims Daaji.png" alt="" style="width:200px; height:200px;">
-      </a>   
-  </div>
-    <div class="kbbtn">
-      <a href="https://www.youtube.com/playlist?list=PL1QpxVYcCuCYtRiUo4AoWOZALqkwZUNhT">
-        <img src="./Ten Maxims Daaji(English).png" alt="" style="width:200px; height:200px;"> 
-        </a> 
-  </div>
-    <div class="kbbtn">
-      <a href="https://www.youtube.com/playlist?list=PLVtsn31CI8rn29q8-Fwjeml-lrNqR_Osx">
-        <img src="./HFN Communication.png" alt="" style="width:200px; height:200px;"> 
-      </a>
-  </div>
-    <div class="kbbtn">
-      <a href="https://www.youtube.com/playlist?list=PLckJJewlqklOavZyCgdThmugCfdt6X1h1">
-        <img src="./HFN Communication(Eng).png" alt="" style="width:200px; height:200px;">
-      </a>
-  </div>
-  <div class="kbbtn">
-    <a href="https://www.youtube.com/playlist?list=PLVtsn31CI8rkcb4wY6Zli8e7_kT1T4rML">
-      <img src="./Mahatmulu-Vari Bodhanalu.png" alt="" style="width:200px; height:200px;">
-    </a>
-  </div>
-  <div class="kbbtn">
-    <a href="https://www.youtube.com/playlist?list=PLVtsn31CI8rli8sCkceVDKKiA8pXL7evy">
-      <img src="./Daaji on Lalaji Maharaju.png" alt="" style="width:200px; height:200px;">
-    </a>  
-  </div>
-  <div class="kbbtn">
-    <a href="https://www.youtube.com/playlist?list=PLVtsn31CI8rkBEzi2Fb9EDFOZbFY7iAfd">
-      <img src="./Sandesa Kiranam.png" alt="" style="width:200px; height:200px;">
-    </a>
-  </div>
-  <div class="kbbtn">
-    <a href="https://www.youtube.com/playlist?list=PLVtsn31CI8rmvozzhL55ly9MrVaKV7_X5">
-      <img src="./Anger to Love.png" alt="" style="width:200px; height:200px;">
-    </a>  
-  </div>
-  <div class="kbbtn">
-    <a href="https://www.youtube.com/playlist?list=PLxm7czIgvctpq3fT5nrVTECqF2GIO9AM2">
-      <img src="./ETV Life Manasa.png" alt="" style="width:200px; height:200px;">
-    </a>  
-  </div>
-    <div class="kbbtn">
-      <a href="https://www.youtube.com/playlist?list=PLVtsn31CI8rnGebP2dFSmIb2Smhk_baiF">
-        <img src="./Asthaseries.png" alt="" style="width:200px; height:200px;">
-      </a>
-    </div>
-    <div class="kbbtn">
-      <a href="https://www.youtube.com/playlist?list=PLVtsn31CI8rlm5cQVOwl0S2YHiTTrZoXm">
-        <img src="./Ashtanga Yoga.png" alt="" style="width:200px; height:200px;">
-      </a>
-    </div>
-    <div class="kbbtn">
-      <a href="https://www.youtube.com/playlist?list=PLVtsn31CI8rlVWfIILkOW0aMkAHx1Mzx2">
-        <img src="./The Art of Removing and Creating Habits.png" alt="" style="width:200px; height:200px;">
-      </a>
-    </div>
-    <div class="kbbtn">
-      <a href="https://www.youtube.com/playlist?list=PLVtsn31CI8rlmkFkPtlNN9WVveNVh7wDA">
-        <img src="./A way to see god.png" alt="" style="width:200px; height:200px;">
-      </a>
-    </div>
-    <div class="kbbtn">
-      <a href="https://www.youtube.com/playlist?list=PLVtsn31CI8rlf5cd-3_xqEIYHuAaE_oYe">
-        <img src="./Dil Se with Daaji.png" alt="" style="width:200px; height:200px;">
-      </a>
-    </div>
-    <div class="kbbtn">
-      <a href="https://www.youtube.com/playlist?list=PLVtsn31CI8rmpfM3uKs-f_euHcCFik4Of">
-        <img src="./Daajis meet with ATA Members.png" alt="" style="width:200px; height:200px;">
-      </a>
-    </div>
-    <div class="kbbtn">
-      <a href="https://www.youtube.com/playlist?list=PLVtsn31CI8rl8UFQ1Ww-4Lpv9ULr0fe-Z">
-        <img src="./Daajis Messages 2020.png" alt="" style="width:200px; height:200px;">
-      </a>
-    </div>
-    <div class="kbbtn">
-      <a href="https://www.youtube.com/playlist?list=PLVtsn31CI8rlsS3HUY0MrZSBmhoJZBPOb">
-        <img src="./Daajis Messages 2021.png" alt="" style="width:200px; height:200px;">
-      </a>
-    </div>
-    <div class="kbbtn">
-      <a href="https://www.youtube.com/playlist?list=PLVtsn31CI8rkGj7l_VAFaI7ykZlEo3mDw">
-        <img src="./Daajis North India Tour Mar-Apr 2023.png" alt="" style="width:200px; height:200px;">
-      </a>
-    </div>
-    <div class="kbbtn">
-      <a href="https://www.youtube.com/playlist?list=PLVtsn31CI8rmr2PIBaq9TkKRk8GNde3zt">
-        <img src="./Daaj's MP Tour June 2023.png" alt="" style="width:200px; height:200px;">
-      </a>
-    </div>
-    <div class="kbbtn">
-      <a href="https://www.youtube.com/playlist?list=PL1QpxVYcCuCYGldyZRK3B1-6W1Oj_3n3p">
-        <img src="./Daaji's Pearls of Wisdom.png" alt="" style="width:200px; height:200px;">
-      </a>
-    </div>
-    <div class="kbbtn">
-      <a href="https://www.youtube.com/playlist?list=PLVtsn31CI8rkoXu5dQJLrKeC-7W7XOAxE">
-        <img src="./Bhandara Talks.png" alt="" style="width:200px; height:200px;">
-      </a>
-    </div>
-    <div class="kbbtn">
-      <a href="https://www.youtube.com/playlist?list=PLVtsn31CI8rmbU9DH6S-eCYfigT2FLgzX">
-        <img src="./Tips on Meditation.png" alt="" style="width:200px; height:200px;">
-      </a>
-    </div>
-    <div class="kbbtn">
-      <a href="https://www.youtube.com/playlist?list=PLVtsn31CI8rliT2m_NJCkfzEI13zVrNQd">
-        <img src="./Daaji on Kamlesh.png" alt="" style="width:200px; height:200px;">
-      </a>
-    </div>
-    <div class="kbbtn">
-      <a href="https://www.youtube.com/playlist?list=PLVtsn31CI8rm1HXa4zcsTT456jqp8wBAA">
-        <img src="./Bhandara Messages.png" alt="" style="width:200px; height:200px;">
-      </a>
-    </div>
-    <div class="kbbtn">
-      <a href="https://www.youtube.com/playlist?list=PLVtsn31CI8rnEkzD-e0_yKUSdc-KTArqg">
-        <img src="./Daaji on Religious Harmony.png" alt="" style="width:200px; height:200px;">
-      </a>
-    </div>
-    <div class="kbbtn">
-      <a href="https://www.youtube.com/playlist?list=PLVtsn31CI8rlpEfXzjOV6OJBea1a49DRc">
-        <img src="./Daaji on Lalaji Maharaju.png" alt="" style="width:200px; height:200px;">
-      </a>
-    </div>
-    <div class="kbbtn">
-      <a href="https://www.youtube.com/playlist?list=PLVtsn31CI8rnqq_2hsCVX0nhfGGj-2M47">
-        <img src="./Relationship Advice.png" alt="" style="width:200px; height:200px;">
-      </a>
-    </div>
-    <div class="kbbtn">
-      <a href="https://www.youtube.com/playlist?list=PL1QpxVYcCuCbQXjyw4Nc20-nWxFQ24pvW">
-        <img src="./Reconnect with yourself.png" alt="" style="width:200px; height:200px;">
-      </a>
-    </div>
-    <div class="kbbtn">
-      <a href="https://www.youtube.com/playlist?list=PL1QpxVYcCuCY9XSJp4g9bqUP6GTi7ylxQ">
-        <img src="./Daaji's Reflections.png" alt="" style="width:200px; height:200px;">
-      </a>
-    </div>
-    <div class="kbbtn">
-      <a href="https://www.youtube.com/playlist?list=PL1QpxVYcCuCYrNHxJrzSQDhQfx1XhKrKC">
-        <img src="./Consciousness,Managing Stress.png" alt="" style="width:200px; height:200px;">
-      </a>
-    </div>
-    <div class="kbbtn">
-      <a href="https://www.youtube.com/playlist?list=PL1QpxVYcCuCZ3k2M1RAAFDK5lXJ1DyPjz">
-        <img src="./Heartfulness Conferences and Events.png" alt="" style="width:200px; height:200px;">
-      </a>
-    </div>
-    <div class="kbbtn">
-      <a href="https://www.youtube.com/playlist?list=PLVtsn31CI8rlP4nQE_Q1H5U8OhQQZBD5J">
-        <img src="./Daaji's blog on Spirituality.png" alt="" style="width:200px; height:200px;">
-      </a>
-    </div>
-    <div class="kbbtn">
-      <a href="https://www.youtube.com/playlist?list=PL1QpxVYcCuCaMDi4olK8bFzFJPKRxq_hL">
-        <img src="./Dialogues with Daaji.png" alt="" style="width:200px; height:200px;">
-      </a>
-    </div>
-    <div class="kbbtn">
-      <a href="https://www.youtube.com/playlist?list=PL1QpxVYcCuCbS3s398EfjurlZzd0sncWg">
-        <img src="./Relationships and Lifestyle.png" alt="" style="width:200px; height:200px;">
-      </a>
-    </div>   
-    <div class="kbbtn">
-      <a href="https://www.youtube.com/playlist?list=PL1QpxVYcCuCZ-CcLMz_hHF9xpg5jKJ44w">
-        <img src="./Meditation in Business and Corporate Life.png" alt="" style="width:200px; height:200px;">
-      </a>
-    </div>
-    <div class="kbbtn">
-      <a href="https://www.youtube.com/playlist?list=PL1QpxVYcCuCZNQA0ET0TMY7GWIv7_UyK7">
-        <img src="./Manage with the Heart.png" alt="" style="width:200px; height:200px;">
-      </a>
-    </div>
-    <div class="kbbtn">
-      <a href="https://www.youtube.com/playlist?list=PLVtsn31CI8rlroDdk-SIqjn8psmldrFIX">
-        <img src="./Heartfulness Year Book 2021.png" alt="" style="width:200px; height:200px;">
-      </a>
-    </div>
-    <div class="kbbtn">
-      <a href="https://www.youtube.com/playlist?list=PLVtsn31CI8rnApURwwWBqGn55EJZu4Wnn">
-        <img src="./Designing Destiny Series.png" alt="" style="width:200px; height:200px;">
-      </a>
-    </div>
-    <div class="kbbtn">
-      <a href="https://www.youtube.com/playlist?list=PLVtsn31CI8rnLTAX7ScGsiLHzN-OicKZd">
-        <img src="./Daajis Goa and Gujarat Tour-June 2024.png" alt="" style="width:200px; height:200px;">
-      </a>
-    </div>
-    <div class="kbbtn">
-      <a href="https://www.youtube.com/playlist?list=PLVtsn31CI8rkHyAV9nJEMsH1B_RHPvZmm">
-        <img src="./Daajis Messages in Babujis Bhandaras.png" alt="" style="width:200px; height:200px;">
-      </a>
-    </div>
-    <div class="kbbtn">
-      <a href="https://www.youtube.com/playlist?list=PLVtsn31CI8rnas97GU5uUc1ISS4iC6JtT">
-        <img src="./Daaji South Tour October 2024.png" alt="" style="width:200px; height:200px;">
-      </a>
-    </div>
-  </div>
-  </div>
-</div>
 
-<!--End of Daaji Master Videos--> 
-<!--Start of Chariji Master Videos-->
-<div class="container">
-  <section id="Charijicoverimg" >
-    <img src="../Images/Chariji Master.jpeg" class="d-block w-100" alt="Daaji">
-  </section>
-</div>
-<div class="container">  
-  <section  id="hdr1">
-  <h3>Knowledge Base</h3> 
-  <div>
-    <h6 style="background-color:#e3b175"><center>(Click the below icons to view all videos)</center></h6>
-  </div>
-</section>
-</div>
-  <div class="container"> 
-  <div class="youtube-carousel">
-    <div class="carousel-container">
-      <div class="kbbtn">
-        <a href="https://www.youtube.com/playlist?list=PLVtsn31CI8rll0ySLeBkUgu11ZKnEe1x9">
-          <img src="./Chariji's First meeting with babuji.png" alt="" style="width:200px; height:200px;">
-        </a>
-      </div>
-      <div class="kbbtn">
-        <a href="https://www.youtube.com/playlist?list=PLVtsn31CI8rl0uGmxTwK-z7S9i1CpOwdI">
-          <img src="./AV NEW 2025.png" alt="" style="width:200px; height:200px;">
-        </a>
-      </div>
-      <div class="kbbtn">
-        <a href="https://www.youtube.com/playlist?list=PLVtsn31CI8rnaI8QkLo3S6CHol4IB3g5n">
-          <img src="./Antarvani.png" alt="" style="width:200px; height:200px;">
-        </a>
-      </div>
-      <div class="kbbtn">
-        <a href="https://www.youtube.com/playlist?list=PLjnLIw_Swei2D1JUFcf-3elhwmyblH5Ia">
-          <img src="./Chariji Maharaj Talks.png" alt="" style="width:200px; height:200px;">
-        </a>
- 
-      </div>
-      <div class="kbbtn">
-        <a href="https://www.youtube.com/playlist?list=PLVtsn31CI8rksfWtwxHKKPws6P8pkXsR0">
-          <img src="./Charijis 97th Birth Anniversary.png" alt="" style="width:200px; height:200px;">
-        </a>
-      </div>
-    </div>
-  </div>
-</div>
+    <!--End of Babuji's Videos-->
 
-<!--End of Chariji Master Videos--> 
-<!-- Start of Babuji Master Videos-->
-<div class="container">
-  <section id="Babujicoverimg" >
-    <img src="../Images/Babuji.jpeg" class="d-block w-100" alt="Daaji">
-  </section>
-</div>
+    <!--Start of Lalaji's Videos-->
+    <div class="container">
+        <section class="master-hero loading">
+            <img src="../Images/Lalaji.jpeg" alt="Babuji Master">
+            <div class="master-overlay">
+                <h2>Lalaji Master's Teachings</h2>
+            </div>
+        </section>
 
-<div class="container">  
-  <section  id="hdr1">
-  <h3>Knowledge Base</h3>
-  <div>
-    <h6 style="background-color:#e3b175"><center>(Click "Youtube" in the below video links to view all videos)</center></h6>
-  </div>
-</section>
-</div>
-<div class="container"> 
-  <div class="youtube-carousel"> 
-    <div class="carousel-container">
-      <div class="kbbtn">
-        <a href="https://www.youtube.com/playlist?list=PLVtsn31CI8rkOsOiI3b42_xQGEygSR8em">
-          <img src="./Babuji Maharaj.png" alt="" style="width:200px; height:200px;">
-        </a>
-    </div>
-    <div class="kbbtn">
-      <a href="https://www.youtube.com/playlist?list=PLVtsn31CI8rkIQeUZDtMuqPlV2zvfMgEE">
-        <img src="./Babuji 125 years Celebrations.png" alt="" style="width:200px; height:200px;">
-      </a>
-    </div>
-    <div class="kbbtn">
-      <a href="https://www.youtube.com/playlist?list=PLVtsn31CI8rlxFL8HiefNy-9bdkH4AM-E">
-        <img src="./Ruthavani NEW 2025.png" alt="" style="width:200px; height:200px;">
-      </a>
-    </div>
-      <div class="kbbtn">
-        <a href="https://www.youtube.com/playlist?list=PLVtsn31CI8rkOxANPYDYAOFPr9hqRV2pw">
-          <img src="./Rutavaani.png" alt="" style="width:200px; height:200px;">
-        </a>
-      </div>
-      <div class="kbbtn">
-        <a href="https://www.youtube.com/playlist?list=PLVtsn31CI8rmO0bBiHMmV-62Yo0K8SbRv">
-          <img src="./Sandesa Malika.png" alt="" style="width:200px; height:200px;">
-        </a>
-      </div>
-      <div class="kbbtn">
-        <a href="https://www.youtube.com/playlist?list=PLVtsn31CI8rnxDwpTy937aWNZCv_8d4nI">
-          <img src="./Beloved Remembered-Babuji Maharaj.png" alt="" style="width:200px; height:200px;">
-        </a>
- 
-      </div>
-      <div class="kbbtn">
-        <a href="https://www.youtube.com/playlist?list=PLVtsn31CI8rli0lkWNY8djGaY_TI3gaJK">
-          <img src="./Divya Sudha Dhara.png" alt="" style="width:200px; height:200px;">
-        </a>
+        <section class="knowledge-section loading">
+            <h3 class="section-title">Knowledge Base</h3>
+            <div class="info-banner">
+                <i class="fas fa-play-circle"></i>
+                Click on any video card to watch the complete playlist
+            </div>
 
-      </div>
-      <div class="kbbtn">
-        <a href="https://www.youtube.com/playlist?list=PLVtsn31CI8rmgL1B6A8kKIZ5-C7YRYVOV">
-          <img src="./Life of Babuji.png" alt="" style="width:200px; height:200px;">
-        </a>
+     
+            <div class="video-carousel">
+                 <div class="carousel-container" id="lalaji-carousel">
+                    <div class="video-card" onclick="openPlaylist('https://www.youtube.com/playlist?list=PLVtsn31CI8rkzG3p1uzCJmla6SArB8STF')">
+                        <div class="video-thumbnail">
+                            <img src="./Priciples of Conversation by Lalaji.png" alt="Lalaji Maharaj" loading="lazy">
+                            <div class="play-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <p class="video-title">Principles of Conversation by Lalaji</p>
+                        </div>
+                    </div>
 
-      </div>
-      <div class="kbbtn">
-        <a href="https://www.youtube.com/playlist?list=PL1QpxVYcCuCaQv84_NfpSa1T46macgp8s">
-          <img src="./Life of Babuji(Hindi).png" alt="" style="width:200px; height:200px;">
-        </a>
-
-      </div>
-      <div class="kbbtn">
-        <a href="https://www.youtube.com/playlist?list=PLVtsn31CI8rnbzkx6esreLoU1IBbRFUbB">
-          <img src="./Babujis Contemporaries.png" alt="" style="width:200px; height:200px;">
-        </a>
-
-      </div>
-    </div>
-   </div>
- </div>
-
-  <!--End of Babujis Videos-->
-
-  <!--Start of Lalajis Videos-->
-
-
-  <div class="container">
-    <section id="Lalajicoverimg" >
-      <img src="../Images/Lalaji.jpeg" class="d-block w-100" alt="Daaji">
+                    <div class="video-card" onclick="openPlaylist('https://www.youtube.com/watch?v=faLYPnX1Su4')">
+                        <div class="video-thumbnail">
+                            <img src="./Lifeoflalaji.png" alt="Life of Lalaji" loading="lazy">
+                            <div class="play-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <p class="video-title">Life of Lalaji</p>
+                        </div>
+                    </div>
+   
+                    <div class="video-card" onclick="openPlaylist('https://www.youtube.com/playlist?list=PLVtsn31CI8rlpEfXzjOV6OJBea1a49DRc')">
+                        <div class="video-thumbnail">
+                            <img src="./Daaji on Lalaji Maharaju.png" alt="Daaji on Lalaji Maharaj" loading="lazy">
+                            <div class="play-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <p class="video-title">Daaji on Lalaji Maharaj</p>
+                        </div>
+                    </div>
+            </div>
+        </div>
     </section>
-  </div>
+    </div>
 
-  <div class="container">  
-    <section  id="hdr1">
-    <h3>Knowledge Base</h3>
-    <div>
-      <h6 style="background-color:#e3b175"><center>(Click "Youtube" in the below video links to view all videos)</center></h6>
-    </div>
-  </section>
-  </div>
-    <div class="container"> 
-    <div class="youtube-carousel"> 
-      <div class="carousel-container">
-        <div class="kbbtn">
-          <a href="https://www.youtube.com/playlist?list=PLVtsn31CI8rkzG3p1uzCJmla6SArB8STF">
-            <img src="./Priciples of Conversation by Lalaji.png" alt="" style="width:200px; height:200px;">
-          </a>
-        </div>
-        <div class="kbbtn">
-          <a href="https://www.youtube.com/watch?v=faLYPnX1Su4">
-            <img src="./Lifeoflalaji.png" alt="" style="width:200px; height:200px;">
-          </a>
-        </div>
-        <div class="kbbtn">
-          <a href="https://www.youtube.com/playlist?list=PLVtsn31CI8rlpEfXzjOV6OJBea1a49DRc">
-            <img src="./Daaji on Lalaji Maharaju.png" alt="" style="width:200px; height:200px;">
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
- 
-  
-<div class="container pt-2 pb-2">
-  <section id="footer">
-    <a href="../HFNContactUs/HFNContactUs.html" ><b>CONTACT US</b></a>
-    <a href="../FAQs/FAQs.html"><b>FAQs</b></a>
-  </section>
-  </div>
-    
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-  <script>
-  document.getElementById('menu-icon').addEventListener('click', function() {
-    var navLinks = document.getElementById('nav-links');
-    var menuIcon = document.getElementById('menu-icon');
-    
-    if (navLinks.classList.contains('vertical-links')) {
-      navLinks.classList.remove('vertical-links');
-      menuIcon.classList.remove('fa-times');
-      menuIcon.classList.add('fa-bars');
-    } else {
-      navLinks.classList.add('vertical-links');
-      menuIcon.classList.remove('fa-bars');
-      menuIcon.classList.add('fa-times');
-    }
-  });
-  </script>
-  <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        // Check if the current URL has the '.html' extension
-        if (window.location.pathname.endsWith('.html')) {
-            // Remove the '.html' from the URL
-            var cleanUrl = window.location.pathname.replace('.html', '');
-            // Redirect to the clean URL without '.html'
-            window.history.replaceState(null, null, cleanUrl);
+    <!--End of Lalaji's Videos-->
+
+    <script>
+        function openPlaylist(url) {
+            window.open(url, '_blank');
         }
-    });
     </script>
-  </body>
-</html>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+                    
