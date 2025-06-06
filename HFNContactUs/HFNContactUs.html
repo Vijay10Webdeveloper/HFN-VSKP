@@ -1004,6 +1004,16 @@
                 window.history.replaceState(null, null, cleanUrl);
             }
         }
+          // Mobile menu toggle
+        const menuToggle = document.getElementById('menu-toggle');
+        const navMenu = document.getElementById('nav-menu');
+        const menuIcon = menuToggle.querySelector('i');
+
+        menuToggle.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+            menuIcon.classList.toggle('fa-bars');
+            menuIcon.classList.toggle('fa-times');
+        });
     </script>
 
     <!-- Bootstrap JS (loaded at end for better performance) -->
