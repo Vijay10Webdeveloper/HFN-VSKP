@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Heartfulness Vizag - Knowledge Base</title>
     <meta name="description" content="Comprehensive knowledge base with spiritual master talks, meditation guidance, and Heartfulness resources">
-    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <!-- Preload critical resources -->
     <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" as="style">
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" as="style">
@@ -13,6 +13,8 @@
     <!-- CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    
     
     <style>
        :root {
@@ -315,36 +317,25 @@
             right: -20px;
         }
 
+           /* Footer */
         .footer {
             background: var(--primary-color);
-            color: white;
-            padding: 2rem 0;
+            color: var(--white);
             text-align: center;
+            padding: 2rem;
             margin-top: 3rem;
         }
 
-        .footer-links {
-            display: flex;
-            justify-content: center;
-            gap: 2rem;
-            flex-wrap: wrap;
-        }
-
-        .footer-links a {
-            color: white;
+        .footer a {
+            color: var(--white);
             text-decoration: none;
-            font-weight: 600;
+            margin: 0 1rem;
             padding: 0.5rem 1rem;
             border-radius: var(--border-radius);
             transition: var(--transition);
         }
 
-        .footer-links a:hover {
-            background: rgba(255,255,255,0.2);
-            transform: translateY(-2px);
-        }
-
-         .footer a:hover {
+        .footer a:hover {
             background: var(--secondary-color);
         }
 
@@ -358,35 +349,50 @@
             to { opacity: 1; }
         }
 
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .menu-toggle {
                 display: block;
+                z-index: 1001;
             }
 
             #nav-links {
-                position: absolute;
-                top: 100%;
-                left: 0;
-                right: 0;
-                background: white;
-                box-shadow: var(--shadow);
-                transform: translateY(-100%);
-                opacity: 0;
-                visibility: hidden;
+                position: fixed;
+                top: 80px;
+                left: -100%;
+                width: 100%;
+                height: calc(100vh - 80px);
+                background: var(--white);
+                flex-direction: column;
+                align-items: center;
+                justify-content: flex-start;
+                padding-top: 2rem;
                 transition: var(--transition);
+                box-shadow: var(--shadow);
+                z-index: 1000;
             }
 
             #nav-links.active {
-                transform: translateY(0);
-                opacity: 1;
-                visibility: visible;
+                left: 0;
             }
 
             #nav-links ul {
                 flex-direction: column;
+                gap: 1rem;
+                width: 100%;
+                text-align: center;
+            }
+
+            #nav-links li {
+                width: 100%;
+            }
+
+            #nav-links a {
+                display: block;
+                width: 100%;
                 padding: 1rem;
-                gap: 0.5rem;
+                margin: 0.5rem 0;
             }
 
             .master-overlay h2 {
@@ -898,7 +904,7 @@
 
     <!--End of Lalaji's Videos-->
 
-      <!-- Footer -->
+     <!-- Footer -->
      <footer class="footer">
         <div class="container">
             <div class="footer-links">
@@ -916,9 +922,60 @@
     </footer>
 
     <script>
-        function openPlaylist(url) {
-            window.open(url, '_blank');
-        }
+
+             document.addEventListener('DOMContentLoaded', function() {
+            const menuToggle = document.getElementById('menu-toggle');
+            const navLinks = document.getElementById('nav-links');
+            const menuIcon = menuToggle.querySelector('i');
+            
+            // Toggle mobile menu
+            menuToggle.addEventListener('click', function() {
+                navLinks.classList.toggle('active');
+                
+                // Change hamburger icon to X when menu is open
+                if (navLinks.classList.contains('active')) {
+                    menuIcon.classList.remove('fa-bars');
+                    menuIcon.classList.add('fa-times');
+                } else {
+                    menuIcon.classList.remove('fa-times');
+                    menuIcon.classList.add('fa-bars');
+                }
+            });
+            
+            // Close menu when clicking on a nav link (for mobile)
+            const navLinksItems = navLinks.querySelectorAll('a');
+            navLinksItems.forEach(link => {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth <= 768) {
+                        navLinks.classList.remove('active');
+                        menuIcon.classList.remove('fa-times');
+                        menuIcon.classList.add('fa-bars');
+                    }
+                });
+            });
+            
+            // Close menu when clicking outside (optional)
+            document.addEventListener('click', function(event) {
+                const isClickInsideMenu = navLinks.contains(event.target);
+                const isClickOnToggle = menuToggle.contains(event.target);
+                
+                if (!isClickInsideMenu && !isClickOnToggle && navLinks.classList.contains('active')) {
+                    navLinks.classList.remove('active');
+                    menuIcon.classList.remove('fa-times');
+                    menuIcon.classList.add('fa-bars');
+                }
+            });
+            
+            // Handle window resize
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 768) {
+                    navLinks.classList.remove('active');
+                    menuIcon.classList.remove('fa-times');
+                    menuIcon.classList.add('fa-bars');
+                }
+            });
+        });
+        
     </script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
