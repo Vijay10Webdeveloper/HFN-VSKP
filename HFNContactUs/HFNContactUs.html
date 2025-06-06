@@ -11,15 +11,18 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     
     <style>
-        :root {
-            --primary-color: #5b38b9;
-            --primary-dark: #4a2d96;
-            --secondary-color: #f8f9fa;
-            --accent-color: #e74c3c;
-            --text-dark: #2c3e50;
-            --text-light: #6c757d;
+       :root {
+            --primary-color: #2c3e50;
+             --secondary-color: #e74c3c;
+            --teritiary-color: #e8ac4a;
+            --accent-color: #f39c12;
+            --light-bg: #ecf0f1;
+            --dark-bg: #34495e;
+            --text-color: #2c3e50;
+            --light-text: #7f8c8d;
+            --white: #ffffff;
             --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            --shadow-hover: 0 8px 25px rgba(0, 0, 0, 0.15);
+            --shadow-hover: 0 8px 15px rgba(0, 0, 0, 0.2);
             --border-radius: 12px;
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -39,19 +42,26 @@
         }
 
         /* Header Styles */
-        .header {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
-            padding: 1rem 0;
+         .header {
+            background: var(--white);
             box-shadow: var(--shadow);
             position: sticky;
             top: 0;
             z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .logo {
-            max-height: 60px;
-            width: auto;
-            filter: brightness(0) invert(1);
+            height: 50px;
             transition: var(--transition);
         }
 
@@ -59,16 +69,36 @@
             transform: scale(1.05);
         }
 
-        #menu-icon {
-            font-size: 1.5rem;
-            color: white;
-            cursor: pointer;
-            display: none;
-            transition: var(--transition);
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
         }
 
-        #menu-icon:hover {
-            transform: rotate(90deg);
+        .nav-menu a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .nav-menu a:hover,
+        .nav-menu a.active {
+            background: linear-gradient(135deg, var(--secondary-color), var(--accent-color));
+            color: var(--white);
+            transform: translateY(-2px);
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-color);
+            cursor: pointer;
         }
 
         /* Navigation Styles - Fixed for Desktop */
@@ -107,9 +137,7 @@
             transition: var(--transition);
         }
 
-        nav a:hover::before {
-            left: 0;
-        }
+     
 
         nav a:hover {
             transform: translateY(-2px);
@@ -237,6 +265,8 @@
             gap: 0.5rem;
         }
 
+        
+
         .center-card .card-title::before {
             content: '📍';
             font-size: 1.3rem;
@@ -248,7 +278,7 @@
         }
 
         .zonal-coordinator .card-title {
-            color: white;
+            color: black;
             font-size: 1.5rem;
         }
 
@@ -275,7 +305,7 @@
         }
 
         .contact-info {
-            background: var(--secondary-color);
+            background: var(--teritiary-color);
             padding: 1rem;
             border-radius: 8px;
             margin: 1rem 0;
@@ -290,6 +320,8 @@
             gap: 0.5rem;
             margin-bottom: 0.5rem;
         }
+
+  
 
         .contact-person::before {
             content: '👤';
@@ -356,31 +388,40 @@
             box-shadow: 0 0 0 3px rgba(91, 56, 185, 0.1);
         }
 
-        /* Footer */
-        #footer {
-            background: var(--text-dark);
+       /* Footer */
+        .footer {
+            background: var(--primary-color);
+            color: white;
             padding: 2rem 0;
             text-align: center;
-            margin-top: 4rem;
+            margin-top: 3rem;
         }
 
-        #footer a {
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
             color: white;
             text-decoration: none;
             font-weight: 600;
-            margin: 0 2rem;
-            padding: 0.8rem 2rem;
-            border: 2px solid white;
-            border-radius: 25px;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
             transition: var(--transition);
-            display: inline-block;
         }
 
-        #footer a:hover {
-            background: white;
-            color: var(--text-dark);
-            transform: translateY(-3px);
+        .footer-links a:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
         }
+
+         .footer a:hover {
+            background: var(--secondary-color);
+        }
+
 
         /* Loading Animation */
         .loading {
@@ -529,25 +570,22 @@
 </head>
 <body>
     <!-- Header -->
-    <div class="header">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-8">
-                    <img src="../Images/advancing-in-love-black.png" class="logo" alt="Heartfulness" loading="lazy">
-                </div>
-                <div class="col-4">
-                    <i class="fas fa-bars" id="menu-icon" aria-label="Menu"></i>
-                    <nav>
-                        <ul id="nav-links">
-                            <li><a href="../Home/Home.html" class="active">HOME</a></li>
-                            <li><a href="../NewSeeker/Newseekers.html">NEW SEEKERS</a></li>
-                            <li><a href="../Abhyasi/Abhyasi.html">ABHYASIS</a></li>
-                        </ul>
-                    </nav>
-                </div>
-            </div>
+     <header class="header">
+        <div class="header-container">
+            <img src="../Images/advancing-in-love-black.png" alt="Heartfulness" class="logo">
+            
+            <nav>
+                <ul class="nav-menu" id="nav-menu">
+                    <li><a href="../Home/Home.html" class="active">HOME</a></li>
+                    <li><a href="../NewSeeker/Newseekers.html">NEW SEEKERS</a></li>
+                    <li><a href="../Abhyasi/Abhyasi.html">ABHYASIS</a></li>
+                </ul>
+                <button class="menu-toggle" id="menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </nav>
         </div>
-    </div>
+    </header>
 
     <!-- Welcome Section -->
     <div class="container">
@@ -641,12 +679,21 @@
     </div>
 
     <!-- Footer -->
-    <section id="footer">
+    <footer class="footer">
         <div class="container">
-            <a href="../HFNContactUs/HFNContactUs.html">CONTACT US</a>
-            <a href="../FAQs/FAQs.html">FAQs</a>
+            <div class="footer-links">
+                <a href="../HFNContactUs/HFNContactUs.html">
+                    <i class="fas fa-envelope"></i> Contact Us
+                </a>
+                <a href="../FAQs/FAQs.html">
+                    <i class="fas fa-question-circle"></i> FAQs
+                </a>
+            </div>
+            <div style="margin-top: 1rem; color: rgba(255,255,255,0.8);">
+                <p>&copy; 2024 Heartfulness Vizag. All rights reserved.</p>
+            </div>
         </div>
-    </section>
+    </footer>
 
     <!-- Scroll to Top Button -->
     <button class="scroll-top" id="scrollTop" aria-label="Scroll to top">
