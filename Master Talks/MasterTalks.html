@@ -97,7 +97,7 @@
 
         #nav-links a:hover,
         #nav-links a.active {
-            background: var(--secondary-color);
+            background: linear-gradient(135deg, var(--secondary-color), var(--accent-color)); 
             color: white;
             transform: translateY(-2px);
         }
@@ -317,14 +317,6 @@
             right: -20px;
         }
 
-           /* Footer */
-        .footer {
-            background: var(--primary-color);
-            color: var(--white);
-            text-align: center;
-            padding: 2rem;
-            margin-top: 3rem;
-        }
 /* Footer */
         .footer {
             background: var(--primary-color);
@@ -346,18 +338,7 @@
         .footer a:hover {
             background: var(--secondary-color);
         }
-       /* .footer a {
-            color: var(--white);
-            text-decoration: none;
-            margin: 0 1rem;
-            padding: 0.5rem 1rem;
-            border-radius: var(--border-radius);
-            transition: var(--transition);
-        }
 
-        .footer a:hover {
-            background: var(--secondary-color);
-        }
 
         /* Loading Animation */
         .loading {
@@ -462,7 +443,7 @@
                 </button>
                 <nav id="nav-links" role="navigation">
                     <ul>
-                        <li><a href="../Home/Home.html">HOME</a></li>
+                        <li><a href="../Home/Home.html" class="active">HOME</a></li>
                         <li><a href="../NewSeeker/Newseekers.html">NEW SEEKERS</a></li>
                         <li><a href="../Abhyasi/Abhyasi.html">ABHYASIS</a></li>
                     </ul>
