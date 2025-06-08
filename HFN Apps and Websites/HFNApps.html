@@ -2,170 +2,865 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=<device-width>, initial-scale=1.0">
-      <title>Heartfulness Vizag</title>
-      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-      <link href="./HFNApps.css" rel="stylesheet">
-      <link href="../hdrftr_style.css" rel="stylesheet">
-      <link href="../Kbsettings.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heartfulness Vizag - Apps & Resources</title>
+    
+    <!-- Preconnect to external domains for faster loading -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    
+    <!-- Critical CSS inline for faster rendering -->
+    <style>
+        /* Critical CSS for above-the-fold content */
+    :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #e74c3c;
+            --accent-color: #f39c12;
+            --light-bg: #ecf0f1;
+            --dark-bg: #34495e;
+            --text-color: #2c3e50;
+            --light-text: #7f8c8d;
+            --white: #ffffff;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 8px 15px rgba(0, 0, 0, 0.2);
+            --border-radius: 12px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+       /* Header Styles */
+        .header {
+            background: var(--white);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            height: 50px;
+            transition: var(--transition);
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-menu a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .nav-menu a:hover,
+        .nav-menu a.active {
+            background: linear-gradient(135deg, var(--secondary-color), var(--accent-color));
+            color: var(--white);
+            transform: translateY(-2px);
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-color);
+            cursor: pointer;
+        }
+
+          /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-menu {
+                position: fixed;
+                top: 80px;
+                left: -100%;
+                width: 100%;
+                height: calc(100vh - 80px);
+                background: var(--white);
+                flex-direction: column;
+                align-items: center;
+                justify-content: flex-start;
+                padding-top: 2rem;
+                transition: var(--transition);
+                box-shadow: var(--shadow);
+            }
+
+            .nav-menu.active {
+                left: 0;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .hero-text h1 {
+                font-size: 2rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .video-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .daily-practices-carousel .video-card {
+                flex: 0 0 280px;
+                min-width: 280px;
+            }
+
+            .download-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .download-btn {
+                width: 100%;
+                max-width: 300px;
+            }
+          }
+
+              /* Footer */
+        .footer {
+  
+            background: var(--primary-color);
+            color: var(--white);
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+
+            .footer-content {
+  
+            background: var(--primary-color);
+            color: var(--white);
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+
+
+        .footer a {
+          
+            color: var(--white);
+            text-decoration: none;
+            margin: 0 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+
+        .footer a:hover {
+            background: var(--secondary-color);
+        }
+        
+    </style>
+    
+    <!-- Load non-critical CSS asynchronously -->
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
 </head>
 <body>
-  <div class="container pt-1" >
-    <div class="header">
-      <div class="row">
-        <div class="col-sm-8">
-      <img src="../Images/advancing-in-love-black.png" class="logo" alt="Heartfulness" style="margin-top: 2px;">  
-      </div>
-      <div class="col-sm-4">
-      <i class="fa fa-bars" id="menu-icon"></i>
-      <nav id="nav-links" >
-        <ul>
-          <li><a class="active" href="../Home/Home.html"><b>HOME</b></a></li>
-          <li><a href="../NewSeeker/Newseekers.html"><b>NEW SEEKERS</b></a></li>
-          <li><a href="../Abhyasi/Abhyasi.html"><b>ABHYASIS</b></a></li>
-        </ul>
-      </nav>
+    <!-- Header Section -->
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <img src="../Images/advancing-in-love-black.png" alt="Heartfulness" class="logo">     
+            <nav>
+                <ul class="nav-menu" id="nav-menu">
+                    <li><a href="../Home/Home.html" class="active">HOME</a></li>
+                    <li><a href="../NewSeeker/Newseekers.html">NEW SEEKERS</a></li>
+                    <li><a href="../Abhyasi/Abhyasi.html">ABHYASIS</a></li>
+                </ul>
+                <button class="menu-toggle" id="menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <div class="container">
+        <section class="hero-section">
+            <div class="hero-content">
+                <h1 class="hero-title">Heartfulness Apps & Resources</h1>
+                <p class="hero-subtitle">Discover tools for your spiritual journey</p>
+            </div>
+            <div class="hero-image">
+                <img src="./HFN Apps and Websites.png" alt="Apps and Websites" loading="lazy">
+            </div>
+        </section>
     </div>
+
+    <!-- Apps Section -->
+    <div class="container">
+        <section class="content-section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-mobile-alt"></i>
+                    Mobile Apps
+                </h2>
+                <p class="section-subtitle">Click the icons below to download apps</p>
+            </div>
+            
+            <div class="grid-container">
+                <div class="card app-card" data-aos="fade-up">
+                    <a href="https://play.google.com/store/apps/details?id=com.hfn.unified&hl=en&pli=1" target="_blank" rel="noopener">
+                        <div class="card-image">
+                            <img src="../HFN Apps and Websites/HeartsApp.png" alt="HeartsApp" loading="lazy">
+                        </div>
+                        <div class="card-content">
+                            <h3>HeartsApp</h3>
+                            <p>Connect with fellow practitioners</p>
+                        </div>
+                    </a>
+                </div>
+                
+                <div class="card app-card" data-aos="fade-up" data-aos-delay="100">
+                    <a href="https://play.google.com/store/apps/details?id=org.heartfulness.heartintune.prod" target="_blank" rel="noopener">
+                        <div class="card-image">
+                            <img src="../HFN Apps and Websites/Heartfulness App.png" alt="Heartfulness App" loading="lazy">
+                        </div>
+                        <div class="card-content">
+                            <h3>Heartfulness App</h3>
+                            <p>Meditation and mindfulness tools</p>
+                        </div>
+                    </a>
+                </div>
+                
+                <div class="card app-card" data-aos="fade-up" data-aos-delay="200">
+                    <a href="https://play.google.com/store/apps/details?id=com.jaldeeinc.heartfulness" target="_blank" rel="noopener">
+                        <div class="card-image">
+                            <img src="../HFN Apps and Websites/Health Care.png" alt="Health Care" loading="lazy">
+                        </div>
+                        <div class="card-content">
+                            <h3>Health Care</h3>
+                            <p>Wellness and health guidance</p>
+                        </div>
+                    </a>
+                </div>
+                
+                <div class="card app-card" data-aos="fade-up" data-aos-delay="300">
+                    <a href="https://play.google.com/store/apps/details?id=com.magzter.heartfulnessemagazine" target="_blank" rel="noopener">
+                        <div class="card-image">
+                            <img src="../HFN Apps and Websites/emagzine.png" alt="Heartfulness e-Magazine" loading="lazy">
+                        </div>
+                        <div class="card-content">
+                            <h3>e-Magazine</h3>
+                            <p>Digital magazine and articles</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </section>
     </div>
-  </div>
-  </div>
-<!--End of Header Section-->
-<div class="container pb-1 mb-1">
-  <section id="HFNAppscoverimg" >
-    <img src="./HFN Apps and Websites.png" class="d-block w-100" alt="Apps and Websites">
-  </section>
-</div>
 
+    <!-- Websites Section -->
+    <div class="container">
+        <section class="content-section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-globe"></i>
+                    Web Resources
+                </h2>
+                <p class="section-subtitle">Explore our online platforms and resources</p>
+            </div>
+            
+            <div class="grid-container websites-grid">
+                <div class="card website-card" data-aos="fade-up">
+                    <a href="https://heartspots.heartfulness.org/" target="_blank" rel="noopener">
+                        <div class="card-image">
+                            <img src="../HFN Apps and Websites/HeartsApp.png" alt="Heartspots" loading="lazy">
+                        </div>
+                        <div class="card-content">
+                            <h3>Heartspots</h3>
+                        </div>
+                    </a>
+                </div>
+                
+                <div class="card website-card" data-aos="fade-up" data-aos-delay="50">
+                    <a href="https://sites.google.com/heartfulness.org/daytonheartfulness/american-telugu-associationata-sessions" target="_blank" rel="noopener">
+                        <div class="card-image">
+                            <img src="../HFN Apps and Websites/ATA Sessions.png" alt="ATA Sessions" loading="lazy">
+                        </div>
+                        <div class="card-content">
+                            <h3>ATA Sessions</h3>
+                        </div>
+                    </a>
+                </div>
+                
+                <div class="card website-card" data-aos="fade-up" data-aos-delay="100">
+                    <a href="https://sites.google.com/heartfulness.org/heartfulness-whisper-readings/" target="_blank" rel="noopener">
+                        <div class="card-image">
+                            <img src="../HFN Apps and Websites/HFN Literature Reading.png" alt="Literature" loading="lazy">
+                        </div>
+                        <div class="card-content">
+                            <h3>Literature</h3>
+                        </div>
+                    </a>
+                </div>
+                
+                <div class="card website-card" data-aos="fade-up" data-aos-delay="150">
+                    <a href="https://heartfulness.org/webinar/glow-webinar-series" target="_blank" rel="noopener">
+                        <div class="card-image">
+                            <img src="../HFN Apps and Websites/Glow Webinar.webp" alt="Glow Webinar" loading="lazy">
+                        </div>
+                        <div class="card-content">
+                            <h3>Glow Webinar Series</h3>
+                        </div>
+                    </a>
+                </div>
+                
+                <div class="card website-card" data-aos="fade-up" data-aos-delay="200">
+                    <a href="https://profile.sahajmarg.org/accounts/login/" target="_blank" rel="noopener">
+                        <div class="card-image">
+                            <img src="../HFN Apps and Websites/HFN Literature Reading.png" alt="Abhyasi Login" loading="lazy">
+                        </div>
+                        <div class="card-content">
+                            <h3>Abhyasi Login</h3>
+                        </div>
+                    </a>
+                </div>
+                
+                <div class="card website-card" data-aos="fade-up" data-aos-delay="250">
+                    <a href="https://www.daaji.org/" target="_blank" rel="noopener">
+                        <div class="card-image">
+                            <img src="../HFN Apps and Websites/Daaji.png" alt="Daaji" loading="lazy">
+                        </div>
+                        <div class="card-content">
+                            <h3>Daaji</h3>
+                        </div>
+                    </a>
+                </div>
+                
+                <div class="card website-card" data-aos="fade-up" data-aos-delay="300">
+                    <a href="https://learning.heartfulness.org/" target="_blank" rel="noopener">
+                        <div class="card-image">
+                            <img src="../HFN Apps and Websites/HFN Learning.png" alt="Learning" loading="lazy">
+                        </div>
+                        <div class="card-content">
+                            <h3>Learning</h3>
+                        </div>
+                    </a>
+                </div>
+                
+                <div class="card website-card" data-aos="fade-up" data-aos-delay="350">
+                    <a href="https://hfnlife.com/" target="_blank" rel="noopener">
+                        <div class="card-image">
+                            <img src="../HFN Apps and Websites/Books and More.png" alt="HFN Life" loading="lazy">
+                        </div>
+                        <div class="card-content">
+                            <h3>HFN Life (Books & More)</h3>
+                        </div>
+                    </a>
+                </div>
+                
+                <div class="card website-card" data-aos="fade-up" data-aos-delay="400">
+                    <a href="https://heartfulness.org/forests/" target="_blank" rel="noopener">
+                        <div class="card-image">
+                            <img src="../HFN Apps and Websites/FBH.png" alt="Forest by Heartfulness" loading="lazy">
+                        </div>
+                        <div class="card-content">
+                            <h3>Forest by Heartfulness</h3>
+                        </div>
+                    </a>
+                </div>
+                
+                <div class="card website-card" data-aos="fade-up" data-aos-delay="450">
+                    <a href="https://preceptor-application.heartfulnessinstitute.in/?batchId=11" target="_blank" rel="noopener">
+                        <div class="card-image">
+                            <img src="../HFN Apps and Websites/Self Nominating Preceptor.png" alt="Self Nominating Preceptor" loading="lazy">
+                        </div>
+                        <div class="card-content">
+                            <h3>Self Nominating Preceptor</h3>
+                        </div>
+                    </a>
+                </div>
+                
+                <div class="card website-card" data-aos="fade-up" data-aos-delay="500">
+                    <a href="https://mailserver.sahajmarg.org/srcminfo//lists/dw/dw.jsp" target="_blank" rel="noopener">
+                        <div class="card-image">
+                            <img src="../HFN Apps and Websites/Whispers.png" alt="Reflections/Whispers" loading="lazy">
+                        </div>
+                        <div class="card-content">
+                            <h3>Reflections/Whispers</h3>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </div>
 
-<!--Start of Knowledge Base-->
-<div class="container">  
-  <section  id="hdr1"> 
-       <h3>Apps</h3>
-       <div>
-        <h6 style="background-color:#e3b175"><center>(Click the icons below to open Apps)</center></h6>
-      </div>
-  </section>
-</div>
-  <div class="container">
-    <section id="KBHFNApps" > 
-      <div id="flex-container">
-        <div class="kbbtn">
-          <a href="https://play.google.com/store/apps/details?id=com.hfn.unified&hl=en&pli=1" target=”_blank” > <img src="../HFN Apps and Websites/HeartsApp.png" alt="HeartsApp"></a> 
-          <p><b>HeartsApp</b> </p> 
+        <footer class="footer">
+        <div class="container">
+            <div class="footer-links">
+                <a href="../HFNContactUs/HFNContactUs.html">
+                    <i class="fas fa-envelope"></i> Contact Us
+                </a>
+                <a href="../FAQs/FAQs.html">
+                    <i class="fas fa-question-circle"></i> FAQs
+                </a>
+            </div>
+            <div style="margin-top: 1rem; color: rgba(255,255,255,0.8);">
+                <p>&copy; 2024 Heartfulness Vizag. All rights reserved.</p>
+            </div>
         </div>
-        <div class="kbbtn">
-          <a href="https://play.google.com/store/apps/details?id=org.heartfulness.heartintune.prod" target=”_blank” > <img src="../HFN Apps and Websites/Heartfulness App.png" alt="HeartfulnessApp"></a> 
-          <p><b>HeartfulnessApp</b> </p>
-        </div>
-        <div class="kbbtn">
-          <a href="https://play.google.com/store/apps/details?id=com.jaldeeinc.heartfulness" target=”_blank” > <img src="../HFN Apps and Websites/Health Care.png" alt="Health Care"></a> 
-          <p><b>Health Care</b> </p> 
-        </div>
-        <div class="kbbtn">
-          <a href="https://play.google.com/store/apps/details?id=com.magzter.heartfulnessemagazine" target=”_blank” > <img src="../HFN Apps and Websites/emagzine.png" alt="Heartfulness e-Magazine"></a> 
-          <p><b>Heartfulness e-Magazine</b> </p> 
-        </div>
-      </div>
-  </section>
-  </div>
-<!---------------------------------------------------------------------------------------------------------->
-  <div class="container">  
-    <section  id="hdr1"> 
-      <h3>Websites</h3>
-      <div>
-        <h6 style="background-color:#e3b175"><center>(Click the icons below to view more information)</center></h6>
-      </div>
-    </section>
-  </div>
-  <div class="container">
-    <section id="KBHFNWebsites" >  
-        <div id="flex-container">
-          <div class="kbbtn">
-            <a href="https://heartspots.heartfulness.org/" target=”_blank” > <img src="../HFN Apps and Websites/HeartsApp.png" alt="Heartspots"></a> 
-            <p><b>Heartspots</b> </p> 
-          </div>
-          <div class="kbbtn">
-            <a href="https://sites.google.com/heartfulness.org/daytonheartfulness/american-telugu-associationata-sessions" target=”_blank” > <img src="../HFN Apps and Websites/ATA Sessions.png" alt="ATA Sessions"></a> 
-            <p><b>ATA Sessions</b> </p> 
-          </div>
-          <div class="kbbtn">
-            <a href="https://sites.google.com/heartfulness.org/heartfulness-whisper-readings/" target=”_blank” > <img src="../HFN Apps and Websites/HFN Literature Reading.png" alt="Heartfulness Literature Reading"></a> 
-            <p><b>Literature</b> </p>
-          </div>
-          <div class="kbbtn">
-            <a href="https://heartfulness.org/webinar/glow-webinar-series" target=”_blank” > <img src="../HFN Apps and Websites/Glow Webinar.webp" alt="Heartfulness Literature Reading"></a> 
-            <p><b>Glow Webinar Series</b> </p>
-          </div>
-          <div class="kbbtn">
-            <a href="https://profile.sahajmarg.org/accounts/login/" target=”_blank” > <img src="../HFN Apps and Websites/HFN Literature Reading.png" alt="Abhyasi Login"></a> 
-            <p><b>Abhyasi Login</b> </p> 
-          </div>
-          <div class="kbbtn">
-            <a href="https://www.daaji.org/" target=”_blank” > <img src="../HFN Apps and Websites/Daaji.png" alt="Daaji"></a> 
-            <p><b>Daaji</b> </p> 
-          </div>
-          <div class="kbbtn">
-            <a href="https://learning.heartfulness.org/" target=”_blank” > <img src="../HFN Apps and Websites/HFN Learning.png" alt="Heartfulness Learning"></a> 
-            <p><b>Learning</b> </p> 
-          </div>
-          <div class="kbbtn">
-            <a href="https://hfnlife.com/" target=”_blank” > <img src="../HFN Apps and Websites/Books and More.png" alt="Heartfulness Learning"></a> 
-            <p><b>HFN life(Books and More)</b> </p> 
-          </div>
-          <div class="kbbtn">
-            <a href="https://heartfulness.org/forests/" target=”_blank” > <img src="../HFN Apps and Websites/FBH.png" alt="Forest by Heartfulness"></a> 
-            <p><b>FBH</b> </p>
-          </div>
-          <div class="kbbtn">
-            <a href="https://preceptor-application.heartfulnessinstitute.in/?batchId=11" target=”_blank” > <img src="../HFN Apps and Websites/Self Nominating Preceptor.png" alt="Self Nominating Preceptor"></a> 
-            <p><b>Self Nominating Preceptor</b> </p>
-          </div>
-          <div class="kbbtn">
-            <a href="https://mailserver.sahajmarg.org/srcminfo//lists/dw/dw.jsp" target=”_blank” > <img src="../HFN Apps and Websites/Whispers.png" alt="Daily Reflections and Whispers"></a> 
-            <p><b>Reflections/Whispers</b> </p> 
-          </div>
-        </div>
-    </section>
-  </div>
-<!--End of Knowledge Base-->
-<!--Start of Footer Section-->
+    </footer>
 
-<div class="container pt-2 pb-2">
-  <section id="footer">
-    <a href="../HFNContactUs/HFNContactUs.html" ><b>CONTACT US</b></a>
-    <a href="../FAQs/FAQs.html"><b>FAQs</b></a>
-  </section>
-  </div>
-  
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-<script>
-document.getElementById('menu-icon').addEventListener('click', function() {
-  var navLinks = document.getElementById('nav-links');
-  var menuIcon = document.getElementById('menu-icon');
-  
-  if (navLinks.classList.contains('vertical-links')) {
-    navLinks.classList.remove('vertical-links');
-    menuIcon.classList.remove('fa-times');
-    menuIcon.classList.add('fa-bars');
-  } else {
-    navLinks.classList.add('vertical-links');
-    menuIcon.classList.remove('fa-bars');
-    menuIcon.classList.add('fa-times');
-  }
-});
+    <!-- Main Stylesheet (loaded after critical CSS) -->
+    <style>
+        /* Main Styles */
+        .hero-section {
+            text-align: center;
+            padding: 60px 0;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            margin: 20px 0 40px;
+            color: white;
+        }
+        
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            background: linear-gradient(45deg, #fff, #f0f0f0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 30px;
+        }
+        
+        .hero-image img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .content-section {
+            margin: 60px 0;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .section-title i {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .section-subtitle {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.1);
+            padding: 12px 25px;
+            border-radius: 25px;
+            display: inline-block;
+            backdrop-filter: blur(10px);
+        }
+        
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .websites-grid {
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 25px;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            position: relative;
+            backdrop-filter: blur(10px);
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent, rgba(102, 126, 234, 0.1), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+        
+        .card:hover::before {
+            opacity: 1;
+        }
+        
+        .card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        }
+        
+        .card a {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            height: 100%;
+        }
+        
+        .app-card .card-image {
+            padding: 30px;
+            text-align: center;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+        
+        .website-card .card-image {
+            padding: 20px;
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .card-image img {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover .card-image img {
+            transform: scale(1.1);
+        }
+        
+        .card-content {
+            padding: 25px;
+            text-align: center;
+        }
+        
+        .card-content h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .card-content p {
+            font-size: 0.95rem;
+            color: #666;
+            line-height: 1.5;
+        }
+        
+        .website-card .card-content {
+            padding: 20px;
+        }
+        
+        .website-card .card-content h3 {
+            font-size: 1.1rem;
+        }
+        
+      /* Footer */
+        .footer {
+            background: var(--primary-color);
+            color: var(--white);
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
 
-</script>
-<script>
-  document.addEventListener("DOMContentLoaded", function() {
-      // Check if the current URL has the '.html' extension
-      if (window.location.pathname.endsWith('.html')) {
-          // Remove the '.html' from the URL
-          var cleanUrl = window.location.pathname.replace('.html', '');
-          // Redirect to the clean URL without '.html'
-          window.history.replaceState(null, null, cleanUrl);
-      }
-  });
-  </script>
+        .footer a {
+            color: var(--white);
+            text-decoration: none;
+            margin: 0 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+
+        .footer a:hover {
+            background: var(--secondary-color);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-toggle {
+                display: block;
+            }
+            
+            .nav-menu {
+                position: fixed;
+                top: 90px;
+                right: -100%;
+                width: 100%;
+                height: calc(100vh - 90px);
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(10px);
+                flex-direction: column;
+                justify-content: flex-start;
+                align-items: center;
+                padding-top: 50px;
+                transition: right 0.3s ease;
+            }
+            
+            .nav-menu.active {
+                right: 0;
+            }
+            
+            .nav-menu li {
+                margin: 20px 0;
+            }
+            
+            .nav-menu a {
+                font-size: 18px;
+            }
+            
+            .hero-title {
+                font-size: 2.2rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .grid-container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .footer-links {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 15px;
+            }
+            
+            .hero-section {
+                padding: 40px 20px;
+            }
+            
+            .hero-title {
+                font-size: 1.8rem;
+            }
+            
+            .section-title {
+                font-size: 1.6rem;
+            }
+            
+            .card-content {
+                padding: 20px 15px;
+            }
+        }
+        
+        /* Loading animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .card {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+        
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        /* Focus states for accessibility */
+        .card:focus-within {
+            outline: 2px solid #667eea;
+            outline-offset: 2px;
+        }
+        
+        .nav-menu a:focus,
+        .footer-link:focus {
+            outline: 2px solid #667eea;
+            outline-offset: 2px;
+            border-radius: 4px;
+        }
+    </style>
+
+    <!-- JavaScript -->
+    <script>
+        // Mobile navigation toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const navToggle = document.getElementById('nav-toggle');
+            const navMenu = document.getElementById('nav-menu');
+            
+            navToggle.addEventListener('click', function() {
+                navMenu.classList.toggle('active');
+                
+                // Change icon
+                if (navMenu.classList.contains('active')) {
+                    navToggle.classList.remove('fa-bars');
+                    navToggle.classList.add('fa-times');
+                } else {
+                    navToggle.classList.remove('fa-times');
+                    navToggle.classList.add('fa-bars');
+                }
+            });
+            
+            // Close menu when clicking on a link
+            const navLinks = navMenu.querySelectorAll('a');
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    navMenu.classList.remove('active');
+                    navToggle.classList.remove('fa-times');
+                    navToggle.classList.add('fa-bars');
+                });
+            });
+            
+            // Clean URL by removing .html extension
+            if (window.location.pathname.endsWith('.html')) {
+                const cleanUrl = window.location.pathname.replace('.html', '');
+                window.history.replaceState(null, null, cleanUrl);
+            }
+            
+            // Lazy loading for images
+            const images = document.querySelectorAll('img[loading="lazy"]');
+            const imageObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        img.src = img.src;
+                        img.classList.remove('lazy');
+                        observer.unobserve(img);
+                    }
+                });
+            });
+            
+            images.forEach(img => imageObserver.observe(img));
+            
+            // Smooth reveal animations
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+            
+            // Observe cards for animation
+            document.querySelectorAll('.card').forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(30px)';
+                card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(card);
+            });
+        });
+        
+        // Performance monitoring
+        window.addEventListener('load', function() {
+            // Optional: Log performance metrics
+            if ('performance' in window) {
+                const perfData = performance.getEntriesByType('navigation')[0];
+                console.log('Page load time:', perfData.loadEventEnd - perfData.loadEventStart, 'ms');
+            }
+        });
+
+             // Mobile menu toggle
+        const menuToggle = document.getElementById('menu-toggle');
+        const navMenu = document.getElementById('nav-menu');
+        const menuIcon = menuToggle.querySelector('i');
+
+        menuToggle.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+            menuIcon.classList.toggle('fa-bars');
+            menuIcon.classList.toggle('fa-times');
+        });
+    </script>
+    
+    <!-- Fallback for browsers that don't support loading="lazy" -->
+    <noscript>
+        <style>
+            img[loading="lazy"] {
+                display: block;
+            }
+        </style>
+    </noscript>
 </body>
 </html>
