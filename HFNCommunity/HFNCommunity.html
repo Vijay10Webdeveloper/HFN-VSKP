@@ -2,150 +2,677 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=<device-width>, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Heartfulness Vizag</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link href="./HFNCommunity.css" rel="stylesheet">
-    <link href="../hdrftr_style.css" rel="stylesheet">
-    <link href="../Kbsettings.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #e74c3c;
+            --accent-color: #f39c12;
+            --light-bg: #ecf0f1;
+            --dark-bg: #34495e;
+            --text-color: #2c3e50;
+            --light-text: #7f8c8d;
+            --white: #ffffff;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 8px 15px rgba(0, 0, 0, 0.2);
+            --border-radius: 12px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+     /* Header Styles */
+        .header {
+            background: var(--white);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            height: 50px;
+            transition: var(--transition);
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-menu a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .nav-menu a:hover,
+        .nav-menu a.active {
+            background: linear-gradient(135deg, var(--secondary-color), var(--accent-color));
+            color: var(--white);
+            transform: translateY(-2px);
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-color);
+            cursor: pointer;
+        }
+
+        /* Navigation Styles */
+        #nav-links {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        #nav-links ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            margin: 0;
+        }
+
+        #nav-links a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        #nav-links a:hover,
+        #nav-links a.active {
+            background: linear-gradient(135deg, var(--primary-color), #d4a056);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        #menu-icon {
+            display: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+
+        #menu-icon:hover {
+            background-color: var(--bg-light);
+        }
+
+        /* Cover Image */
+        #HFNCommunitycoverimg {
+            margin: 2rem 0;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        #HFNCommunitycoverimg img {
+            width: 100%;
+            height: auto;
+            transition: var(--transition);
+        }
+
+        #HFNCommunitycoverimg:hover img {
+            transform: scale(1.02);
+        }
+
+        /* Knowledge Base Section */
+        #hdr1 {
+            text-align: center;
+            margin: 3rem 0 2rem 0;
+        }
+
+        #hdr1 h3 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        #hdr1 h3::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(135deg, var(--primary-color), #d4a056);
+            border-radius: 2px;
+        }
+
+        #hdr1 h6 {
+            background: linear-gradient(135deg, var(--primary-color), #d4a056);
+            color: white;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            font-size: 1.1rem;
+            font-weight: 500;
+            box-shadow: var(--shadow);
+            margin-top: 1rem;
+        }
+
+        /* Video Horizontal Carousel */
+        .youtube-carousel {
+            margin: 3rem 0;
+            position: relative;
+        }
+
+        .carousel-container {
+            display: flex;
+            gap: 2rem;
+            padding: 1rem 0;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-color) transparent;
+        }
+
+        .carousel-container::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .carousel-container::-webkit-scrollbar-track {
+            background: var(--bg-light);
+            border-radius: 4px;
+        }
+
+        .carousel-container::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, var(--primary-color), #d4a056);
+            border-radius: 4px;
+        }
+
+        .carousel-container::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #d4a056, var(--primary-color));
+        }
+
+        /* Updated Video Card Styles */
+        .video-card {
+            position: relative;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            background: white;
+            flex: 0 0 280px;
+            min-width: 280px;
+            cursor: pointer;
+        }
+
+        .video-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .video-thumbnail {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .video-thumbnail img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+
+        .video-card:hover .video-thumbnail img {
+            transform: scale(1.1);
+        }
+
+        .play-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            opacity: 0;
+            transition: var(--transition);
+            backdrop-filter: blur(5px);
+        }
+
+        .video-card:hover .play-overlay {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+
+        .video-info {
+            padding: 1rem;
+            background: white;
+        }
+
+        .video-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-color);
+            margin: 0;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+       /* Footer */
+        .footer {
+            background: var(--primary-color);
+            color: var(--white);
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+
+        .footer a {
+            color: var(--white);
+            text-decoration: none;
+            margin: 0 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+
+        .footer a:hover {
+            background: var(--secondary-color);
+        }
+       
+          /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-menu {
+                position: fixed;
+                top: 80px;
+                left: -100%;
+                width: 100%;
+                height: calc(100vh - 80px);
+                background: var(--white);
+                flex-direction: column;
+                align-items: center;
+                justify-content: flex-start;
+                padding-top: 2rem;
+                transition: var(--transition);
+                box-shadow: var(--shadow);
+            }
+
+            .nav-menu.active {
+                left: 0;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .hero-text h1 {
+                font-size: 2rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .video-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .daily-practices-carousel .video-card {
+                flex: 0 0 280px;
+                min-width: 280px;
+            }
+
+            .download-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .download-btn {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+
+
+        /* Loading Animation */
+        .video-thumbnail img {
+            opacity: 0;
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Stagger animation for grid items */
+        .video-card:nth-child(1) .video-thumbnail img { animation-delay: 0.1s; }
+        .video-card:nth-child(2) .video-thumbnail img { animation-delay: 0.2s; }
+        .video-card:nth-child(3) .video-thumbnail img { animation-delay: 0.3s; }
+        .video-card:nth-child(4) .video-thumbnail img { animation-delay: 0.4s; }
+        .video-card:nth-child(5) .video-thumbnail img { animation-delay: 0.5s; }
+        .video-card:nth-child(6) .video-thumbnail img { animation-delay: 0.6s; }
+        .video-card:nth-child(7) .video-thumbnail img { animation-delay: 0.7s; }
+        .video-card:nth-child(8) .video-thumbnail img { animation-delay: 0.8s; }
+        .video-card:nth-child(9) .video-thumbnail img { animation-delay: 0.9s; }
+        .video-card:nth-child(10) .video-thumbnail img { animation-delay: 1.0s; }
+        .video-card:nth-child(11) .video-thumbnail img { animation-delay: 1.1s; }
+    </style>
 </head>
 <body>
-  <!-------------------------------------------------------------------------------------------->
-  <div class="container pt-1" >
-    <div class="header">
-      <div class="row">
-        <div class="col-sm-8">
-      <img src="../Images/advancing-in-love-black.png" class="logo" alt="Heartfulness" style="margin-top: 2px;">  
-      </div>
-      <div class="col-sm-4">
-      <i class="fa fa-bars" id="menu-icon"></i>
-      <nav id="nav-links" >
-        <ul>
-          <li><a class="active" href="../Home/Home.html"><b>HOME</b></a></li>
-          <li><a href="../NewSeeker/Newseekers.html"><b>NEW SEEKERS</b></a></li>
-          <li><a href="../Abhyasi/Abhyasi.html"><b>ABHYASIS</b></a></li>
-        </ul>
-      </nav>
-    </div>
-    </div>
-  </div>
-  </div>
-<!--End of Header Section-->
-<div class="container">
-  <section id="HFNCommunitycoverimg" >
-    <img src="./HFNCommunity.png" class="d-block w-100" alt="Community">
-  </section>
-</div>
-<!--Start of Knowledge Base-->
-<div class="container">  
-  <section  id="hdr1">
-  <h3>Knowledge Base</h3>
-  <div>
-    <h6 style="background-color:#e3b175"><center>(Click the icons below to view all videos)</center></h6>
-  </div>
-  </section>
-</div>
-<div class="container"> 
-  <div class="youtube-carousel"> 
-    <div class="carousel-container">
-      <div class="kbbtn">
-        <a href="https://www.youtube.com/playlist?list=PLgc_CfnLmxDSDCUdxdZqsqNEuPlYDue0u">
-            <img src="./Peace Webinar.png" alt="" style="width:200px; height:200px;">
-          </a>
-    </div>
-    <div class="kbbtn">
-             <a href="https://www.youtube.com/playlist?list=PLgc_CfnLmxDQLHL8l9TAtP4lrHZk8Tzrw">
-            <img src="./BHED.png" alt="" style="width:200px; height:200px;">
-          </a>
-    </div>
-    <div class="kbbtn">
-    <a href="https://www.youtube.com/playlist?list=PLgc_CfnLmxDQRoTb9-bWgnn8SDxyD6s3f">
-            <img src="./Kanhacast Excerpts.png" alt="" style="width:200px; height:200px;">
-          </a>
-    </div>
-    <div class="kbbtn">
-    <a href="https://www.youtube.com/playlist?list=PLgc_CfnLmxDSe6vyODy1i2hkeAPnlO8XT">
-    <img src="./Understanding Yoga Sutras.png" alt="" style="width:200px; height:200px;">
-    </a>
-    </div>
-    <div class="kbbtn">
-    <a href="https://www.youtube.com/playlist?list=PLgc_CfnLmxDQyJdwjK5xHK4nhx6wUj19N">
-    <img src="./10 maxims.png" alt="" style="width:200px; height:200px;">
-    </a>
-    </div>
-    <div class="kbbtn">
-         <a href="https://www.youtube.com/playlist?list=PLgc_CfnLmxDTeAX2Odr5NnW6IYkTeHJuH">
-    <img src="./kanhaCast(Podcast).png" alt="" style="width:200px; height:200px;">
-    </a>
-    </div>
-    <div class="kbbtn">
-    <a href="https://www.youtube.com/playlist?list=PLgc_CfnLmxDS9lmP9GsJT0BTgFQYBUdyS">
-    <img src="./Discover a new You.png" alt="" style="width:200px; height:200px;">
-    </a>
-   </div>
-    <div class="kbbtn">
-          <a href="https://www.youtube.com/playlist?list=PLgc_CfnLmxDT7A5Lpjf6JmBvhX_l-Bqlv">
-    <img src="./GSM.png" alt="" style="width:200px; height:200px;">
-    </a>
-    </div>
-    <div class="kbbtn">
-     <a href="https://www.youtube.com/playlist?list=PLgc_CfnLmxDSDkXv3PS71o58kv_3LU-_X">
-    <img src="./Joy in Real Time.png" alt="" style="width:200px; height:200px;">
-    </a>
-    </div>
-    <div class="kbbtn">
-    <a href="https://www.youtube.com/playlist?list=PLVtsn31CI8rk9K8osQOtm3rjOjFIR-o__">
-    <img src="./As a Man Thinketh.png" alt="" style="width:200px; height:200px;">
-    </a>
-    </div>
-    <div class="kbbtn">
-          <a href="https://www.youtube.com/playlist?list=PLVtsn31CI8rkwjViSrqoXwd_0eIPSHicc">
-    <img src="./Heartfulness Webinars.png" alt="" style="width:200px; height:200px;">
-    </a>
-    </div>
-    </div>
-  </div>
-</div>
+   <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <img src="../Images/advancing-in-love-black.png" alt="Heartfulness" class="logo">     
+            <nav>
+                <ul class="nav-menu" id="nav-menu">
+                    <li><a href="../Home/Home.html" class="active">HOME</a></li>
+                    <li><a href="../NewSeeker/Newseekers.html">NEW SEEKERS</a></li>
+                    <li><a href="../Abhyasi/Abhyasi.html">ABHYASIS</a></li>
+                </ul>
+                <button class="menu-toggle" id="menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </nav>
+        </div>
+    </header>
 
-<!--End of Knowledge Base-->
-<!--Start of Footer Section-->
+    <!-- Cover Image Section -->
+    <div class="container">
+        <section id="HFNCommunitycoverimg">
+            <img src="./HFNCommunity.png" class="d-block w-100" alt="Community" loading="lazy">
+        </section>
+    </div>
 
-<div class="container pt-2 pb-2">
-  <section id="footer">
-    <a href="../HFNContactUs/HFNContactUs.html" ><b>CONTACT US</b></a>
-    <a href="../FAQs/FAQs.html"><b>FAQs</b></a>
-  </section>
-  </div>
-  
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-<script>
-document.getElementById('menu-icon').addEventListener('click', function() {
-  var navLinks = document.getElementById('nav-links');
-  var menuIcon = document.getElementById('menu-icon');
-  
-  if (navLinks.classList.contains('vertical-links')) {
-    navLinks.classList.remove('vertical-links');
-    menuIcon.classList.remove('fa-times');
-    menuIcon.classList.add('fa-bars');
-  } else {
-    navLinks.classList.add('vertical-links');
-    menuIcon.classList.remove('fa-bars');
-    menuIcon.classList.add('fa-times');
-  }
-});
+    <!-- Knowledge Base Section -->
+    <div class="container">
+        <section id="hdr1">
+            <h3>Knowledge Base</h3>
+            <h6>Scroll horizontally to explore our comprehensive video collection</h6>
+        </section>
+    </div>
 
-</script>
-<script>
-  document.addEventListener("DOMContentLoaded", function() {
-      // Check if the current URL has the '.html' extension
-      if (window.location.pathname.endsWith('.html')) {
-          // Remove the '.html' from the URL
-          var cleanUrl = window.location.pathname.replace('.html', '');
-          // Redirect to the clean URL without '.html'
-          window.history.replaceState(null, null, cleanUrl);
-      }
-  });
-  </script>
+    <!-- Video Grid Section -->
+    <div class="container">
+        <div class="youtube-carousel">
+            <div class="carousel-container">
+                <div class="video-card" onclick="openPlaylist('https://www.youtube.com/playlist?list=PLgc_CfnLmxDSDCUdxdZqsqNEuPlYDue0u')">
+                    <div class="video-thumbnail">
+                        <img src="./Peace Webinar.png" alt="Peace Webinar" loading="lazy">
+                        <div class="play-overlay">
+                            <i class="fas fa-play"></i>
+                        </div>
+                    </div>
+                    <div class="video-info">
+                        <p class="video-title">Peace Webinar</p>
+                    </div>
+                </div>
+
+                <div class="video-card" onclick="openPlaylist('https://www.youtube.com/playlist?list=PLgc_CfnLmxDQLHL8l9TAtP4lrHZk8Tzrw')">
+                    <div class="video-thumbnail">
+                        <img src="./BHED.png" alt="BHED" loading="lazy">
+                        <div class="play-overlay">
+                            <i class="fas fa-play"></i>
+                        </div>
+                    </div>
+                    <div class="video-info">
+                        <p class="video-title">BHED</p>
+                    </div>
+                </div>
+
+                <div class="video-card" onclick="openPlaylist('https://www.youtube.com/playlist?list=PLgc_CfnLmxDQRoTb9-bWgnn8SDxyD6s3f')">
+                    <div class="video-thumbnail">
+                        <img src="./Kanhacast Excerpts.png" alt="Kanhacast Excerpts" loading="lazy">
+                        <div class="play-overlay">
+                            <i class="fas fa-play"></i>
+                        </div>
+                    </div>
+                    <div class="video-info">
+                        <p class="video-title">Kanhacast Excerpts</p>
+                    </div>
+                </div>
+
+                <div class="video-card" onclick="openPlaylist('https://www.youtube.com/playlist?list=PLgc_CfnLmxDSe6vyODy1i2hkeAPnlO8XT')">
+                    <div class="video-thumbnail">
+                        <img src="./Understanding Yoga Sutras.png" alt="Understanding Yoga Sutras" loading="lazy">
+                        <div class="play-overlay">
+                            <i class="fas fa-play"></i>
+                        </div>
+                    </div>
+                    <div class="video-info">
+                        <p class="video-title">Understanding Yoga Sutras</p>
+                    </div>
+                </div>
+
+                <div class="video-card" onclick="openPlaylist('https://www.youtube.com/playlist?list=PLgc_CfnLmxDQyJdwjK5xHK4nhx6wUj19N')">
+                    <div class="video-thumbnail">
+                        <img src="./10 maxims.png" alt="10 Maxims" loading="lazy">
+                        <div class="play-overlay">
+                            <i class="fas fa-play"></i>
+                        </div>
+                    </div>
+                    <div class="video-info">
+                        <p class="video-title">10 Maxims</p>
+                    </div>
+                </div>
+
+                <div class="video-card" onclick="openPlaylist('https://www.youtube.com/playlist?list=PLgc_CfnLmxDTeAX2Odr5NnW6IYkTeHJuH')">
+                    <div class="video-thumbnail">
+                        <img src="./kanhaCast(Podcast).png" alt="KanhaCast Podcast" loading="lazy">
+                        <div class="play-overlay">
+                            <i class="fas fa-play"></i>
+                        </div>
+                    </div>
+                    <div class="video-info">
+                        <p class="video-title">KanhaCast (Podcast)</p>
+                    </div>
+                </div>
+
+                <div class="video-card" onclick="openPlaylist('https://www.youtube.com/playlist?list=PLgc_CfnLmxDS9lmP9GsJT0BTgFQYBUdyS')">
+                    <div class="video-thumbnail">
+                        <img src="./Discover a new You.png" alt="Discover a New You" loading="lazy">
+                        <div class="play-overlay">
+                            <i class="fas fa-play"></i>
+                        </div>
+                    </div>
+                    <div class="video-info">
+                        <p class="video-title">Discover a New You</p>
+                    </div>
+                </div>
+
+                <div class="video-card" onclick="openPlaylist('https://www.youtube.com/playlist?list=PLgc_CfnLmxDT7A5Lpjf6JmBvhX_l-Bqlv')">
+                    <div class="video-thumbnail">
+                        <img src="./GSM.png" alt="GSM" loading="lazy">
+                        <div class="play-overlay">
+                            <i class="fas fa-play"></i>
+                        </div>
+                    </div>
+                    <div class="video-info">
+                        <p class="video-title">GSM</p>
+                    </div>
+                </div>
+
+                <div class="video-card" onclick="openPlaylist('https://www.youtube.com/playlist?list=PLgc_CfnLmxDSDkXv3PS71o58kv_3LU-_X')">
+                    <div class="video-thumbnail">
+                        <img src="./Joy in Real Time.png" alt="Joy in Real Time" loading="lazy">
+                        <div class="play-overlay">
+                            <i class="fas fa-play"></i>
+                        </div>
+                    </div>
+                    <div class="video-info">
+                        <p class="video-title">Joy in Real Time</p>
+                    </div>
+                </div>
+
+                <div class="video-card" onclick="openPlaylist('https://www.youtube.com/playlist?list=PLVtsn31CI8rk9K8osQOtm3rjOjFIR-o__')">
+                    <div class="video-thumbnail">
+                        <img src="./As a Man Thinketh.png" alt="As a Man Thinketh" loading="lazy">
+                        <div class="play-overlay">
+                            <i class="fas fa-play"></i>
+                        </div>
+                    </div>
+                    <div class="video-info">
+                        <p class="video-title">As a Man Thinketh</p>
+                    </div>
+                </div>
+
+                <div class="video-card" onclick="openPlaylist('https://www.youtube.com/playlist?list=PLVtsn31CI8rkwjViSrqoXwd_0eIPSHicc')">
+                    <div class="video-thumbnail">
+                        <img src="./Heartfulness Webinars.png" alt="Heartfulness Webinars" loading="lazy">
+                        <div class="play-overlay">
+                            <i class="fas fa-play"></i>
+                        </div>
+                    </div>
+                    <div class="video-info">
+                        <p class="video-title">Heartfulness Webinars</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+     <!-- Footer -->
+     <footer class="footer">
+        <div class="container">
+            <div class="footer-links">
+                <a href="../HFNContactUs/HFNContactUs.html">
+                    <i class="fas fa-envelope"></i> Contact Us
+                </a>
+                <a href="../FAQs/FAQs.html">
+                    <i class="fas fa-question-circle"></i> FAQs
+                </a>
+            </div>
+            <div style="margin-top: 1rem; color: rgba(255,255,255,0.8);">
+                <p>&copy; 2024 Heartfulness Vizag. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Mobile menu toggle
+        const menuToggle = document.getElementById('menu-toggle');
+        const navMenu = document.getElementById('nav-menu');
+        const menuIcon = menuToggle.querySelector('i');
+
+        menuToggle.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+            menuIcon.classList.toggle('fa-bars');
+            menuIcon.classList.toggle('fa-times');
+        });
+
+        // OpenPlaylist function
+        function openPlaylist(playlistUrl) {
+            console.log('Opening playlist:', playlistUrl);
+            window.open(playlistUrl, '_blank', 'noopener,noreferrer');
+        }
+
+        // Optimized menu toggle with better performance
+        document.getElementById('menu-icon').addEventListener('click', function() {
+            const navLinks = document.getElementById('nav-links');
+            const menuIcon = this;
+            
+            navLinks.classList.toggle('vertical-links');
+            
+            if (navLinks.classList.contains('vertical-links')) {
+                menuIcon.classList.remove('fa-bars');
+                menuIcon.classList.add('fa-times');
+            } else {
+                menuIcon.classList.remove('fa-times');
+                menuIcon.classList.add('fa-bars');
+            }
+        });
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(e) {
+            const navLinks = document.getElementById('nav-links');
+            const menuIcon = document.getElementById('menu-icon');
+            
+            if (!navLinks.contains(e.target) && !menuIcon.contains(e.target)) {
+                navLinks.classList.remove('vertical-links');
+                menuIcon.classList.remove('fa-times');
+                menuIcon.classList.add('fa-bars');
+            }
+        });
+
+        // Clean URL functionality
+        document.addEventListener("DOMContentLoaded", function() {
+            if (window.location.pathname.endsWith('.html')) {
+                const cleanUrl = window.location.pathname.replace('.html', '');
+                window.history.replaceState(null, null, cleanUrl);
+            }
+        });
+
+        // Lazy loading for images with intersection observer
+        if ('IntersectionObserver' in window) {
+            const imageObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        img.src = img.dataset.src || img.src;
+                        img.classList.remove('lazy');
+                        observer.unobserve(img);
+                    }
+                });
+            });
+
+            document.querySelectorAll('img[loading="lazy"]').forEach(img => {
+                imageObserver.observe(img);
+            });
+        }
+    </script>
 </body>
 </html>
