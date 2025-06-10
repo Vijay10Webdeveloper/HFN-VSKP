@@ -2,173 +2,694 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=<device-width>, initial-scale=1.0">
-      <title>Heartfulness Visakhapatnam</title>
-      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-      <link href="./HFNMusic.css" rel="stylesheet">
-      <link href="../hdrftr_style.css" rel="stylesheet">
-      <link href="../Kbsettings.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heartfulness Vizag</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --text-dark: #333;
+            --border-radius: 12px;
+             --primary-color: #2c3e50;
+            --secondary-color: #e74c3c;
+            --accent-color: #f39c12;
+            --light-bg: #ecf0f1;
+            --dark-bg: #34495e;
+            --text-color: #2c3e50;
+            --light-text: #7f8c8d;
+            --white: #ffffff;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 8px 15px rgba(0, 0, 0, 0.2);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+         /* Header Styles */
+        .header {
+            background: var(--white);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            height: 50px;
+            transition: var(--transition);
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-menu a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .nav-menu a:hover,
+        .nav-menu a.active {
+            background: linear-gradient(135deg, var(--secondary-color), var(--accent-color));
+            color: var(--white);
+            transform: translateY(-2px);
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-color);
+            cursor: pointer;
+        }
+
+        /* Mobile Menu */
+        #menu-icon {
+            display: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 10px;
+            color: var(--text-dark);
+            transition: var(--transition);
+        }
+
+        #menu-icon:hover {
+            color: var(--primary-color);
+            transform: scale(1.1);
+        }
+
+       
+
+        /* Section Headers */
+        .section-header {
+            text-align: center;
+            margin: 3rem 0 2rem 0;
+            position: relative;
+        }
+
+        .section-header h3 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-header h3::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), #d4a574);
+            border-radius: 2px;
+        }
+
+        .section-subtitle {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.8rem 2rem;
+            border-radius: 25px;
+            display: inline-block;
+            font-weight: 600;
+            margin-top: 1rem;
+            box-shadow: var(--shadow);
+        }
+
+
+        /* Horizontal Scrolling Video Section */
+        .video-scroll-container {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            margin: 2rem 0;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .video-carousel {
+            display: flex;
+            gap: 1.5rem;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            padding: 1rem 0;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .video-carousel::-webkit-scrollbar {
+            display: none;
+        }
+
+        .video-card {
+            flex: 0 0 280px;
+            background: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .video-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .video-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+
+        .video-card:hover img {
+            transform: scale(1.05);
+        }
+
+        .video-card::after {
+            content: '\f04b';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem;
+            color: rgba(255, 255, 255, 0.9);
+            opacity: 0;
+            transition: var(--transition);
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .video-card:hover::after {
+            opacity: 1;
+        }
+
+        /* Scroll Navigation Buttons */
+        .scroll-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            z-index: 10;
+        }
+
+        .scroll-nav:hover {
+            background: #d4a574;
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .scroll-nav.prev {
+            left: 10px;
+        }
+
+        .scroll-nav.next {
+            right: 10px;
+        }
+
+       /* Footer */
+        .footer {
+            background: var(--primary-color);
+            color: var(--white);
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+
+        .footer a {
+            color: var(--white);
+            text-decoration: none;
+            margin: 0 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+
+        .footer a:hover {
+            background: var(--secondary-color);
+        }
+
+
+         /* Header Styles */
+        .header {
+            background: var(--white);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            height: 50px;
+            transition: var(--transition);
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-menu a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .nav-menu a:hover,
+        .nav-menu a.active {
+            background: linear-gradient(135deg, var(--secondary-color), var(--accent-color));
+            color: var(--white);
+            transform: translateY(-2px);
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-color);
+            cursor: pointer;
+        }
+
+         /* Hero Section */
+        .hero-section {
+            position: relative;
+            margin: 2rem 0;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .hero-image {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            filter: brightness(0.8);
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(139, 69, 19, 0.8), rgba(44, 85, 48, 0.6));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+        }
+
+        .hero-content h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+      /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-menu {
+                position: fixed;
+                top: 80px;
+                left: -100%;
+                width: 100%;
+                height: calc(100vh - 80px);
+                background: var(--white);
+                flex-direction: column;
+                align-items: center;
+                justify-content: flex-start;
+                padding-top: 2rem;
+                transition: var(--transition);
+                box-shadow: var(--shadow);
+            }
+
+            .nav-menu.active {
+                left: 0;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .video-grid {
+                grid-template-columns: 1fr;
+            }
+
+
+            .download-btn {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+
+        /* Loading Animation */
+        .fade-in {
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Scroll Indicators */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 5px;
+        }
+
+        .scroll-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(227, 177, 117, 0.5);
+            transition: var(--transition);
+        }
+
+        .scroll-dot.active {
+            background: var(--primary-color);
+        }
+    </style>
 </head>
 <body>
-  <!----------------------------------------------------------------------------------------------------->
-  <div class="container pt-1" >
-    <div class="header">
-      <div class="row">
-        <div class="col-sm-8">
-      <img src="../Images/advancing-in-love-black.png" class="logo" alt="Heartfulness" style="margin-top: 2px;">  
-      </div>
-      <div class="col-sm-4">
-      <i class="fa fa-bars" id="menu-icon"></i>
-      <nav id="nav-links" >
-        <ul>
-          <li><a class="active" href="../Home/Home.html"><b>HOME</b></a></li>
-          <li><a href="../NewSeeker/Newseekers.html"><b>NEW SEEKERS</b></a></li>
-          <li><a href="../Abhyasi/Abhyasi.html"><b>ABHYASIS</b></a></li>
-        </ul>
-      </nav>
+    
+          <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <img src="../Images/advancing-in-love-black.png" alt="Heartfulness" class="logo">     
+            <nav>
+                <ul class="nav-menu" id="nav-menu">
+                    <li><a href="../Home/Home.html" class="active">HOME</a></li>
+                    <li><a href="../NewSeeker/Newseekers.html">NEW SEEKERS</a></li>
+                    <li><a href="../Abhyasi/Abhyasi.html">ABHYASIS</a></li>
+                </ul>
+                <button class="menu-toggle" id="menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </nav>
+        </div>
+    </header>
+    
+ <!-- Hero Section -->
+    <div class="container">
+        <section class="hero-section loading">
+            <img src="./HFN Music Coverpg.jpeg" class="hero-image" alt="Masters of Sahaj Marg">
+            <div class="hero-overlay">
+                <div class="hero-content">
+                    <h1>Heartfulness Music</h1>
+                    <p>Deepen your spiritual journey with comprehensive resources</p>
+                </div>
+            </div>
+        </section>
     </div>
+       
+
+        <!-- Knowledge Base Videos -->
+        <div class="section-header fade-in">
+            <h3>Knowledge Base</h3> <br>
+            <div class="section-subtitle">Scroll horizontally to explore all videos</div>
+        </div>
+
+        <div class="video-scroll-container fade-in">
+            <button class="scroll-nav prev" onclick="scrollVideos('prev')">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="scroll-nav next" onclick="scrollVideos('next')">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+            
+            <div class="video-carousel" id="videoCarousel">
+                <a href="https://www.youtube.com/playlist?list=PL2RCcNDbBInaZVp0LO3KswZRy5aFIViLD" class="video-card" target="_blank">
+                    <img src="./Charanji.png" alt="Charanjit">
+                </a>
+                 <a href="https://www.youtube.com/playlist?list=PLVtsn31CI8rkkaSRusfLLe6--4Gce6ZRR" class="video-card" target="_blank">
+                    <img src="./Best of Bhajans.png" alt="Best of Bhajans">
+                </a>
+                <a href="https://www.youtube.com/playlist?list=PLVtsn31CI8rmzdoDyUVmyNFlYZsY8vSzu" class="video-card" target="_blank">
+                    <img src="./Daaji's Choice.png" alt="Daaji's Choice">
+                </a>
+                <a href="https://www.youtube.com/playlist?list=PLDn_z1YX-1mB1TEJGNxFfrHzxdf8qNjVM" class="video-card" target="_blank">
+                    <img src="./Choice of Daaji(Best of Kishore Kumar).png" alt="Best of Kishore Kumar">
+                </a>
+                <a href="https://www.youtube.com/playlist?list=PLDn_z1YX-1mB1TEJGNxFfrHzxdf8qNjVM" class="video-card" target="_blank">
+                    <img src="./Best of Jagit and Chitra.png" alt="Best of Jagit and Chitra">
+                </a>
+                 <a href="https://www.youtube.com/playlist?list=PLDn_z1YX-1mB_CxPYx-0FwFwSP8Gn0tdw" class="video-card" target="_blank">
+                    <img src="./Best of Gazhals by Pankaj & Gayatri.png" alt="Best of Gazhals by Pankaj and Gayatri">
+                </a>
+
+                 <a href="https://www.youtube.com/playlist?list=PLDn_z1YX-1mAEl9gwIXnH3NI-x3LvnUCC" class="video-card" target="_blank">
+                    <img src="./Best of Bhupinder & Mitalee.png" alt="Best of Bhupinder and Mitalee">
+                </a>
+
+                 <a href="https://www.youtube.com/playlist?list=PLDn_z1YX-1mB1kYPnP22a9jeqqmh5bMk8" class="video-card" target="_blank">
+                    <img src="./Best of Lata.png" alt="Best of Lata">
+                </a>
+
+                 <a href="https://www.youtube.com/playlist?list=PLDn_z1YX-1mBF7KwyL5ViU3zyFfkjk5Fu" class="video-card" target="_blank">
+                    <img src="./Best of Hemanth Kumar.png" alt="Best of Hemanth Kumar">
+                </a>
+
+                <a href="https://www.youtube.com/playlist?list=PLDn_z1YX-1mBL6TzixH39EdNeVhG68BuB" class="video-card" target="_blank">
+                    <img src="./Best of Indian Classical-Vocal.png" alt="Best of Indian Classical-Vocal">
+                </a>
+
+                 <a href="https://www.youtube.com/playlist?list=PLDn_z1YX-1mBTg75FEPzch5rNr-jXhCyx" class="video-card" target="_blank">
+                    <img src="./Best of Bhajans.png" alt="Best of Bhajans">
+                </a>
+
+                <a href="https://www.youtube.com/playlist?list=PLDn_z1YX-1mDT_CLMraM8dT9X7qPR0NxB" class="video-card" target="_blank">
+                    <img src="./Best of Indian Classical-Instrument.png" alt="Best of Indian Classical Instrument">
+                </a>
+
+                 <a href="https://www.youtube.com/playlist?list=PLDn_z1YX-1mAGe9sD_mAoIQGKXK3ND7pk" class="video-card" target="_blank">
+                    <img src="./Best of Hindi Duet Songs.png" alt="Best of Hindi Duet Songs">
+                </a>
+
+                <a href="https://www.youtube.com/playlist?list=PLDn_z1YX-1mAzJ69d6BE9U8Ygk3htTh7q" class="video-card" target="_blank">
+                    <img src="./Best of Kishore Kumar.png" alt="Best of Kishore Kumar">
+                </a>
+           
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer fade-in">
+            <a href="../HFNContactUs/HFNContactUs.html"><b>CONTACT US</b></a>
+            <a href="../FAQs/FAQs.html"><b>FAQs</b></a>
+            <div style="margin-top: 1rem; color: rgba(255,255,255,0.8);">
+                <p>&copy; 2024 Heartfulness Vizag. All rights reserved.</p>
+            </div>
+        </div>
     </div>
-  </div>
-  </div>
-<!--End of Header Section-->
-<div class="container">
-  <section id="HFNMusiccoverimg" >
-    <img src="./HFN Music Coverpg.jpeg" class="d-block w-100" alt="Music">
-  </section>
-</div>
 
-<!--Start of Knowledge Base-->
-<div class="container">  
-  <section  id="hdr1">
-  <h3>Knowledge Base</h3>
-  <div>
-    <h6 style="background-color:#e3b175"><center>(Click the icons below to view all videos)</center></h6>
-  </div>
-  </section>
-</div>
-  <div class="container"> 
-  <div class="youtube-carousel"> 
-    <div class="carousel-container">
-      <div class="kbbtn">
-        <a href="https://www.youtube.com/playlist?list=PL2RCcNDbBInaZVp0LO3KswZRy5aFIViLD">
-          <img src="./Charanji.png" alt="" style="width:200px; height:200px;">
-        </a>
-       </div>
-       <div class="kbbtn">
-        <a href="https://www.youtube.com/playlist?list=PLVtsn31CI8rkkaSRusfLLe6--4Gce6ZRR">
-          <img src="./Best of Bhajans.png" alt="" style="width:200px; height:200px;">
-        </a>
-         </div>
-         <div class="kbbtn">
-          <a href="https://www.youtube.com/playlist?list=PLVtsn31CI8rmzdoDyUVmyNFlYZsY8vSzu">
-            <img src="./Daaji's Choice.png" alt="" style="width:200px; height:200px;">
-          </a>  
-          </div>
-          <div class="kbbtn">
-            <a href="https://www.youtube.com/playlist?list=PLDn_z1YX-1mB1TEJGNxFfrHzxdf8qNjVM">
-              <img src="./Choice of Daaji(Best of Kishore Kumar).png" alt="" style="width:200px; height:200px;">
-            </a>
-          </div>
-          <div class="kbbtn">
-            <a href="https://www.youtube.com/playlist?list=PLDn_z1YX-1mB1TEJGNxFfrHzxdf8qNjVM">
-              <img src="./Best of Jagit and Chitra.png" alt="" style="width:200px; height:200px;">
-            </a>
-          </div>
-          <div class="kbbtn">
-            <a href="https://www.youtube.com/playlist?list=PLDn_z1YX-1mB_CxPYx-0FwFwSP8Gn0tdw">
-              <img src="./Best of Gazhals by Pankaj & Gayatri.png" alt="" style="width:200px; height:200px;">
-            </a>
-          </div>
-          <div class="kbbtn">
-            <a href="https://www.youtube.com/playlist?list=PLDn_z1YX-1mAEl9gwIXnH3NI-x3LvnUCC">
-              <img src="./Best of Bhupinder & Mitalee.png" alt="" style="width:200px; height:200px;">
-            </a>
-          </div>
-          <div class="kbbtn">
-            <a href="https://www.youtube.com/playlist?list=PLDn_z1YX-1mB1kYPnP22a9jeqqmh5bMk8">
-              <img src="./Best of Lata.png" alt="" style="width:200px; height:200px;">
-            </a>
-          </div>
-          <div class="kbbtn">
-            <a href="https://www.youtube.com/playlist?list=PLDn_z1YX-1mBF7KwyL5ViU3zyFfkjk5Fu">
-              <img src="./Best of Hemanth Kumar.png" alt="" style="width:200px; height:200px;">
-            </a>
-          </div>
-          <div class="kbbtn">
-            <a href="https://www.youtube.com/playlist?list=PLDn_z1YX-1mBL6TzixH39EdNeVhG68BuB">
-              <img src="./Best of Indian Classical-Vocal.png" alt="" style="width:200px; height:200px;">
-            </a>
-          </div>
-          <div class="kbbtn">
-            <a href="https://www.youtube.com/playlist?list=PLDn_z1YX-1mBTg75FEPzch5rNr-jXhCyx">
-              <img src="./Best of Bhajans.png" alt="" style="width:200px; height:200px;">
-            </a>
-          </div>
-          <div class="kbbtn">
-            <a href="https://www.youtube.com/playlist?list=PLDn_z1YX-1mDT_CLMraM8dT9X7qPR0NxB">
-              <img src="./Best of Indian Classical-Instrument.png" alt="" style="width:200px; height:200px;">
-            </a>
-          </div>
-          <div class="kbbtn">
-            <a href="https://www.youtube.com/playlist?list=PLDn_z1YX-1mAGe9sD_mAoIQGKXK3ND7pk">
-              <img src="./Best of Hindi Duet Songs.png" alt="" style="width:200px; height:200px;">
-            </a>
-          </div>
-          <div class="kbbtn">
-            <a href="https://www.youtube.com/playlist?list=PLDn_z1YX-1mDNff3qppWIEYzhwIJnHX76">
-              <img src="./Best of Hindi Duet Songs.png" alt="" style="width:200px; height:200px;">
-            </a>
-          </div>
-          <div class="kbbtn">
-            <a href="https://www.youtube.com/playlist?list=PLDn_z1YX-1mAzJ69d6BE9U8Ygk3htTh7q">
-              <img src="./Best of Kishore Kumar.png" alt="" style="width:200px; height:200px;">
-            </a>
-          </div>
-      </div>
-    </div>
-  </div>
+    
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+    <script>
 
+          // Mobile menu toggle
+        const menuToggle = document.getElementById('menu-toggle');
+        const navMenu = document.getElementById('nav-menu');
+        const menuIcon = menuToggle.querySelector('i');
 
-<!--End of Knowledge Base-->
-<!--Start of Footer Section-->
+        menuToggle.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+            menuIcon.classList.toggle('fa-bars');
+            menuIcon.classList.toggle('fa-times');
+        });
 
-<div class="container pt-2 pb-2">
-  <section id="footer">
-    <a href="../HFNContactUs/HFNContactUs.html" ><b>CONTACT US</b></a>
-    <a href="../FAQs/FAQs.html"><b>FAQs</b></a>
-  </section>
-  </div>
-  
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-<script>
-document.getElementById('menu-icon').addEventListener('click', function() {
-  var navLinks = document.getElementById('nav-links');
-  var menuIcon = document.getElementById('menu-icon');
-  
-  if (navLinks.classList.contains('vertical-links')) {
-    navLinks.classList.remove('vertical-links');
-    menuIcon.classList.remove('fa-times');
-    menuIcon.classList.add('fa-bars');
-  } else {
-    navLinks.classList.add('vertical-links');
-    menuIcon.classList.remove('fa-bars');
-    menuIcon.classList.add('fa-times');
-  }
-});
+        // Enhanced Mobile Menu
+        document.getElementById('menu-icon').addEventListener('click', function() {
+            const navLinks = document.getElementById('nav-links');
+            const menuIcon = this;
+            
+            navLinks.classList.toggle('show');
+            
+            if (navLinks.classList.contains('show')) {
+                menuIcon.classList.remove('fa-bars');
+                menuIcon.classList.add('fa-times');
+            } else {
+                menuIcon.classList.remove('fa-times');
+                menuIcon.classList.add('fa-bars');
+            }
+        });
 
-</script>
-<script>
-  document.addEventListener("DOMContentLoaded", function() {
-      // Check if the current URL has the '.html' extension
-      if (window.location.pathname.endsWith('.html')) {
-          // Remove the '.html' from the URL
-          var cleanUrl = window.location.pathname.replace('.html', '');
-          // Redirect to the clean URL without '.html'
-          window.history.replaceState(null, null, cleanUrl);
-      }
-  });
-  </script>
+        // Horizontal Video Scrolling
+        function scrollVideos(direction) {
+            const carousel = document.getElementById('videoCarousel');
+            const cardWidth = 280 + 24; // card width + gap
+            const scrollAmount = cardWidth * 2; // scroll 2 cards at a time
+            
+            if (direction === 'next') {
+                carousel.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+            } else {
+                carousel.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+            }
+        }
+
+        // Keyboard navigation for video carousel
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft') {
+                scrollVideos('prev');
+            } else if (e.key === 'ArrowRight') {
+                scrollVideos('next');
+            }
+        });
+
+        // Smooth fade-in animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe all fade-in elements
+        document.querySelectorAll('.fade-in').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+            observer.observe(el);
+        });
+
+        // Remove .html from URL (performance optimization)
+        if (window.location.pathname.endsWith('.html')) {
+            const cleanUrl = window.location.pathname.replace('.html', '');
+            window.history.replaceState(null, null, cleanUrl);
+        }
+
+        // Preload critical images for better performance
+        function preloadImage(src) {
+            const img = new Image();
+            img.src = src;
+        }
+
+        // Add touch/swipe support for video carousel
+        let startX = 0;
+        let scrollLeft = 0;
+        const videoCarousel = document.getElementById('videoCarousel');
+
+        videoCarousel.addEventListener('touchstart', function(e) {
+            startX = e.touches[0].pageX - videoCarousel.offsetLeft;
+            scrollLeft = videoCarousel.scrollLeft;
+        });
+
+        videoCarousel.addEventListener('touchmove', function(e) {
+            if (!startX) return;
+            e.preventDefault();
+            const x = e.touches[0].pageX - videoCarousel.offsetLeft;
+            const walk = (x - startX) * 2;
+            videoCarousel.scrollLeft = scrollLeft - walk;
+        });
+
+        videoCarousel.addEventListener('touchend', function() {
+            startX = 0;
+        });
+
+        // Auto-hide navigation on scroll (mobile)
+        let lastScrollTop = 0;
+        const header = document.querySelector('.header');
+
+        window.addEventListener('scroll', function() {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            
+            if (scrollTop > lastScrollTop && scrollTop > 100) {
+                header.style.transform = 'translateY(-100%)';
+            } else {
+                header.style.transform = 'translateY(0)';
+            }
+            
+            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+        });
+    </script>
 </body>
 </html>
