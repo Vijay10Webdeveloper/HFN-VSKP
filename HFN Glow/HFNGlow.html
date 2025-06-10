@@ -2,139 +2,751 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=<device-width>, initial-scale=1.0">
-      <title>Heartfulness Vizag</title>
-      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-      <link href="./HFNGlow.css" rel="stylesheet">
-      <link href="../hdrftr_style.css" rel="stylesheet">
-      <link href="../Kbsettings.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heartfulness Vizag</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+         :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #e74c3c;
+            --accent-color: #f39c12;
+            --light-bg: #ecf0f1;
+            --dark-bg: #34495e;
+            --text-color: #2c3e50;
+            --light-text: #7f8c8d;
+            --white: #ffffff;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 8px 15px rgba(0, 0, 0, 0.2);
+            --border-radius: 12px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        /* Header Styles */
+        .header {
+            background: var(--white);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            height: 50px;
+            transition: var(--transition);
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-menu a {
+            text-decoration: none;
+            color: var(--text-color); 
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+           transition: var(--transition); 
+            position: relative;
+        }
+
+        .nav-menu a:hover,
+        .nav-menu a.active {
+           background: linear-gradient(135deg, var(--secondary-color), var(--accent-color)); 
+            color: var(--white);
+            transform: translateY(-2px); 
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-color);
+            cursor: pointer;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 30px;
+            align-items: center;
+            justify-content: flex-end;
+            margin: 0;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 25px;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        nav a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: var(--transition);
+        }
+
+        nav a:hover::before {
+            left: 100%;
+        }
+
+        nav a:hover, nav a.active {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(227, 177, 117, 0.4);
+        }
+
+        /* Hero Section */
+        .hero-section {
+            position: relative;
+            margin: 2rem 0;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .hero-image {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            filter: brightness(0.8);
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(139, 69, 19, 0.8), rgba(44, 85, 48, 0.6));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+        }
+
+        .hero-content h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+          /* Info Banner */
+        .info-banner {
+            background: linear-gradient(135deg, var(--secondary-color), #f4d03f);
+            color: var(--text-dark);
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            text-align: center;
+            margin-bottom: 2rem;
+            font-weight: 600;
+        }
+ /* Main Content */
+        .content-section {
+            background: white;
+            margin: 2rem 0;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+
+        .section-title {
+            color: var(--primary-color);
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: var(--secondary-color);
+            border-radius: 2px;
+        }
+        /* Video Player Carousel */
+        .video-carousel {
+            position: relative;
+            margin: 2rem 0;
+        }
+
+        .carousel-container {
+            display: flex;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            gap: 1rem;
+            padding: 1rem 0;
+            scrollbar-width: thin;
+            scrollbar-color: var(--secondary-color) #f1f1f1;
+        }
+
+        .carousel-container::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .carousel-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .carousel-container::-webkit-scrollbar-thumb {
+            background: var(--secondary-color);
+            border-radius: 4px;
+        }
+
+        .video-card {
+            flex: 0 0 300px;
+            background: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .video-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .video-thumbnail {
+            position: relative;
+            width: 100%;
+            height: 180px;
+            overflow: hidden;
+        }
+
+        .video-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+
+        .video-card:hover .video-thumbnail img {
+            transform: scale(1.05);
+        }
+
+        .play-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.7);
+            color: white;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .video-card:hover .play-overlay {
+            background: rgba(139, 69, 19, 0.9);
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+
+        .video-info {
+            padding: 1rem;
+        }
+
+        .video-title {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin: 0;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        
+
+        /* Footer */
+        .footer {
+            background: var(--primary-color);
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+
+        .footer-links a:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+
+         .footer a:hover {
+            background: var(--secondary-color);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+ @media (max-width: 768px) {
+              .nav-menu {
+                position: fixed;
+                top: 80px;
+                left: -100%;
+                width: 100%;
+                height: calc(100vh - 80px);
+                background: var(--white); 
+                flex-direction: column;
+                align-items: center;
+                justify-content: flex-start;
+                padding-top: 2rem;
+                transition: var(--transition);
+                box-shadow: var(--shadow); 
+            } 
+
+            .nav-menu.active {
+                left: 0;
+            }       
+
+            .video-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            #nav-links {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: white;
+                box-shadow: var(--shadow); 
+                transform: translateY(-100%);
+                opacity: 0;
+                visibility: hidden;
+                transition: var(--transition);
+            }
+
+            #nav-links.active {
+                transform: translateY(0);
+                opacity: 1;
+                visibility: visible;
+            } 
+
+            #nav-links ul {
+                flex-direction: column;
+                padding: 1rem;
+                gap: 0.5rem;
+            }
+
+            .hero-content h1 {
+                font-size: 2rem;
+            }
+
+            .download-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .knowledge-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 1rem;
+            }
+
+            .footer-links {
+                flex-direction:horizontal;
+                gap: 1rem;
+            }
+                 
+        }
+
+        /* Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Focus styles for accessibility */
+        button:focus,
+        a:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        /* Loading Animation */
+        .loading {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Scroll Animations */
+        .scroll-animate {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+
+        .scroll-animate.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
 </head>
 <body>
-  <div class="container pt-1" >
-    <div class="header">
-      <div class="row">
-        <div class="col-sm-8">
-      <img src="../Images/advancing-in-love-black.png" class="logo" alt="Heartfulness" style="margin-top: 2px;">  
+    <!-- Header -->
+       <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <img src="../Images/advancing-in-love-black.png" alt="Heartfulness" class="logo">
+            
+            <nav>
+                <ul class="nav-menu" id="nav-menu">
+                    <li><a href="../Home/Home.html" class="active">HOME</a></li>
+                    <li><a href="../NewSeeker/Newseekers.html">NEW SEEKERS</a></li>
+                    <li><a href="../Abhyasi/Abhyasi.html">ABHYASIS</a></li>
+                </ul>
+                <button class="menu-toggle" id="menu-toggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </nav>
         </div>
-      <div class="col-sm-4">
-      <i class="fa fa-bars" id="menu-icon"></i>
-      <nav id="nav-links" >
-        <ul>
-          <li><a class="active" href="../Home/Home.html"><b>HOME</b></a></li>
-          <li><a href="../NewSeeker/Newseekers.html"><b>NEW SEEKERS</b></a></li>
-          <li><a href="../Abhyasi/Abhyasi.html"><b>ABHYASIS</b></a></li>
-        </ul>
-      </nav>
-      </div>
-     </div>
-   </div>
-  </div>
-<!--End of Header Section-->
-<div class="container">
-  <section id="HFNGlowcoverimg" >
-    <img src="./Glow Webinar Series.png" class="d-block w-100" alt="Glow Webinar">
-  </section>
-</div>
+    </header>
 
-<!--Start of Knowledge Base-->
-<div class="container">  
-  <section  id="hdr1">
-  <h3>Knowledge Base</h3>
-  <div>
-    <h6 style="background-color:#e3b175"><center>(Click the icons below to view all videos)</center></h6>
-  </div>
-  </section>
-</div>
-<div class="container"> 
-  <div class="youtube-carousel"> 
-    <div class="carousel-container">
-      <div class="kbbtn">
-        <a href="https://www.youtube.com/playlist?list=PLtS1WgjO5xwMqIuHb260uLUn7pCwxUtEb">
-          <img src="./Mental Wellness and Health.png" alt="" style="width:200px; height:200px;">
-        </a>
-      </div>
-      <div class="kbbtn">
-        <a href="https://www.youtube.com/playlist?list=PLtS1WgjO5xwPm0pD2hV2aWLgQIg6CIbbC">
-          <img src="./Parenting.png" alt="" style="width:200px; height:200px;">
-        </a>
-      </div>
-      <div class="kbbtn">
-        <a href="https://www.youtube.com/playlist?list=PLtS1WgjO5xwPd8m7aXHElcgtT122NIT3i">
-          <img src="./Spiritual and Spiritual Quotient.png" alt="" style="width:200px; height:200px;">
-        </a>
-      </div>
-      <div class="kbbtn">
-        <a href="https://www.youtube.com/playlist?list=PLtS1WgjO5xwOK9NzfgURdqVIZKjqtk9Ox">
-          <img src="./Positive Youth Development.png" alt="" style="width:200px; height:200px;">
-        </a>
-      </div>
-      <div class="kbbtn">
-        <a href="https://www.youtube.com/playlist?list=PLtS1WgjO5xwOgQXALOL9JCM5FT1SEoVqI">
-          <img src="./Equality and Inclusion.png" alt="" style="width:200px; height:200px;">
-        </a>
-      </div>
-      <div class="kbbtn">
-        <a href="https://www.youtube.com/playlist?list=PLtS1WgjO5xwPhqQuKPp8bHrbZPY4TMn5F">
-          <img src="./Womanhood.png" alt="" style="width:200px; height:200px;">
-        </a>
-      </div>
-      <div class="kbbtn">
-        <a href="https://www.youtube.com/playlist?list=PLtS1WgjO5xwMCsEE76ex-01Vyt2wmeKy2">
-          <img src="./Climate Awareness.png" alt="" style="width:200px; height:200px;">
-        </a>
-      </div>
-      <div class="kbbtn">
-        <a href="https://www.youtube.com/playlist?list=PLtS1WgjO5xwOfzzT_cp5vKxKt8oOFJoaU">
-          <img src="./Artists,Singers and Musicians.png" alt="" style="width:200px; height:200px;">
-        </a>
-      </div>
-      <div class="kbbtn">
-        <a href="https://www.youtube.com/playlist?list=PLtS1WgjO5xwMKG9EUo0j4Pd0NDjN8cjmF">
-          <img src="./Women Empowerment.png" alt="" style="width:200px; height:200px;">
-        </a>
-      </div>
+    <!-- Hero Section -->
+    <div class="container">
+        <section class="hero-section loading">
+            <img src="../Images/Glow Webinar Series.png" class="hero-image" alt="Masters of Sahaj Marg">
+            <div class="hero-overlay">
+                <div class="hero-content">
+                    <h1>Heartfulness Glow Portal</h1>
+                    <p>Deepen your spiritual journey with comprehensive resources</p>
+                </div>
+            </div>
+        </section>
     </div>
-  </div>
- </div>
- <!--End of Knowledge Base-->
-<!--Start of Footer Section-->
 
-<div class="container pt-2 pb-2">
-  <section id="footer">
-    <a href="../HFNContactUs/HFNContactUs.html" ><b>CONTACT US</b></a>
-    <a href="../FAQs/FAQs.html"><b>FAQs</b></a>
+    <!-- Knowledge Base Section -->
+  <section class="content-section loading">
+            <h2 class="section-title">Knowledge Base</h2>
+            <div class="info-banner">
+                <i class="fas fa-info-circle"></i>
+                Click the cards below to explore our comprehensive spiritual resources
+            </div>
+
+            <div class="video-carousel">
+                <div class="carousel-container" id="daaji-carousel">
+                    <div class="video-card" onclick="openPlaylist('https://www.youtube.com/playlist?list=PLtS1WgjO5xwMqIuHb260uLUn7pCwxUtEb')">
+                        <div class="video-thumbnail">
+                            <img src="./Mental Wellness and Health.png" alt="Mental Wellness" loading="lazy">
+                            <div class="play-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <p class="video-title">Mental Wellness</p>
+                        </div>
+                    </div>
+
+                    <div class="video-card" onclick="openPlaylist('https://www.youtube.com/playlist?list=PLtS1WgjO5xwPm0pD2hV2aWLgQIg6CIbbC')">
+                        <div class="video-thumbnail">
+                            <img src="./Parenting.png" alt="Parenting" loading="lazy">
+                            <div class="play-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <p class="video-title">Parenting</p>
+                        </div>
+                    </div>
+
+                    <div class="video-card" onclick="openPlaylist('https://www.youtube.com/playlist?list=PLtS1WgjO5xwPd8m7aXHElcgtT122NIT3i')">
+                        <div class="video-thumbnail">
+                            <img src="./Spiritual and Spiritual Quotient.png" alt="Spiritual and Spiritual Quotient" loading="lazy">
+                            <div class="play-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <p class="video-title">Spiritual and Spiritual Quotient</p>
+                        </div>
+                    </div>
+
+                   <div class="video-card" onclick="openPlaylist('https://www.youtube.com/playlist?list=PLtS1WgjO5xwOK9NzfgURdqVIZKjqtk9Ox')">
+                        <div class="video-thumbnail">
+                            <img src="./Positive Youth Development.png" alt="Positive Youth Development" loading="lazy">
+                            <div class="play-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <p class="video-title">Positive Youth Development</p>
+                        </div>
+                    </div>
+
+                     <div class="video-card" onclick="openPlaylist('https://www.youtube.com/playlist?list=PLtS1WgjO5xwOgQXALOL9JCM5FT1SEoVqI')">
+                        <div class="video-thumbnail">
+                            <img src="./Equality and Inclusion.png" alt="Equality and Inclusion" loading="lazy">
+                            <div class="play-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <p class="video-title">Equality and Inclusion</p>
+                        </div>
+                    </div>
+
+                    <div class="video-card" onclick="openPlaylist('https://www.youtube.com/playlist?list=PLtS1WgjO5xwPhqQuKPp8bHrbZPY4TMn5F')">
+                        <div class="video-thumbnail">
+                            <img src="./Womanhood.png" alt="Womanhood" loading="lazy">
+                            <div class="play-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <p class="video-title">Womanhood</p>
+                        </div>
+                    </div>
+            
+                    <div class="video-card" onclick="openPlaylist('https://www.youtube.com/playlist?list=PLtS1WgjO5xwMCsEE76ex-01Vyt2wmeKy2')">
+                        <div class="video-thumbnail">
+                            <img src="./Climate Awareness.png" alt="Climate Awareness" loading="lazy">
+                            <div class="play-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <p class="video-title">Climate Awareness</p>
+                        </div>
+                    </div>
+                
+                    <div class="video-card" onclick="openPlaylist('https://www.youtube.com/playlist?list=PLtS1WgjO5xwOfzzT_cp5vKxKt8oOFJoaU')">
+                        <div class="video-thumbnail">
+                            <img src="./Artists,Singers and Musicians.png" alt="Artists,Singers and Musicians" loading="lazy">
+                            <div class="play-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <p class="video-title">Artists,Singers and Musicians</p>
+                        </div>
+                    </div>
+                
+                    <div class="video-card" onclick="openPlaylist('https://www.youtube.com/playlist?list=PLtS1WgjO5xwMKG9EUo0j4Pd0NDjN8cjmF')">
+                        <div class="video-thumbnail">
+                            <img src="./Women Empowerment.png" alt="Women Empowerment" loading="lazy">
+                            <div class="play-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <p class="video-title">Women Empowerment</p>
+                        </div>
+                    </div>
+                 </div>
+               </div>
   </section>
-  </div>
-  
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-<script>
-document.getElementById('menu-icon').addEventListener('click', function() {
-  var navLinks = document.getElementById('nav-links');
-  var menuIcon = document.getElementById('menu-icon');
-  
-  if (navLinks.classList.contains('vertical-links')) {
-    navLinks.classList.remove('vertical-links');
-    menuIcon.classList.remove('fa-times');
-    menuIcon.classList.add('fa-bars');
-  } else {
-    navLinks.classList.add('vertical-links');
-    menuIcon.classList.remove('fa-bars');
-    menuIcon.classList.add('fa-times');
-  }
-});
+                
+  <footer class="footer">
+        <div class="container">
+            <div class="footer-links">
+                <a href="../HFNContactUs/HFNContactUs.html">
+                    <i class="fas fa-envelope"></i> Contact Us
+                </a>
+                <a href="../FAQs/FAQs.html">
+                    <i class="fas fa-question-circle"></i> FAQs
+                </a>
+            </div>
+            <div style="margin-top: 1rem; color: rgba(255,255,255,0.8);">
+                <p>&copy; 2024 Heartfulness Vizag. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
 
-</script>
-<script>
-  document.addEventListener("DOMContentLoaded", function() {
-      // Check if the current URL has the '.html' extension
-      if (window.location.pathname.endsWith('.html')) {
-          // Remove the '.html' from the URL
-          var cleanUrl = window.location.pathname.replace('.html', '');
-          // Redirect to the clean URL without '.html'
-          window.history.replaceState(null, null, cleanUrl);
-      }
-  });
-  </script>
+<!-- JavaScript -->
+
+
+    <script>
+
+         function openPlaylist(url) {
+  window.open(url, '_blank');
+}
+
+        // Mobile navigation toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const navToggle = document.getElementById('nav-toggle');
+            const navMenu = document.getElementById('nav-menu');
+            
+            navToggle.addEventListener('click', function() {
+                navMenu.classList.toggle('active');
+                
+                // Change icon
+                if (navMenu.classList.contains('active')) {
+                    navToggle.classList.remove('fa-bars');
+                    navToggle.classList.add('fa-times');
+                } else {
+                    navToggle.classList.remove('fa-times');
+                    navToggle.classList.add('fa-bars');
+                }
+            });
+
+ 
+            
+            // Close menu when clicking on a link
+            const navLinks = navMenu.querySelectorAll('a');
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    navMenu.classList.remove('active');
+                    navToggle.classList.remove('fa-times');
+                    navToggle.classList.add('fa-bars');
+                });
+            });
+            
+            // Clean URL by removing .html extension
+            if (window.location.pathname.endsWith('.html')) {
+                const cleanUrl = window.location.pathname.replace('.html', '');
+                window.history.replaceState(null, null, cleanUrl);
+            }
+            
+            // Lazy loading for images
+            const images = document.querySelectorAll('img[loading="lazy"]');
+            const imageObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        img.src = img.src;
+                        img.classList.remove('lazy');
+                        observer.unobserve(img);
+                    }
+                });
+            });
+            
+            images.forEach(img => imageObserver.observe(img));
+            
+            // Smooth reveal animations
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+            
+            // Observe cards for animation
+            document.querySelectorAll('.card').forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(30px)';
+                card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(card);
+            });
+        });
+        
+        // Performance monitoring
+        window.addEventListener('load', function() {
+            // Optional: Log performance metrics
+            if ('performance' in window) {
+                const perfData = performance.getEntriesByType('navigation')[0];
+                console.log('Page load time:', perfData.loadEventEnd - perfData.loadEventStart, 'ms');
+            }
+        });
+
+             // Mobile menu toggle
+        const menuToggle = document.getElementById('menu-toggle');
+        const navMenu = document.getElementById('nav-menu');
+        const menuIcon = menuToggle.querySelector('i');
+
+        menuToggle.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+            menuIcon.classList.toggle('fa-bars');
+            menuIcon.classList.toggle('fa-times');
+        });
+    </script>
+    
+    <!-- Fallback for browsers that don't support loading="lazy" -->
+    <noscript>
+        <style>
+            img[loading="lazy"] {
+                display: block;
+            }
+        </style>
+    </noscript>
 </body>
 </html>
