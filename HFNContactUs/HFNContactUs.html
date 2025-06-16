@@ -85,6 +85,7 @@
             position: relative;
         }
 
+     
         .nav-menu a:hover,
         .nav-menu a.active {
             background: linear-gradient(135deg, var(--secondary-color), var(--accent-color));
@@ -624,14 +625,6 @@
             <h1 class="welcome-title">WELCOME TO VISAKHAPATNAM<br>HEARTFULNESS METROZONE CENTERS</h1>
         </div>
 
-        <!-- Search Section -->
-        <div class="search-section">
-            <div class="row">
-                <div class="col-md-8 mx-auto">
-                    <input type="text" class="search-input" placeholder="🔍 Search for meditation centers..." id="searchInput">
-                </div>
-            </div>
-        </div>
 
         <!-- Centers Overview -->
         <div class="centers-grid">
@@ -646,6 +639,8 @@
                     <li>KOTHAPALEM</li>
                     <li>MADHAVADHARA</li>
                     <li>MARRIPALEM</li>
+                    <li>SANTHIPURAM</li>
+                    <li>SHEELANAGAR</li>
                 </ul>
             </div>
             <div class="center-column">
@@ -655,6 +650,7 @@
                     <li>BAKKANAPALEM</li>
                     <li>KOMMADI</li>
                     <li>MIDHILAPURI</li>
+                    <li>P.M PALEM</li>
                 </ul>
             </div>
             <div class="center-column">
@@ -669,12 +665,15 @@
                     <li>SEETHAMMADHARA</li>
                     <li>SIRIPURAM</li>
                     <li>VENKOJIPALEM</li>
-                    <li>VISALAKSHINAGAR</li>
-                    <li>YOGA VILLAGE (A.U)</li>
+                    <li>VISALAKSHI NAGAR</li>
+                    <li>YOGA VILLAGE</li>
                 </ul>
             </div>
         </div>
 
+
+
+        
         <!-- Zonal Coordinator -->
         <div class="center-card zonal-coordinator">
             <div class="card-body">
@@ -734,22 +733,52 @@
     <!-- Loading Scripts -->
     <script>
         // Performance optimizations
-        document.addEventListener('DOMContentLoaded', function() {
-            // Lazy load center details
-            loadCenterDetails();
+       document.addEventListener('DOMContentLoaded', function() {
+    // Lazy load center details
+    loadCenterDetails();
+    
+    // Initialize search functionality
+    initializeSearch();
+    
+    // Initialize mobile menu
+    initializeMobileMenu();
+    
+    // Initialize scroll to top
+    initializeScrollToTop();
+    
+    // Initialize center navigation - ADD THIS LINE
+    setTimeout(() => {
+        initializeCenterNavigation();
+    }, 1100); // Wait for centers to load
+    
+    // Clean URL
+    cleanURL();
+});
+
+        function initializeCenterNavigation() {
+    const centerListItems = document.querySelectorAll('.center-column li');
+    
+    centerListItems.forEach(item => {
+        item.addEventListener('click', function() {
+            const centerName = this.textContent.trim();
+            // Find matching center card
+            const targetId = centerName.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-') + '-meditation-center';
+            const targetElement = document.getElementById(targetId);
             
-            // Initialize search functionality
-            initializeSearch();
-            
-            // Initialize mobile menu
-            initializeMobileMenu();
-            
-            // Initialize scroll to top
-            initializeScrollToTop();
-            
-            // Clean URL
-            cleanURL();
+            if (targetElement) {
+                targetElement.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center'
+                });
+                // Add highlight effect
+                targetElement.style.border = '3px solid var(--accent-color)';
+                setTimeout(() => {
+                    targetElement.style.border = '';
+                }, 2000);
+            }
         });
+    });
+}
 
         // Center data
         const centers = [
@@ -768,7 +797,7 @@
                 mapLink: "https://maps.app.goo.gl/NAPS1htjbcSFrG799"
             },
             {
-                name: "BAKKANAPALEM MEDITATION CENTER (MADHURAWADA)",
+                name: "BAKKANAPALEM MEDITATION CENTER",
                 address: "SVS Royal Paradise, Bakkanapalem, Madhurawada, Visakhapatnam-530048",
                 contact: "Vijay Mudunuri (CC/CoP)",
                 phone: "+91-8317657590",
@@ -776,16 +805,16 @@
             },
             {
                 name: "BIRLA JN MEDITATION CENTER",
-                address: "Flat No.301, Meera Enclave, Birla Junction, Visakhapatnam-530016",
-                contact: "K.Surya Prakash (CC/CoP)",
-                phone: "+91-9440166603",
+                address: "Club house, 1st floor, Lakshmi Nivasam, Bapuji Nagar,Birla Junction,Back side of KIA Showroom, Visakhapatnam-530007",
+                contact: "PS Satya Prabha(CC/CoP)",
+                phone: "+91-7901052604",
                 mapLink: "https://maps.app.goo.gl/RPpSdvzoSPhFFGCt7"
             },
             {
                 name: "CHINNA MUSHIDAWADA MEDITATION CENTER",
-                address: "Plot No.42, Chinna Mushidiwada, Visakhapatnam-530013",
-                contact: "M.Srinivas (CC/CoP)",
-                phone: "+91-9440123456",
+                address: "D.No.15-6-3,1st Floor,NRI Base,ION examination center, Visakhapatnam-530033",
+                contact: "K.N.Rao(CC/CoP)",
+                phone: "+91-9849194454",
                 mapLink: "https://maps.app.goo.gl/oETqwGWqaZQZ93ys8"
             },
             {
@@ -797,7 +826,7 @@
             },
             {
 
-                name: "KOMMADI MEDITATION CENTER(MADHURAWADA)",
+                name: "KOMMADI MEDITATION CENTER",
                 address: "2-7 S.C colony, Devi Metta,Near FCI Godown,Venkatnagar, Kommadi, Visakhapatnam-530048",
                 contact: "Satyanarayana (CC/CoP)",
                 phone: "+91-7032335454",
@@ -811,21 +840,14 @@
     mapLink: "https://maps.app.goo.gl/jR3UmFRiTo1waspi9"
 },
 {
-    name: "LAKSHMI NIVASAM MEDITATION CENTER(BIRLA JUNCTION)",
-    address: "Club house, 1st floor, Lakshmi Nivasam, Bapuji Nagar, Near Birla Junction, Backside of KIA Showroom, Visakhapatnam-53007",
-    contact: "PS Satya Prabha (CC/CoP)",
-    phone: "+91-7901052604",
-    mapLink: "https://maps.app.goo.gl/RPpSdvzoSPhFFGCt7"
-},
-{
-    name: "LANSUM GREENS MEDITATION CENTER(MADHAVADHARA)",
-    address: "Kalinganagar, Madhavadhara, Visakhapatnam-53007",
+    name: "MADHAVADHARA MEDITATION CENTER",
+    address: "Lansum Greens,Kalinganagar, Madhavadhara, Visakhapatnam-53007",
     contact: "Tavudu (CC/CoP)",
     phone: "+91-9177260789",
     mapLink: "https://maps.app.goo.gl/ccUpGuaLmYNTjArA8"
 },
 {
-    name: "MIDHILAPURI MEDITATION CENTER(MADHURAWADA)",
+    name: "MIDHILAPURI MEDITATION CENTER",
     address: "203, Manasa residency, Midhilapuri Vuda Colony, Visakhapatnam-530041",
     contact: "E.Sita Devi (CC/CoP)",
     phone: "+91-8374611097",
@@ -846,7 +868,7 @@
     mapLink: "https://maps.app.goo.gl/e2pc4MD6x295ryVr7"
 },
 {
-    name: "NAVALPARK MEDITATION CENTER",
+    name: "NAVAL PARK MEDITATION CENTER",
     address: "Scindia Rd, Dockyard Line, Naval Park, Hindustan Shipyard, Visakhapatnam-530011",
     contact: "Chetan Chandegave (CC/CoP)",
     phone: "+91-9004689711",
@@ -860,12 +882,13 @@
     mapLink: "https://goo.gl/maps/ktwf1b8mGuhsJC3aA"
 },
 {
-    name: "PEELA HOMES MEDITATION CENTER(VENKOJIPALEM)",
-    address: "55-1-17/2/19, Flat number 304, H.B. colony road, Old Venkojipalem, Visakhapatnam-530022",
-    contact: "S Rama Devi (CC/CoP)",
-    phone: "+91-9966433004",
-    mapLink: "https://maps.app.goo.gl/21YBr1JW4jM61fq7A"
+    name: "PENDURTHI MEDITATION CENTER",
+    address: "FF 503, Balaji Grand Apartment, Brundavan Gardens,Vellamthota, Pendurthi,Visakhapatnam-531173",
+    contact: "E Ravi Kumar(CC/CoP)",
+    phone: "+91-9866508108",
+    mapLink: "https://maps.google.com/?q=17.818661,83.203972"
 },
+
 {
     name: "P.M PALEM MEDITATION CENTER",
     address: "F.no.502, Vasundhara Residency, Madhurawada, Visakhapatnam",
@@ -874,14 +897,14 @@
     mapLink: "https://maps.app.goo.gl/YB5gK9RRiBNztLqQA"
 },
 {
-    name: "SANKAR MUTT ROAD MEDITATION CENTER(SANTHIPURAM)",
+    name: "SANTHIPURAM MEDITATION CENTER",
     address: "H.No:50-92-2/6/4, Surya Enclave, Sankaramatam Road,Santhipuram, Visakhapatnam-530016",
     contact: "P.Narsinga Rao (CC/CoP)",
     phone: "+91-9440680051",
     mapLink: "https://maps.app.goo.gl/B7B88rqyHrDPHsy29"
 },
 {
-    name: "SCINDHIYA MEDITATION CENTER",
+    name: "SCINDIA MEDITATION CENTER",
     address: "H No: K8, HSL Colony, Scindia, Visakhapatnam-530005",
     contact: "Rajesh Pandey (CC/CoP)",
     phone: "+91-7780245594",
@@ -902,11 +925,25 @@
     mapLink: "https://maps.app.goo.gl/LYQMfvfnzBjptYJNA"
 },
 {
-    name: "SRI NAGAR MEDITATION CENTER(GAJUWAKA)",
+    name: "SIRIPURAM MEDITATION CENTER",
+    address: "Flat 208,Mahalakshmi Towers,CBM Compound,Balajinagar,Siripuram,Visakhapatnam-530003 ",
+    contact: "Meenakshi Devi(CC/CoP)",
+    phone: "+91-9848029973",
+    mapLink: "https://maps.app.goo.gl/ozCREEtjNYo7CNzUA"
+},
+{
+    name: "GAJUWAKA MEDITATION CENTER",
     address: "Flat no:27-3-138/10,Srinidhi plaza, Offical COlony, Street-4,Srinagar, Gajuwaka, Visakhapatnam-530026",
     contact: "DKM Lakshmi (CC/CoP)",
     phone: "+91-9032621099",
     mapLink: "https://maps.app.goo.gl/W95eK6CRczRE9fhz9"
+},
+{
+    name: "VENKOJIPALEM MEDITATION CENTER",
+    address: "55-1-17/2/19, Flat number 304, H.B. colony road,Peela Homes, Old Venkojipalem, Visakhapatnam-530022",
+    contact: "S Rama Devi (CC/CoP)",
+    phone: "+91-9966433004",
+    mapLink: "https://maps.app.goo.gl/21YBr1JW4jM61fq7A"
 },
 {
     name: "VISALAKSHI NAGAR MEDITATION CENTER",
@@ -916,7 +953,7 @@
     mapLink: "https://maps.app.goo.gl/gYF2pg5DiuERs8Vs7"
 },
 {
-    name: "YOGA VILLAGE A.U MEDITATION CENTER",
+    name: "YOGA VILLAGE MEDITATION CENTER",
     address: "Meditation and yoga hall, Department of yoga conscious Andhra University, RK Beach Road, Visakhapatnam-530003",
     contact: "Rama Devi P (CC/CoP)",
     phone: "+91-9440403403",
@@ -940,23 +977,24 @@
                 });
             }, 1000);
         }
-
-        function createCenterCard(center) {
-            const card = document.createElement('div');
-            card.className = 'center-card';
-            card.innerHTML = `
-                <div class="card-body">
-                    <h6 class="card-title">${center.name}</h6>
-                    <p><strong>Address:</strong> ${center.address}</p>
-                    <div class="contact-info">
-                        <div class="contact-person">${center.contact}</div>
-                        <div class="contact-number">${center.phone}</div>
-                    </div>
-                    <a href="${center.mapLink}" target="_blank" class="map-link">View on Map</a>
-                </div>
-            `;
-            return card;
-        }
+function createCenterCard(center) {
+    const card = document.createElement('div');
+    card.className = 'center-card';
+    // Add ID based on center name
+    card.id = center.name.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
+    card.innerHTML = `
+        <div class="card-body">
+            <h6 class="card-title">${center.name}</h6>
+            <p><strong>Address:</strong> ${center.address}</p>
+            <div class="contact-info">
+                <div class="contact-person">${center.contact}</div>
+                <div class="contact-number">${center.phone}</div>
+            </div>
+            <a href="${center.mapLink}" target="_blank" class="map-link">View on Map</a>
+        </div>
+    `;
+    return card;
+}
 
         function initializeSearch() {
             const searchInput = document.getElementById('searchInput');
@@ -1043,6 +1081,7 @@
             menuIcon.classList.toggle('fa-bars');
             menuIcon.classList.toggle('fa-times');
         });
+
     </script>
 
     <!-- Bootstrap JS (loaded at end for better performance) -->
