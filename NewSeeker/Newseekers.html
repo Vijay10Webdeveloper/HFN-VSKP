@@ -213,43 +213,71 @@
             min-width: 320px;
         }
 
-        .video-card {
-            background: var(--white);
+         .video-card {
+            flex: 0 0 300px;
+            background: white;
             border-radius: var(--border-radius);
             overflow: hidden;
             box-shadow: var(--shadow);
             transition: var(--transition);
-            position: relative;
+            cursor: pointer;
         }
 
         .video-card:hover {
             transform: translateY(-5px);
-            box-shadow: var(--shadow-hover);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
         }
 
-        .video-wrapper {
+        .video-thumbnail {
             position: relative;
-            padding-bottom: 56.25%;
-            height: 0;
+            width: 100%;
+            height: 180px;
             overflow: hidden;
         }
 
-        .video-wrapper iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
+        .video-thumbnail img {
             width: 100%;
             height: 100%;
-            border: none;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+
+        .video-card:hover .video-thumbnail img {
+            transform: scale(1.05);
+        }
+
+        .play-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.7);
+            color: white;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .video-card:hover .play-overlay {
+            background: rgba(139, 69, 19, 0.9);
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+
+        .video-info {
+            padding: 1rem;
         }
 
         .video-title {
-            padding: 1rem;
-            font-size: 1rem;
             font-weight: 600;
-            color: var(--text-color);
-            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-            text-align: center;
+            color: var(--primary-color);
+            margin: 0;
+            font-size: 0.9rem;
+            line-height: 1.4;
         }
 
         /* Download Section */
@@ -535,61 +563,107 @@
     <section class="section">
         <h2 class="section-title">Guided Daily Practices</h2>
         <div class="daily-practices-carousel">
-            <div class="video-card lazy-load">
-                <div class="video-wrapper">
-                    <iframe data-src="https://www.youtube.com/embed/bFlUx1cYOhQ?si=P5SoiYh65rm-7hFk" loading="lazy" allowfullscreen></iframe>
-                </div>
-                <div class="video-title">Guided Relaxation (Telugu)</div>
+           
+ 
+
+             <div class="video-card" onclick="openPlaylist('https://www.youtube.com/embed/bFlUx1cYOhQ?si=P5SoiYh65rm-7hFk')">
+                        <div class="video-thumbnail">
+                            <img src="../Images/Guided Relaxation Telugu.png" alt="Guided Relaxation (Telugu)" loading="lazy">
+                            <div class="play-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <p class="video-title">Guided Relaxation (Telugu)</p>
+                        </div>
+            </div>
+
+            
+             <div class="video-card" onclick="openPlaylist('https://www.youtube.com/embed/VajzTDv942Q?si=xtkMQNceVpyyFrHI')">
+                        <div class="video-thumbnail">
+                            <img src="../Images/Guided Meditation Telugu.png" alt="Guided Meditation (Telugu)" loading="lazy">
+                            <div class="play-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <p class="video-title">Guided Meditation (Telugu)</p>
+                        </div>
+            </div>
+
+             <div class="video-card" onclick="openPlaylist('https://www.youtube.com/embed/a4a0Xd3Bwmw?si=Z3tGXzWeQ1Z9VTCM')">
+                        <div class="video-thumbnail">
+                            <img src="../Images/Guided Cleaning Telugu.png" alt="Guided Cleaning (Telugu)" loading="lazy">
+                            <div class="play-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <p class="video-title">Guided Cleaning (Telugu)</p>
+                        </div>
+            </div>
+
+            <div class="video-card" onclick="openPlaylist('https://www.youtube.com/embed/OYotQzp7Tp4?si=wQD0evhlWIMwYF7q')">
+                        <div class="video-thumbnail">
+                            <img src="../Images/Guided Prayer Telugu.png" alt="Guided Prayer Meditation (Telugu)" loading="lazy">
+                            <div class="play-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <p class="video-title">Guided Prayer Meditation (Telugu)</p>
+                        </div>
+            </div>
+
+            <div class="video-card" onclick="openPlaylist('https://www.youtube.com/embed/3pLhetYsHfQ?si=-yARBgm824jCM7Wu')">
+                        <div class="video-thumbnail">
+                            <img src="../Images/Guided Meditation.jpeg" alt="Guided Meditation (English)" loading="lazy">
+                            <div class="play-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <p class="video-title">Guided Meditation (English)</p>
+                        </div>
+            </div>
+
+            <div class="video-card" onclick="openPlaylist('https://www.youtube.com/embed/7o4elxFJkrc?si=E8Qb0iY-Afd6ilIe')">
+                        <div class="video-thumbnail">
+                            <img src="../Images/Guided Cleaning English.png" alt="Guided Cleaning (English)" loading="lazy">
+                            <div class="play-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <p class="video-title">Guided Cleaning (English)</p>
+                        </div>
+            </div>
+
+            
+            <div class="video-card" onclick="openPlaylist('https://www.youtube.com/embed/6KrbdvLYCL8?si=dWJWRaHrZJeV-tUz')">
+                        <div class="video-thumbnail">
+                            <img src="../Images/Guided Prayer English.png" alt="Guided Prayer Meditation (English)" loading="lazy">
+                            <div class="play-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <p class="video-title">Guided Prayer Meditation (English)</p>
+                        </div>
+            </div>
+
+            <div class="video-card" onclick="openPlaylist('https://www.youtube.com/embed/Q5vzU4Z_q0g?si=nlaeakXai5ojTRRc')">
+                        <div class="video-thumbnail">
+                            <img src="../Images/Remove Emotional Patterns.png" alt="Remove Emotional Patterns" loading="lazy">
+                            <div class="play-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <p class="video-title">Remove Emotional Patterns</p>
+                        </div>
             </div>
             
-            <div class="video-card lazy-load">
-                <div class="video-wrapper">
-                    <iframe data-src="https://www.youtube.com/embed/VajzTDv942Q?si=xtkMQNceVpyyFrHI" loading="lazy" allowfullscreen></iframe>
-                </div>
-                <div class="video-title">Guided Meditation (Telugu)</div>
-            </div>
-            
-            <div class="video-card lazy-load">
-                <div class="video-wrapper">
-                    <iframe data-src="https://www.youtube.com/embed/a4a0Xd3Bwmw?si=Z3tGXzWeQ1Z9VTCM" loading="lazy" allowfullscreen></iframe>
-                </div>
-                <div class="video-title">Guided Cleaning (Telugu)</div>
-            </div>
-            
-            <div class="video-card lazy-load">
-                <div class="video-wrapper">
-                    <iframe data-src="https://www.youtube.com/embed/OYotQzp7Tp4?si=wQD0evhlWIMwYF7q" loading="lazy" allowfullscreen></iframe>
-                </div>
-                <div class="video-title">Guided Prayer Meditation (Telugu)</div>
-            </div>
-            
-            <div class="video-card lazy-load">
-                <div class="video-wrapper">
-                    <iframe data-src="https://www.youtube.com/embed/3pLhetYsHfQ?si=-yARBgm824jCM7Wu" loading="lazy" allowfullscreen></iframe>
-                </div>
-                <div class="video-title">Guided Meditation (English)</div>
-            </div>
-            
-            <div class="video-card lazy-load">
-                <div class="video-wrapper">
-                    <iframe data-src="https://www.youtube.com/embed/7o4elxFJkrc?si=E8Qb0iY-Afd6ilIe" loading="lazy" allowfullscreen></iframe>
-                </div>
-                <div class="video-title">Guided Cleaning (English)</div>
-            </div>
-            
-            <div class="video-card lazy-load">
-                <div class="video-wrapper">
-                    <iframe data-src="https://www.youtube.com/embed/6KrbdvLYCL8?si=dWJWRaHrZJeV-tUz" loading="lazy" allowfullscreen></iframe>
-                </div>
-                <div class="video-title">Guided Prayer Meditation (English)</div>
-            </div>
-            
-            <div class="video-card lazy-load">
-                <div class="video-wrapper">
-                    <iframe data-src="https://www.youtube.com/embed/Q5vzU4Z_q0g?si=nlaeakXai5ojTRRc" loading="lazy" allowfullscreen></iframe>
-                </div>
-                <div class="video-title">Remove Emotional Patterns</div>
-            </div>
         </div>
     </section>
 
@@ -619,107 +693,178 @@
         <div class="knowledge-notice">
            Scroll horizontally to explore all video playlists below and explore our comprehensive knowledge base
         </div>
-        
-        <div class="daily-practices-carousel">
-            <div class="video-card lazy-load">
-                <div class="playlist-card">
-                    <a href="https://www.youtube.com/playlist?list=PLa8gvTHECIMo6TrBdh9Y7eS8pCMZbxJiG" target="_blank">
-                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjMzQ0OTVlIi8+Cjx0ZXh0IHg9IjE1MCIgeT0iMTAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSJ3aGl0ZSIgZm9udC1zaXplPSIxOCI+OTAgRGF5IENoYWxsZW5nZTwvdGV4dD4KPHN2ZyB4PSIxMzAiIHk9IjgwIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0id2hpdGUiPgo8cGF0aCBkPSJNOCAydjEwbDUuNS01LjVMOCAyeiIvPgo8L3N2Zz4KPC9zdmc+" alt="90 Day Challenge" class="playlist-image">
-                    </a>
-                </div>
-                <div class="video-title">90 Day Challenge Playlist</div>
+     <div class="daily-practices-carousel">
+            <div class="video-card" onclick="openPlaylist('https://www.youtube.com/playlist?list=PLa8gvTHECIMo6TrBdh9Y7eS8pCMZbxJiG')">
+                        <div class="video-thumbnail">
+                            <img src="../Images/90daychallenge.jpeg" alt="90 Day Challenge Playlist" loading="lazy">
+                            <div class="play-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <p class="video-title">90 Day Challenge Playlist</p>
+                        </div>
+            </div>    
+
+            <div class="video-card" onclick="openPlaylist('https://www.youtube.com/embed/_WMDAlX9rEI?si=zPB4xkl1QetXLIpS')">
+                        <div class="video-thumbnail">
+                            <img src="../Images/Stressmgmt.jpeg" alt="Stress Management Meditation" loading="lazy">
+                            <div class="play-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <p class="video-title">Stress Management Meditation</p>
+                        </div>
+            </div>
+
+             <div class="video-card" onclick="openPlaylist('https://www.youtube.com/embed/0_Sr9LyVdbQ?si=he9a7KeTbJepKVNW')">
+                        <div class="video-thumbnail">
+                            <img src="../Images/How to meditate the right way.jpg" alt="How to Meditate the Right Way?" loading="lazy">
+                            <div class="play-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <p class="video-title">How to Meditate the Right Way?</p>
+                        </div>
             </div>
             
-            <div class="video-card lazy-load">
-                <div class="video-wrapper">
-                    <iframe data-src="https://www.youtube.com/embed/_WMDAlX9rEI?si=zPB4xkl1QetXLIpS" loading="lazy" allowfullscreen></iframe>
-                </div>
-                <div class="video-title">Stress Management Meditation</div>
+           <div class="video-card" onclick="openPlaylist('https://www.youtube.com/embed/rs1uc27CBI4?si=sk_Ush5h2E2mAMKX')">
+                        <div class="video-thumbnail">
+                            <img src="../Images/Effective Meditation.jpg" alt="3 To-Do's for Effective Meditation" loading="lazy">
+                            <div class="play-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <p class="video-title">3 To-Do's for Effective Meditation</p>
+                        </div>
             </div>
+
+         <div class="video-card" onclick="openPlaylist('https://www.youtube.com/embed/e6BkPebxyFs?si=vsymu6Uz7F37oJky')">
+                        <div class="video-thumbnail">
+                            <img src="../Images/AngerMgmt.jpg" alt="Anger Management Tips" loading="lazy">
+                            <div class="play-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <p class="video-title">Anger Management Tips</p>
+                        </div>
+         </div>
+
+         
+         <div class="video-card" onclick="openPlaylist('https://www.youtube.com/embed/molDO-D4nm0?si=45wvUg1rwSlQFwRO')">
+                        <div class="video-thumbnail">
+                            <img src="../Images/Advance your spiritual journey.jpg" alt="How to Advance Your Spiritual Journey?" loading="lazy">
+                            <div class="play-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <p class="video-title">How to Advance Your Spiritual Journey?</p>
+                        </div>
+         </div>
             
-            <div class="video-card lazy-load">
-                <div class="video-wrapper">
-                    <iframe data-src="https://www.youtube.com/embed/0_Sr9LyVdbQ?si=he9a7KeTbJepKVNW" loading="lazy" allowfullscreen></iframe>
-                </div>
-                <div class="video-title">How to Meditate the Right Way?</div>
-            </div>
+
+        <div class="video-card" onclick="openPlaylist('https://www.youtube.com/embed/cDF1glqFVjw?si=lBEthBf56RlJVF5O')">
+                        <div class="video-thumbnail">
+                            <img src="../Images/Kanha Shanti Vanam.png" alt="Kanha Shanti Vanam Hyderabad" loading="lazy">
+                            <div class="play-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <p class="video-title">Kanha Shanti Vanam Hyderabad</p>
+                        </div>
+         </div>
+
+        <div class="video-card" onclick="openPlaylist('https://www.youtube.com/embed/Z_9GHTFs6Uk?si=U61x081SY6FsoTMi')">
+                        <div class="video-thumbnail">
+                            <img src="../Images/Heartfulness Life at KanhaShanti Vanam.png" alt="The Heartfulness Life At Kanha Shanti Vanam" loading="lazy">
+                            <div class="play-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <p class="video-title">The Heartfulness Life At Kanha Shanti Vanam</p>
+                        </div>
+         </div>
             
-            <div class="video-card lazy-load">
-                <div class="video-wrapper">
-                    <iframe data-src="https://www.youtube.com/embed/rs1uc27CBI4?si=sk_Ush5h2E2mAMKX" loading="lazy" allowfullscreen></iframe>
-                </div>
-                <div class="video-title">3 To-Do's for Effective Meditation</div>
-            </div>
+        <div class="video-card" onclick="openPlaylist('https://www.youtube.com/embed/videoseries?si=uqz0UYHl5Z3XFfW_&list=PL1QpxVYcCuCaDIn21q_s50E3MWZokMg8y')">
+                        <div class="video-thumbnail">
+                            <img src="../Images/Global Spirituality Mahotsav.png" alt="Global Spirituality Mahotsav" loading="lazy">
+                            <div class="play-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <p class="video-title">Global Spirituality Mahotsav</p>
+                        </div>
+         </div>
+
+        <div class="video-card" onclick="openPlaylist('https://www.youtube.com/embed/KRV80ZB78V8?si=pkRqgOsc1umw57e3')">
+                        <div class="video-thumbnail">
+                            <img src="../Images/Heartfulness Initiatives.png" alt="Heartfulness Initiatives" loading="lazy">
+                            <div class="play-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <p class="video-title">Heartfulness Initiatives</p>
+                        </div>
+         </div>
+
+
+        <div class="video-card" onclick="openPlaylist('https://www.youtube.com/embed/bQYZyUs-ZNE?si=7gAbe4XqxuZuconE')">
+                        <div class="video-thumbnail">
+                            <img src="../Images/Athletes and Meditation.png" alt="Athletes and Meditation" loading="lazy">
+                            <div class="play-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <p class="video-title">Athletes and Meditation</p>
+                        </div>
+         </div>
+
+         <div class="video-card" onclick="openPlaylist('https://www.youtube.com/embed/_ld5iZeWHec?si=_RbSOpyzqq6Bi7hs')">
+                        <div class="video-thumbnail">
+                            <img src="../Images/AntahkaranaSuddhi.jpg" alt="AntahKarana Suddhi (Mental Detox)" loading="lazy">
+                            <div class="play-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <p class="video-title">AntahKarana Suddhi (Mental Detox)</p>
+                        </div>
+         </div>
             
-            <div class="video-card lazy-load">
-                <div class="video-wrapper">
-                    <iframe data-src="https://www.youtube.com/embed/e6BkPebxyFs?si=vsymu6Uz7F37oJky" loading="lazy" allowfullscreen></iframe>
-                </div>
-                <div class="video-title">Anger Management Tips</div>
-            </div>
-            
-            <div class="video-card lazy-load">
-                <div class="video-wrapper">
-                    <iframe data-src="https://www.youtube.com/embed/molDO-D4nm0?si=45wvUg1rwSlQFwRO" loading="lazy" allowfullscreen></iframe>
-                </div>
-                <div class="video-title">How to Advance Your Spiritual Journey?</div>
-            </div>
-            
-            <div class="video-card lazy-load">
-                <div class="video-wrapper">
-                    <iframe data-src="https://www.youtube.com/embed/cDF1glqFVjw?si=lBEthBf56RlJVF5O" loading="lazy" allowfullscreen></iframe>
-                </div>
-                <div class="video-title">Kanha Shanti Vanam Hyderabad</div>
-            </div>
-            
-            <div class="video-card lazy-load">
-                <div class="video-wrapper">
-                    <iframe data-src="https://www.youtube.com/embed/Z_9GHTFs6Uk?si=U61x081SY6FsoTMi" loading="lazy" allowfullscreen></iframe>
-                </div>
-                <div class="video-title">The Heartfulness Life At Kanha Shanti Vanam</div>
-            </div>
-            
-            <div class="video-card lazy-load">
-                <div class="video-wrapper">
-                    <iframe data-src="https://www.youtube.com/embed/videoseries?si=uqz0UYHl5Z3XFfW_&list=PL1QpxVYcCuCaDIn21q_s50E3MWZokMg8y" loading="lazy" allowfullscreen></iframe>
-                </div>
-                <div class="video-title">Global Spirituality Mahotsav</div>
-            </div>
-            
-            <div class="video-card lazy-load">
-                <div class="video-wrapper">
-                    <iframe data-src="https://www.youtube.com/embed/KRV80ZB78V8?si=pkRqgOsc1umw57e3" loading="lazy" allowfullscreen></iframe>
-                </div>
-                <div class="video-title">Heartfulness Initiatives</div>
-            </div>
-            
-            <div class="video-card lazy-load">
-                <div class="video-wrapper">
-                    <iframe data-src="https://www.youtube.com/embed/bQYZyUs-ZNE?si=7gAbe4XqxuZuconE" loading="lazy" allowfullscreen></iframe>
-                </div>
-                <div class="video-title">Athletes and Meditation</div>
-            </div>
-            
-            <div class="video-card lazy-load">
-                <div class="video-wrapper">
-                    <iframe data-src="https://www.youtube.com/embed/_ld5iZeWHec?si=_RbSOpyzqq6Bi7hs" loading="lazy" allowfullscreen></iframe>
-                </div>
-                <div class="video-title">AntahKarana Suddhi (Mental Detox)</div>
-            </div>
-            
-            <div class="video-card lazy-load">
-                <div class="video-wrapper">
-                    <iframe data-src="https://www.youtube.com/embed/1blfhkoPslo?si=Th8rmGT-T1sLgihq" loading="lazy" allowfullscreen></iframe>
-                </div>
-                <div class="video-title">Best Way to Remove Stress</div>
-            </div>
-            
-            <div class="video-card lazy-load">
-                <div class="video-wrapper">
-                    <iframe data-src="https://www.youtube.com/embed/_NCxkYzlh_I?si=1uvb6DgjcL7gN-_b" loading="lazy" allowfullscreen></iframe>
-                </div>
-                <div class="video-title">Do You Need a Guru?</div>
-            </div>
+        <div class="video-card" onclick="openPlaylist('https://www.youtube.com/embed/1blfhkoPslo?si=Th8rmGT-T1sLgihq')">
+                        <div class="video-thumbnail">
+                            <img src="../Images/Best way to remove stress.jpg" alt="Best Way to Remove Stress" loading="lazy">
+                            <div class="play-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <p class="video-title">Best Way to Remove Stress</p>
+                        </div>
+         </div>
+
+                 <div class="video-card" onclick="openPlaylist('https://www.youtube.com/embed/_NCxkYzlh_I?si=1uvb6DgjcL7gN-_b')">
+                        <div class="video-thumbnail">
+                            <img src="../Images/Do you need Guru.jpg" alt="Do You Need a Guru?" loading="lazy">
+                            <div class="play-overlay">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                        <div class="video-info">
+                            <p class="video-title">Do You Need a Guru?</p>
+                        </div>
+         </div>
+        </div>
         </div>
     </section>
 
@@ -741,6 +886,9 @@
     </footer>
 
     <script>
+         function openPlaylist(url) {
+  window.open(url, '_blank');
+}
         // Mobile menu toggle
         const menuToggle = document.getElementById('menu-toggle');
         const navMenu = document.getElementById('nav-menu');
