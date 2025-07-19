@@ -79,19 +79,19 @@
 
         .nav-menu a {
             text-decoration: none;
-            color: var(--text-color);
+            color: var(--text-color); 
             font-weight: 600;
             padding: 0.5rem 1rem;
             border-radius: var(--border-radius);
-            transition: var(--transition);
+           transition: var(--transition); 
             position: relative;
         }
 
         .nav-menu a:hover,
         .nav-menu a.active {
-            background: linear-gradient(135deg, var(--secondary-color), var(--accent-color));
+           background: linear-gradient(135deg, var(--secondary-color), var(--accent-color)); 
             color: var(--white);
-            transform: translateY(-2px);
+            transform: translateY(-2px); 
         }
 
         .menu-toggle {
@@ -133,12 +133,12 @@
             position: relative;
         }
 
-        #nav-links a:hover,
+       #nav-links a:hover, 
         #nav-links a.active {
-            background: var(--secondary-color);
+            background: var(--secondary-color); 
             color: white;
             transform: translateY(-2px);
-        }
+        } 
 
         .menu-toggle {
             display: none;
@@ -364,20 +364,20 @@
         /* Responsive Design */
         @media (max-width: 768px) {
  @media (max-width: 768px) {
-            .nav-menu {
+              .nav-menu {
                 position: fixed;
                 top: 80px;
                 left: -100%;
                 width: 100%;
                 height: calc(100vh - 80px);
-                background: var(--white);
+                background: var(--white); 
                 flex-direction: column;
                 align-items: center;
                 justify-content: flex-start;
                 padding-top: 2rem;
                 transition: var(--transition);
-                box-shadow: var(--shadow);
-            }
+                box-shadow: var(--shadow); 
+            } 
 
             .nav-menu.active {
                 left: 0;
@@ -398,7 +398,7 @@
                 left: 0;
                 right: 0;
                 background: white;
-                box-shadow: var(--shadow);
+                box-shadow: var(--shadow); 
                 transform: translateY(-100%);
                 opacity: 0;
                 visibility: hidden;
@@ -409,7 +409,7 @@
                 transform: translateY(0);
                 opacity: 1;
                 visibility: visible;
-            }
+            } 
 
             #nav-links ul {
                 flex-direction: column;
@@ -526,15 +526,39 @@
             </div>
             <div class="knowledge-grid">
                 <div class="knowledge-card">
+                    <a href="../HFN Yoga/HFNYoga.html" target="_blank" rel="noopener">
+                        <img src="../Images/Heartfulness Yoga.jpeg" alt="Heartfulness Yoga">
+                        <p>Yoga</p>
+                    </a>
+                </div>
+                <div class="knowledge-card">
                     <a href="../Master Talks/MasterTalks.html" target="_blank" rel="noopener">
                         <img src="../Images/SahajmargMasters.jpeg" alt="Sahaj Marg Masters">
                         <p>Master's Talks</p>
                     </a>
                 </div>
                 <div class="knowledge-card">
-                    <a href="../HFN Yoga/HFNYoga.html" target="_blank" rel="noopener">
-                        <img src="../Images/Heartfulness Yoga.jpeg" alt="Heartfulness Yoga">
-                        <p>Yoga</p>
+                    <a href="../HFN Youth/HFNYouth.html" target="_blank" rel="noopener">
+                        <img src="../Images/HFN Youth.png" alt="Heartfulness Youth">
+                        <p>Youth</p>
+                    </a>
+                </div>
+                <div class="knowledge-card">
+                    <a href="../HFNMusic/HFNMusic.html" target="_blank" rel="noopener">
+                        <img src="../HFNMusic/HFNMusic.png" alt="Heartfulness Music">
+                        <p>Music</p>
+                    </a>
+                </div>
+                <div class="knowledge-card">
+                    <a href="../HFNAudio/HFNAudio.html" target="_blank" rel="noopener">
+                        <img src="../Images/HFNAudio.png" alt="Heartfulness Audio">
+                        <p>Audio Books</p>
+                    </a>
+                </div>
+                 <div class="knowledge-card">
+                    <a href="../HFN Quiz/HFNQuiz.html" target="_blank" rel="noopener">
+                        <img src="../HFN Quiz/Books.jpg" alt="Heartfulness Quiz">
+                        <p>Heartfulness Quiz</p>
                     </a>
                 </div>
                 <div class="knowledge-card">
@@ -550,21 +574,9 @@
                     </a>
                 </div>
                 <div class="knowledge-card">
-                    <a href="../HFNMusic/HFNMusic.html" target="_blank" rel="noopener">
-                        <img src="../HFNMusic/HFNMusic.png" alt="Heartfulness Music">
-                        <p>Music</p>
-                    </a>
-                </div>
-                <div class="knowledge-card">
                     <a href="../HFNCommunity/HFNCommunity.html" target="_blank" rel="noopener">
                         <img src="../Images/HFNCommunity.png" alt="Heartfulness Community">
                         <p>Community</p>
-                    </a>
-                </div>
-                <div class="knowledge-card">
-                    <a href="../HFN Youth/HFNYouth.html" target="_blank" rel="noopener">
-                        <img src="../Images/HFN Youth.png" alt="Heartfulness Youth">
-                        <p>Youth</p>
                     </a>
                 </div>
                 <div class="knowledge-card">
@@ -577,12 +589,6 @@
                     <a href="../HFN Apps and Websites/HFNApps.html" target="_blank" rel="noopener">
                         <img src="../Images/Apps and Websites.png" alt="Heartfulness Apps">
                         <p>Apps/Weblinks</p>
-                    </a>
-                </div>
-                <div class="knowledge-card">
-                    <a href="../HFNAudio/HFNAudio.html" target="_blank" rel="noopener">
-                        <img src="../Images/HFNAudio.png" alt="Heartfulness Audio">
-                        <p>Audio Books</p>
                     </a>
                 </div>
             </div>
