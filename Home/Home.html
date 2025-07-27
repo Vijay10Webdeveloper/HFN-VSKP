@@ -466,7 +466,7 @@
         .fade-in {
             opacity: 0;
             transform: translateY(20px);
-            animation: fadeIn 0.8s ease forwards;
+            animation: fadeIn 0.5s ease forwards;
         }
 
         .fade-in:nth-child(1) { animation-delay: 0.1s; }
@@ -636,9 +636,15 @@
 
             <section class="section fade-in" id="testimonials">
                 <h2>Testimonial Videos</h2>
+    
                 <div class="youtube-carousel"> 
+                    
                     <div class="carousel-container-youtube">
-
+       <div class="video-scroll-container fade-in">
+            <button class="scroll-nav prev" onclick="scrollVideos('prev')">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+           
                     <div class="video-card" onclick="openPlaylist('https://www.youtube.com/embed/N-YVbEWTiPk?si=TvJcC0NBjTzQ1CXl&controls=0')">
                         <div class="video-thumbnail">
                             <img src="../Images/benefits-meditation.jpg" alt="Benefits of Meditation" loading="lazy">
@@ -842,6 +848,10 @@
                         </div>
                     </div>
                     </div>
+                     <button class="scroll-nav next" onclick="scrollVideos('next')">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+            </div>
                 </div>
             </section>
         </main>
