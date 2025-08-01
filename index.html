@@ -499,45 +499,38 @@
             box-shadow: var(--shadow);
            
         }
-        #testimonialvideos
-            {
-                
-            }
         /* Footer */
         .footer {
             background: var(--primary-color);
-            color: var(--white);
+            color: white;
+            padding: 2rem 0;
             text-align: center;
-            padding: 2rem;
             margin-top: 3rem;
         }
 
-        .footer a {
-            color: var(--white);
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: white;
             text-decoration: none;
-            margin: 0 1rem;
+            font-weight: 600;
             padding: 0.5rem 1rem;
             border-radius: var(--border-radius);
             transition: var(--transition);
         }
 
-        .footer a:hover {
+        .footer-links a:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+
+         .footer a:hover {
             background: var(--secondary-color);
-        }
-        
-        .footer-message {
-            margin-top: 1.5rem;
-            color: white !important;
-        }
-    
-        .footer-copyright {
-            margin-top: 1rem;
-            color: white !important;
-            font-size: 0.9rem;
-        }
-        
-        .footer-copyright p {
-            color: white !important;
         }
 
       
@@ -696,7 +689,7 @@
             </section>
 
     
-<section class="section fade-in" id="contact">
+    <section class="section fade-in" id="contact">
             <h2>Testimonial Videos</h2> 
         <div class="video-scroll-container fade-in">
             <button class="scroll-nav prev" onclick="scrollVideos('prev')">
@@ -758,11 +751,13 @@
                 <a href="https://www.youtube.com/embed/videoseries?si=8I5AbHkf9GixT4S1&controls=0&list=PL1QpxVYcCuCa_Dy5CcLKSHWw-03aNPEMW" class="video-card" target="_blank">
                     <img src="./Images/What Others Say.png" alt="What Others Say about Heartfulness">
                 </a> 
+            </div>
         </div>
     </section>
     
         
-    <footer class="footer">
+<footer class="footer">
+    <div class="container">
         <div class="footer-links">
             <a href="./HFNContactUs/HFNContactUs.html">
                 <i class="fas fa-envelope"></i> Contact Us
@@ -777,7 +772,8 @@
         <div class="footer-copyright">
             <p>&copy; 2024 Heartfulness Meditation Vizag. All rights reserved.</p>
         </div>
-    </footer> 
+    </div>
+</footer> 
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
     <script>

@@ -288,25 +288,37 @@
             text-align: center;
         }
 
-       /* Footer */
+      /* Footer */
         .footer {
             background: var(--primary-color);
-            color: var(--white);
+            color: white;
+            padding: 2rem 0;
             text-align: center;
-            padding: 2rem;
             margin-top: 3rem;
         }
 
-        .footer a {
-            color: var(--white);
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: white;
             text-decoration: none;
-            margin: 0 1rem;
+            font-weight: 600;
             padding: 0.5rem 1rem;
             border-radius: var(--border-radius);
             transition: var(--transition);
         }
 
-        .footer a:hover {
+        .footer-links a:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+
+         .footer a:hover {
             background: var(--secondary-color);
         }
 

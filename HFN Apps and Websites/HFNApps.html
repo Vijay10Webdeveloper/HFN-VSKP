@@ -218,6 +218,7 @@
         }
 
 
+
          /* Hero Section */
         .hero-section {
             position: relative;
@@ -737,108 +738,7 @@
             font-size: 1.1rem;
         }
         
-      /* Footer */
-        .footer {
-            background: var(--primary-color);
-            color: var(--white);
-            text-align: center;
-            padding: 2rem;
-            margin-top: 3rem;
-        }
-
-        .footer a {
-            color: var(--white);
-            text-decoration: none;
-            margin: 0 1rem;
-            padding: 0.5rem 1rem;
-            border-radius: var(--border-radius);
-            transition: var(--transition);
-        }
-
-        .footer a:hover {
-            background: var(--secondary-color);
-        }
-        
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .nav-toggle {
-                display: block;
-            }
-            
-            .nav-menu {
-                position: fixed;
-                top: 90px;
-                right: -100%;
-                width: 100%;
-                height: calc(100vh - 90px);
-                background: rgba(255, 255, 255, 0.95);
-                backdrop-filter: blur(10px);
-                flex-direction: column;
-                justify-content: flex-start;
-                align-items: center;
-                padding-top: 50px;
-                transition: right 0.3s ease;
-            }
-            
-            .nav-menu.active {
-                right: 0;
-            }
-            
-            .nav-menu li {
-                margin: 20px 0;
-            }
-            
-            .nav-menu a {
-                font-size: 18px;
-            }
-            
-            .hero-title {
-                font-size: 2.2rem;
-            }
-            
-            .section-title {
-                font-size: 2rem;
-                flex-direction: column;
-                gap: 10px;
-            }
-            
-            .grid-container {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-            
-            .footer-content {
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            .footer-links {
-                flex-direction: row;
-                gap: 15px;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .container {
-                padding: 0 15px;
-            }
-            
-            .hero-section {
-                padding: 40px 20px;
-            }
-            
-            .hero-title {
-                font-size: 1.8rem;
-            }
-            
-            .section-title {
-                font-size: 1.6rem;
-            }
-            
-            .card-content {
-                padding: 20px 15px;
-            }
-        }
+    
         
         /* Loading animations */
         @keyframes fadeInUp {
