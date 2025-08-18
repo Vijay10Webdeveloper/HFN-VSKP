@@ -268,8 +268,10 @@
             overflow-x: auto;
             scroll-behavior: smooth;
             padding: 1rem 0;
-            scrollbar-width: none;
+            scrollbar-width: thin;
             -ms-overflow-style: none;
+             -webkit-overflow-scrolling: touch;
+            scrollbar-color: var(--accent-color) var(--light-bg);
         }
 
         .video-carousel::-webkit-scrollbar {
