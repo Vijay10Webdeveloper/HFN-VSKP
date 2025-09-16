@@ -1,0 +1,3206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heartfulness Knowledge Quiz</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+        
+       body { 
+            margin: 0; 
+            font-family:  -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            background: linear-gradient(135deg, #0a0a2e 0%, #16213e 50%, #0f3460 100%);
+            overflow-x: hidden;
+        }
+        
+        .kbc-bg {
+            background: radial-gradient(circle at center, #1a1a3e 0%, #0a0a2e 100%);
+            position: relative;
+        }
+        
+        .kbc-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><radialGradient id="g" cx="50%" cy="50%" r="50%"><stop offset="0%" style="stop-color:%23ffffff;stop-opacity:0.05"/><stop offset="100%" style="stop-color:%23ffffff;stop-opacity:0"/></radialGradient></defs><circle cx="50" cy="50" r="50" fill="url(%23g)"/></svg>') center/200px 200px;
+            animation: pulse 3s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.7; }
+        }
+        
+        .gold-text {
+            background: linear-gradient(45deg, #ffd700, #ffed4e, #ffd700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+        
+        .option-button {
+            background: linear-gradient(145deg, #2a2a4a 0%, #1a1a3a 100%);
+            border: 2px solid #4a4a6a;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .option-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .option-button:hover::before {
+            left: 100%;
+        }
+        
+        .option-button:hover {
+            border-color: #ffd700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .correct-answer {
+            background: linear-gradient(145deg, #22c55e 0%, #16a34a 100%);
+            border-color: #22c55e;
+            box-shadow: 0 0 30px rgba(34, 197, 94, 0.5);
+            animation: correctPulse 1s ease-in-out infinite;
+        }
+        
+        .wrong-answer {
+            background: linear-gradient(145deg, #ef4444 0%, #dc2626 100%);
+            border-color: #ef4444;
+            box-shadow: 0 0 30px rgba(239, 68, 68, 0.5);
+            animation: wrongShake 0.5s ease-in-out;
+        }
+        
+        @keyframes correctPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        
+        @keyframes wrongShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        .prize-ladder {
+            background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid #374151;
+        }
+        
+        .current-prize {
+            background: linear-gradient(145deg, #ffd700 0%, #f59e0b 100%);
+            color: #0f172a;
+            font-weight: bold;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { box-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
+            to { box-shadow: 0 0 20px rgba(255, 215, 0, 0.8); }
+        }
+        
+        .sparkle {
+            animation: sparkle 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes sparkle {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        
+        const HeartfulnessQuiz = () => {
+            const [currentQuestion, setCurrentQuestion] = useState(0);
+            const [selectedAnswers, setSelectedAnswers] = useState([]);
+            const [showResult, setShowResult] = useState(false);
+            const [gameStarted, setGameStarted] = useState(false);
+            const [gameOver, setGameOver] = useState(false);
+            const [timeLeft, setTimeLeft] = useState(60);
+            const [totalPoints, setTotalPoints] = useState(0);
+            const [questionsAnswered, setQuestionsAnswered] = useState(0);
+            const [correctAnswers, setCorrectAnswers] = useState(0);
+            const [canProceed, setCanProceed] = useState(false);
+
+            const pointsPerQuestion = 100;
+
+            const questions = [
+               {
+                    id: 7,
+                    question: "Where can Reality be realized according to Babuji?",
+                    options: [
+                        "In the innermost core of the heart",
+                        "Through physical organs of sense",
+                        "Through intellectual study",
+                        "In temples and holy places"
+                    ],
+                    correct: 0},
+{
+                    id: 3,
+                    question: "What were castes originally according to the Babuji?",
+                    options: [
+                        "Religious divisions.",
+                        "Different guilds of workers and artisans organized for division of labor",
+                        "Political parties",
+                        "Educational institutions."
+                    ],
+                    correct: 1},
+{
+                    id: 6,
+                    question: "Why do many people become fake Gurus?",
+                    options: [
+                        "They genuinely want to help others",
+                        "Gurudom is profitable, securing enormous income and respect they cannot otherwise earn",
+                        "They are divinely appointed",
+                        "Society forces them into the role"
+                    ],
+                    correct: 1},
+{
+                    id: 29,
+                    question: "What happens when meditating on the form of a realized Master?",
+                    options: [
+                        "One develops attachment to the form",
+                        "One loses grossness and imbibes the Master's subtle condition",
+                        "One becomes confused about reality",
+                        "One gains magical powers"
+                    ],
+                    correct: 1},
+{
+                    id: 35,
+                    question: "What is the lowest spiritual region called?",
+                    options: [
+                        "Brahmanda Mandal",
+                        "Sahasra Dal Kamal",
+                        "Pinda Desh",
+                        "Naval region"
+                    ],
+                    correct: 2},
+{
+                    id: 15,
+                    question: "What is the relationship between God's center and man's center?",
+                    options: [
+                        "They are completely separate",
+                        "Man's center is inferior to God's center",
+                        "The innermost centre of man's existence and God's manifestation is the same",
+                        "They are similar but not identical"
+                    ],
+                    correct: 2},
+{
+                    id: 7,
+                    question: "What does Babuji say about gross worship of idols and rigid adherence to rituals?",
+                    options: [
+                        "They are the highest form of spiritual practice",
+                        "They actuate real faith in practitioners",
+                        "They do not actuate real faith and promote materialism.",
+                        "They are necessary for all spiritual seekers"
+                    ],
+                    correct: 2},
+{
+                    id: 30,
+                    question: "What does Babuji say about the formation of new samskaras when desires end?",
+                    options: [
+                        "New samskaras continue to form regardless",
+                        "The formation of samskaras stops completely",
+                        "Only positive samskaras are formed",
+                        "Samskaras transform into a different type"
+                    ],
+                    correct: 1},
+{
+                    id: 22,
+                    question: "According to Babuji, what are Viveka and Vairagya actually?",
+                    options: [
+                        "Results of spiritual practice, not the means themselves",
+                        "The primary spiritual practices",
+                        "Ancient traditions to be followed",
+                        "Mental exercises for beginners"
+                    ],
+                    correct: 0},
+{
+                    id: 4,
+                    question: "What does Babuji criticize about most current methods of spiritual training?",
+                    options: [
+                        "They are too easy to follow",
+                        "They require too much money",
+                        "They are too modern",
+                        "They are based on hard and fast rules that don't correspond with worldly life"
+                    ],
+                    correct: 3},
+{
+                    id: 7,
+                    question: "What leads to the beginning of the state of negation?",
+                    options: [
+                        "Permanent stay in the condition of self-surrender",
+                        "Intense meditation practice",
+                        "Reading spiritual texts",
+                        "Performing religious rituals"
+                    ],
+                    correct: 0},
+{
+                    id: 6,
+                    question: "What happens when the idea of God becomes prominent in our hearts?",
+                    options: [
+                        "We become detached from family",
+                        "We begin to treat realization as the primary object of life",
+                        "We lose interest in worldly success",
+                        "We become unable to work efficiently"
+                    ],
+                    correct: 1},
+{
+                    id: 32,
+                    question: "What does Babuji say about beginners who complain about the wandering mind during meditation?",
+                    options: [
+                        "They should immediately stop meditation practice",
+                        "Their complaints are valid and indicate they're not ready for meditation",
+                        "They have unrealistic expectations of achieving a suspended mind from the first day",
+                        "They need stronger willpower to control their thoughts"
+                    ],
+                    correct: 2},
+{
+                    id: 11,
+                    question: "What does the author say about people who claim they only want Bhakti (devotion) and nothing beyond?",
+                    options: [
+                        "They have the highest goal",
+                        "They are attracted by the charming effect of a devotee's condition and want to remain entangled",
+                        "They are the most spiritual people'",
+                        "They understand the true purpose of life"
+                    ],
+                    correct: 1},
+{
+                    id: 14,
+                    question: "What are the three main bodies mentioned in human composition?",
+                    options: [
+                        "Physical, emotional, and mental bodies",
+                        "Gross body (Sthool Sharir), astral body (Sookshma Sharir), and causal body (Karan Sharir)",
+                        "Past, present, and future bodies",
+                        "Conscious, unconscious, and superconscious bodies"
+                    ],
+                    correct: 1},
+{
+                    id: 27,
+                    question: "How should one develop Divine love according to Babuji?",
+                    options: [
+                        "Through intense study of religious scriptures",
+                        "By remembering God frequently throughout the day",
+                        "Through pilgrimage to holy places",
+                        "By performing charitable acts"
+                    ],
+                    correct: 1},
+{
+                    id: 22,
+                    question: "What does faith serve as a link between?",
+                    options: [
+                        "The past and the future",
+                        "The material and the spiritual",
+                        "The individual and society",
+                        "The mortal and the Immortal"
+                    ],
+                    correct: 3},
+{
+                    id: 15,
+                    question: "What is the difference between true Ajapa and habitual Japa during sleep?",
+                    options: [
+                        "There is no difference",
+                        "True Ajapa stops during sleep, habitual Japa continues",
+                        "Habitual Japa is due to force of habit and stops if practice is discontinued; true Ajapa is permanent",
+                        "True Ajapa is louder than habitual Japa"
+                    ],
+                    correct: 2},
+{
+                    id: 15,
+                    question: "What does Babuji say about Maha Pralaya?",
+                    options: [
+                        "It is a state of individual enlightenment",
+                        "It is the complete dissolution where everything returns to its origin",
+                        "It is a specific meditation technique",
+                        "It is the creation of the universe"
+                    ],
+                    correct: 1},
+{
+                    id: 26,
+                    question: "What is Nirodha?",
+                    options: [
+                        "The disturbed condition of mind",
+                        "Sluggishness and indolence",
+                        "The tendency bringing mind to a perfectly self-contained state free from disturbances",
+                        "Concentration on one object"
+                    ],
+                    correct: 2},
+{
+                    id: 28,
+                    question: "What is Uparati?",
+                    options: [
+                        "Complete attachment to worldly objects",
+                        "Self-withdrawal where both attraction and repulsion are absent",
+                        "Intense emotional devotion",
+                        "Intellectual understanding of scriptures"
+                    ],
+                    correct: 1},
+{
+                    id: 6,
+                    question: "What type of faith is considered genuine and lasting?",
+                    options: [
+                        "Faith based on attractive displays and material achievements",
+                        "Faith promoted by inducement and outward features",
+                        "Faith based on thorough consideration and conviction of merits",
+                        "Faith based on popular opinion"
+                    ],
+                    correct: 2},
+{
+                    id: 2,
+                    question: "What does the author say about the problem of life in relation to death?",
+                    options: [
+                        "Death solves all problems",
+                        "The problem ends with death",
+                        "It doesn't end with death, as it's only a change of form",
+                        "Death is the ultimate goal"
+                    ],
+                    correct: 2},
+{
+                    id: 2,
+                    question: "What does Babuji consider the main purpose of spiritual training?",
+                    options: [
+                        "To memorize religious verses",
+                        "To perform mechanical worship rituals",
+                        "That a man should begin to imbibe godly attributes",
+                        "To build more temples"
+                    ],
+                    correct: 2},
+{
+                    id: 17,
+                    question: "How many main heads is the spiritual process classified under?",
+                    options: [
+                        "Two: meditation and prayer",
+                        "Four: body, mind, spirit, soul",
+                        "Three: karma (action), Upasana (devotion), and Gyana (knowledge)",
+                        "Five: faith, hope, charity, wisdom, compassion"
+                    ],
+                    correct: 2},
+{
+                    id: 4,
+                    question: "What should one do to begin spiritual practice while managing worldly responsibilities?",
+                    options: [
+                        "Abandon all worldly duties completely",
+                        "Pray only during religious holidays",
+                        "Wait until retirement to start spiritual practice",
+                        "Snatch a few minutes from rest time and pray with sincere heart"
+                    ],
+                    correct: 3},
+{
+                    id: 14,
+                    question: "What is the beginning of the spiritual state known as Shabda or Ajapa?",
+                    options: [
+                        "Loud chanting",
+                        "Mind Relaxation",
+                        "Reading scriptures",
+                        "Inner vibrations in the heart"
+                    ],
+                    correct: 3},
+{
+                    id: 21,
+                    question: "What analogy does Babuji use for unwanted thoughts during meditation?",
+                    options: [
+                        "Weeds in a garden that must be pulled out",
+                        "Enemies that must be fought and defeated",
+                        "Dogs barking after a caravan that goes forward without paying heed",
+                        "Clouds that must be blown away by strong winds"
+                    ],
+                    correct: 2},
+{
+                    id: 3,
+                    question: "According to Babuji, what are Chakras?",
+                    options: [
+                        "Physical exercise positions.",
+                        "Centers of concentrated energy of the Real Power of Divine force inherited by man.",
+                        "Religious ceremonies",
+                        "Sacred texts."
+                    ],
+                    correct: 1},
+{
+                    id: 19,
+                    question: "According to Babuji, what type of conception will keep you within bounds and limitations?",
+                    options: [
+                        "Abstract conception",
+                        "Gross conception",
+                        "Subtle conception",
+                        "Divine conception"
+                    ],
+                    correct: 1},
+{
+                    id: 14,
+                    question: "When does natural attraction toward a master develop?",
+                    options: [
+                        "Immediately upon first meeting",
+                        "When convinced of his practical spiritual attainments",
+                        "When impressed by his material success",
+                        "When others recommend him"
+                    ],
+                    correct: 1},
+{
+                    id: 17,
+                    question: "What develops when every action becomes duty for duty's sake?",
+                    options: [
+                        "Selfishness and pride",
+                        "Material success",
+                        "Social recognition",
+                        "Universal love without attachment"
+                    ],
+                    correct: 3},
+{
+                    id: 8,
+                    question: "What happens to people who blindly follow forms and symbols without applying reason?",
+                    options: [
+                        "They achieve quick enlightenment",
+                        "They develop stronger faith",
+                        "They become natural leaders",
+                        "Their vision becomes limited and they remain in a confined sphere"
+                    ],
+                    correct: 3},
+{
+                    id: 25,
+                    question: "According to Babuji, what external ways of life help cultivate moderation?",
+                    options: [
+                        "Strict dietary rules and physical austerities",
+                        "Gentle and polite language, courteous dealing, sympathy, and reverence to elders",
+                        "Isolation from society and minimal communication",
+                        "Following rigid daily schedules and routines"
+                    ],
+                    correct: 1},
+{
+                    id: 39,
+                    question: "When is the position of Parishad bestowed?",
+                    options: [
+                        "To all advanced practitioners",
+                        "Under rare circumstances when Nature stands in dire need",
+                        "After a fixed period of practice",
+                        "To those who ask for it"
+                    ],
+                    correct: 1},
+{
+                    id: 12,
+                    question: "How should one judge the real worth of a spiritual guide?",
+                    options: [
+                        "By his popularity and number of followers",
+                        "By his wealth and social status",
+                        "By his eloquence and speaking ability",
+                        "By associating with him and testing his practical spiritual attainments"
+                    ],
+                    correct: 3},
+{
+                    id: 18,
+                    question: "How does the Guru's affection compare to a mother's affection?",
+                    options: [
+                        "People know very little of the Guru's affection, and still less of God's affection",
+                        "It is less than a mother's affection",
+                        "It is exactly the same as a mother's affection",
+                        "It is more visible and obvious than a mother's affection"
+                    ],
+                    correct: 0},
+{
+                    id: 5,
+                    question: "According to Babuji, where should one seek God?",
+                    options: [
+                        "In particular religions or sects",
+                        "In scriptures",
+                        "In forms and rituals",
+                        "In the innermost core of our heart"
+                    ],
+                    correct: 3},
+{
+                    id: 25,
+                    question: "When is someone truly fit to be a Guru according to Babuji?",
+                    options: [
+                        "When they don't entertain in their heart the slightest impression of being a teacher or Guru",
+                        "When they advertise themselves as a Guru",
+                        "When they have many followers",
+                        "When they have performed many miracles"
+                    ],
+                    correct: 0},
+{
+                    id: 12,
+                    question: "What must we do to solve our spiritual problem?",
+                    options: [
+                        "Stay in the outer circles of existence",
+                        "Trace our steps back from gross existence to finer forms up to the center",
+                        "Accumulate more material knowledge",
+                        "Focus only on the physical world"
+                    ],
+                    correct: 1},
+{
+                    id: 13,
+                    question: "What does Babuji say about the relationship between desires and miseries?",
+                    options: [
+                        "Desires are completely unrelated to miseries",
+                        "Fulfilling all desires eliminates miseries",
+                        "Desires are the main cause of miseries, so their curtailment is the solution",
+                        "Only unfulfilled desires cause miseries"
+                    ],
+                    correct: 2},
+{
+                    id: 20,
+                    question: "What is the surest test of spiritual progress according to Babuji?",
+                    options: [
+                        "Ability to perform miracles",
+                        "Number of followers gained",
+                        "Constant growth of lightness of mind and spirit",
+                        "Amount of time spent in meditation"
+                    ],
+                    correct: 2},
+{
+                    id: 10,
+                    question: "How does babuji differentiate between salvation and liberation?",
+                    options: [
+                        "They are the same thing",
+                        "Salvation is higher than liberation",
+                        "Liberation is temporary, salvation is permanent",
+                        "Salvation is temporary pause in rebirth rotation; liberation ends the endless circle of rebirth"
+                    ],
+                    correct: 3},
+{
+                    id: 2,
+                    question: "Why is there constant feud among representatives of different religions?",
+                    options: [
+                        "They have different holy books",
+                        "They compete for followers",
+                        "They have different worship methods",
+                        "They talk about God but inwardly might be no better than atheists"
+                    ],
+                    correct: 3},
+{
+                    id: 25,
+                    question: "How many tendencies of mind do thinkers classify?",
+                    options: [
+                        "Three",
+                        "Four",
+                        "Five",
+                        "Seven"
+                    ],
+                    correct: 2},
+{
+                    id: 16,
+                    question: "According to Babuji, what is the most appropriate conception of a Guru?",
+                    options: [
+                        "As a spiritual mother",
+                        "As a strict teacher",
+                        "As a business partner",
+                        "As a distant deity"
+                    ],
+                    correct: 0},
+{
+                    id: 1,
+                    question: "According to Babuji, what is the ultimate goal of spiritual practice?",
+                    options: [
+                        "To accumulate good karma and achieve material success.",
+                        "To reach the Superactive Centre or Zero, returning to the primeval cause",
+                        "To develop psychic powers and supernatural abilities",
+                        "To become a religious teacher and guide others."
+                    ],
+                    correct: 1},
+{
+                    id: 24,
+                    question: "What characterizes Gurumata disciples?",
+                    options: [
+                        "They seek only material benefits",
+                        "They obey the Master's commands and try to submit to his will",
+                        "They question everything the Master says",
+                        "They practice independently without guidance"
+                    ],
+                    correct: 1},
+{
+                    id: 12,
+                    question: "How does the 'Sahaj Marg' system accomplish inner cleaning compared to Hatha Yoga?",
+                    options: [
+                        "Through harder physical practices",
+                        "Through expensive equipment",
+                        "Through easy mental practices aided by teacher's transmitted power",
+                        "Through isolation from society"
+                    ],
+                    correct: 2},
+{
+                    id: 23,
+                    question: "Through what medium is the link between mortal and Immortal established?",
+                    options: [
+                        "Sacred texts and scriptures",
+                        "Religious ceremonies",
+                        "The Master who is connected with the Immortal",
+                        "Personal meditation practice"
+                    ],
+                    correct: 2},
+{
+                    id: 28,
+                    question: "What alternative method does Babuji suggest for those incapable of finer means to develop Divine love?",
+                    options: [
+                        "Performing elaborate rituals and ceremonies",
+                        "Engaging in severe physical austerities",
+                        "Playing the part of a lover as if enacting a drama",
+                        "Seeking the company of other devotees"
+                    ],
+                    correct: 2},
+{
+                    id: 30,
+                    question: "What eventually happens to the Master's form during deep meditation?",
+                    options: [
+                        "It becomes more vivid and detailed",
+                        "It transforms into light",
+                        "It disappears from sight and leads to pure Reality",
+                        "It becomes permanently fixed in vision"
+                    ],
+                    correct: 2},
+{
+                    id: 11,
+                    question: "What serves as the base of the entire universe according to the mathematical analogy?",
+                    options: [
+                        "The number one",
+                        "Infinity",
+                        "Complex equations",
+                        "Zero"
+                    ],
+                    correct: 3},
+{
+                    id: 19,
+                    question: "What is the second of the four Sadhanas?",
+                    options: [
+                        "Viveka (discrimination)",
+                        "Devotion (bhakti)",
+                        "Meditation (dhyana)",
+                        "Vairagya (renunciation)"
+                    ],
+                    correct: 3},
+{
+                    id: 17,
+                    question: "Why do modern Gita teachers and Preachers fail to produce the desired effect?",
+                    options: [
+                        "People are not interested",
+                        "They lack power to transmit the conditions they speak about",
+                        "The text is too old",
+                        "They don't speak loudly enough"
+                    ],
+                    correct: 1},
+{
+                    id: 16,
+                    question: "What was special about how Lord Krishna taught Arjuna the Gita?",
+                    options: [
+                        "He used simple language",
+                        "He transmitted the very conditions into Arjuna's heart, not just words",
+                        "He gave him a written text",
+                        "He performed miracles"
+                    ],
+                    correct: 1},
+{
+                    id: 24,
+                    question: "What does Babuji say about the disciple's role in spiritual advancement?",
+                    options: [
+                        "The disciple should remain completely passive",
+                        "The disciple should do their utmost to advance and not neglect their duty",
+                        "Only the master should work",
+                        "Disciples don't need to make any effort"
+                    ],
+                    correct: 1},
+{
+                    id: 3,
+                    question: "What is submission to the will of the Master also called?",
+                    options: [
+                        "The end of spiritual practice",
+                        "The beginning of self-surrender",
+                        "Complete enlightenment",
+                        "The final goal of life"
+                    ],
+                    correct: 1},
+{
+                    id: 11,
+                    question: "Why is faith in the Master considered important?",
+                    options: [
+                        "Masters are always perfect beings",
+                        "The Master is the only medium through whom divine impulse comes",
+                        "Masters have magical powers",
+                        "It's a traditional requirement"
+                    ],
+                    correct: 1},
+{
+                    id: 28,
+                    question: "At the highest stage of surrender, how does one view the question of right or wrong?",
+                    options: [
+                        "They become confused about morality",
+                        "They rely on social conventions",
+                        "The question doesn't arise, or they're certain that following Master's will is the only right thing",
+                        "They develop their own moral code"
+                    ],
+                    correct: 2},
+{
+                    id: 21,
+                    question: "How many circles depict the various stages of egoism?",
+                    options: [
+                        "Seven",
+                        "Nine",
+                        "Eleven",
+                        "Sixteen"
+                    ],
+                    correct: 2},
+{
+                    id: 11,
+                    question: "Who is cited as a beautiful example of surrender by Babuji?",
+                    options: [
+                        "Arjuna in the battlefield",
+                        "Lord Krishna",
+                        "Sage Valmiki",
+                        "Bharata, son of Dasharatha"
+                    ],
+                    correct: 3},
+{
+                    id: 22,
+                    question: "Why do beginners often complain about feeling nothing during meditation?",
+                    options: [
+                        "The effect is beyond their conception at early stages",
+                        "They are not sincere enough",
+                        "They have bad karma",
+                        "They use wrong techniques"
+                    ],
+                    correct: 0},
+{
+                    id: 28,
+                    question: "What does Kabirdas call those who stick only to the physical form of the Master?",
+                    options: [
+                        "True devotees",
+                        "Guru Pashu",
+                        "Perfect disciples",
+                        "Spiritual aspirants"
+                    ],
+                    correct: 1},
+{
+                    id: 20,
+                    question: "If a disciple enters the Guru's mental sphere surrendering all belongings, how long does spiritual birth take?",
+                    options: [
+                        "One year",
+                        "Seven months",
+                        "Three months",
+                        "Seven years"
+                    ],
+                    correct: 1},
+{
+                    id: 7,
+                    question: "What does Babuji identify as the most important factor for speedy spiritual success?",
+                    options: [
+                        "Following strict dietary restrictions and fasting",
+                        "Performing elaborate rituals and ceremonies",
+                        "Intense longing and impatience to reach the goal",
+                        "Reading many spiritual texts and gaining theoretical knowledge"
+                    ],
+                    correct: 2},
+{
+                    id: 15,
+                    question: "For the sake of facility, how do we connect our link with the Master?",
+                    options: [
+                        "Through complex philosophical study",
+                        "Through expensive rituals",
+                        "In the light of worldly relationships",
+                        "Through isolation and asceticism"
+                    ],
+                    correct: 2},
+{
+                    id: 7,
+                    question: "What does the author say about the 'inner voice' that people claim to follow?",
+                    options: [
+                        "It's the play of their undisciplined mind",
+                        "It's always reliable and truthful",
+                        "It should be followed without question.",
+                        "It's a sign of advanced spiritual achievement"
+                    ],
+                    correct: 0},
+{
+                    id: 9,
+                    question: "What should be the proper attitude in prayer according to Babuji?",
+                    options: [
+                        "Asking for specific material benefits and worldly success",
+                        "Standing before Him as a humble suppliant presenting to Him our true state and completely resigning ourselves to His will.",
+                        "Demanding answers and signs from the divine",
+                        "Focusing primarily on the prayers of others rather than personal communication"
+                    ],
+                    correct: 1},
+{
+                    id: 34,
+                    question: "What is Sahaj Samadhi?",
+                    options: [
+                        "The finest concentration where one is busy with work but settled on the Real in the heart's core",
+                        "Complete unconsciousness during meditation",
+                        "A temporary trance state",
+                        "Deep sleep during meditation"
+                    ],
+                    correct: 0},
+{
+                    id: 20,
+                    question: "What does Babuji say about concentration in relation to meditation?",
+                    options: [
+                        "Concentration must be achieved before meditation can begin",
+                        "Concentration is a separate practice from meditation",
+                        "Concentration is the natural result of proper meditation in due course",
+                        "Concentration is more important than meditation"
+                    ],
+                    correct: 2},
+{
+                    id: 24,
+                    question: "What does Babuji identify as 'the worst drawback and the deadliest poison to spiritual life'?",
+                    options: [
+                        "Anger and hatred",
+                        "Material attachment",
+                        "Feeling of despondency",
+                        "Pride and ego"
+                    ],
+                    correct: 2},
+{
+                    id: 21,
+                    question: "What does real spiritual training accomplish?",
+                    options: [
+                        "Makes the mind disciplined and regulated",
+                        "Restores moderation in senses and faculties",
+                        "Creates lightness of spirit",
+                        "Increases material wealth"
+                    ],
+                    correct: [0, 1, 2], // A,B,C answers are correct
+                    multiSelect: true},
+{
+                    id: 29,
+                    question: "How does Uparati differ from Vairagya?",
+                    options: [
+                        "Vairagya produces aversion for worldly objects while Uparati is free from both attraction and repulsion",
+                        "They are exactly the same",
+                        "Uparati is easier to achieve",
+                        "Vairagya is more advanced than Uparati"
+                    ],
+                    correct: 0},
+{
+                    id: 8,
+                    question: "What does mere consciousness of God accomplish?",
+                    options: [
+                        "Guarantees immediate enlightenment",
+                        "Eliminates all worldly problems",
+                        "Makes meditation unnecessary",
+                        "Cures many evils of the mind and removes difficulties"
+                    ],
+                    correct: 3},
+{
+                    id: 13,
+                    question: "What is the relationship between man's composition and the universe?",
+                    options: [
+                        "Man's composition is exactly the same as that of the universe",
+                        "They are completely different",
+                        "Man's composition is simpler than the universe",
+                        "Man's composition is more complex than the universe"
+                    ],
+                    correct: 0},
+{
+                    id: 20,
+                    question: "How does the author describe the ultimate spiritual state?",
+                    options: [
+                        "Full of bliss and joy",
+                        "Constant meditation",
+                        "Complete knowledge of scriptures",
+                        "A state where even consciousness of peace fails - neither Anandam nor otherwise"
+                    ],
+                    correct: 3},
+{
+                    id: 37,
+                    question: "Who has mastery over Brahmanda Mandal?",
+                    options: [
+                        "A Vasu",
+                        "A Dhruva",
+                        "A Dhruvadhipati",
+                        "A Parishad"
+                    ],
+                    correct: 1},
+{
+                    id: 19,
+                    question: "What does the author say about teachers who stop the normal functioning of the mind during sittings?",
+                    options: [
+                        "It's the highest form of spiritual practice",
+                        "It's a feat of jugglery and misuse of power",
+                        "It's necessary for all students",
+                        "It's the quickest path to realization"
+                    ],
+                    correct: 1},
+{
+                    id: 4,
+                    question: "What does the author call the 'greatest evil' and 'deadliest poison to spiritual life'?",
+                    options: [
+                        "Ignorance",
+                        "Poverty",
+                        "Prejudice",
+                        "Pride"
+                    ],
+                    correct: 2},
+{
+                    id: 18,
+                    question: "What does Babuji suggest about the ideal kept in view during modern chanting practices?",
+                    options: [
+                        "It is the highest possible ideal",
+                        "It is not the highest; most remain in touch with gross physical forms of gods",
+                        "It varies from person to person appropriately",
+                        "It is perfectly aligned with ancient traditions"
+                    ],
+                    correct: 1},
+{
+                    id: 20,
+                    question: "What type of faith usually leads to disastrous results?",
+                    options: [
+                        "Faith based on experience",
+                        "Faith based on reason",
+                        "Blind faith based on outward show",
+                        "Faith developed through a period of time"
+                    ],
+                    correct: 2},
+{
+                    id: 11,
+                    question: "What happens to people who stick to solid forms of worship throughout their life?",
+                    options: [
+                        "They achieve the highest spiritual attainment",
+                        "They become spiritually powerful",
+                        "They wade deep through the mire of ungodliness and become like 'living stones'",
+                        "They become great teachers"
+                    ],
+                    correct: 2},
+{
+                    id: 7,
+                    question: "What does Babuji say about the principle that a disciple can never break from their Guru?",
+                    options: [
+                        "It is a sacred, unbreakable law",
+                        "It is mentioned in all scriptures",
+                        "It is a cunning device by false Gurus and nothing but fraud",
+                        "It should be followed in all circumstances"
+                    ],
+                    correct: 2},
+{
+                    id: 9,
+                    question: "Who can achieve the highest spiritual flight according to the simplified course described? ",
+                    options: [
+                        "Men",
+                        "Women",
+                        "Young people",
+                        "Old people",
+                        "Householders",
+                        "Recluses"
+                    ],
+                    correct: [0, 1, 2, 3,4,5], // All answers are correct
+                    multiSelect: true},
+{
+                    id: 2,
+                    question: "What does Babuji identify as the main obstacle to India's spiritual freedom?",
+                    options: [
+                        "Political interference",
+                        "Economic challenges",
+                        "Want of capacity for broader vision and freethinking",
+                        "Foreign influence"
+                    ],
+                    correct: 2},
+{
+                    id: 14,
+                    question: "What is Sankirtan (congregational chanting) compared to?",
+                    options: [
+                        "The song of angels",
+                        "The groans of a sick man that offer temporary consolation",
+                        "The roar of a lion",
+                        "The whisper of the divine"
+                    ],
+                    correct: 1},
+{
+                    id: 28,
+                    question: "What was special about the Babuji Master's approach to disciples?",
+                    options: [
+                        "He demanded complete submission",
+                        "He performed many miracles",
+                        "He treated associates as brethren and never considered them disciples",
+                        "He charged high fees"
+                    ],
+                    correct: 2},
+{
+                    id: 21,
+                    question: "When can blind faith be advantageous?",
+                    options: [
+                        "Always, in every situation",
+                        "Never, under any circumstances",
+                        "Only for beginners in spirituality",
+                        "Only when the path and guide are accidentally the right ones"
+                    ],
+                    correct: 3},
+{
+                    id: 1,
+                    question: "According to Babuji, what is the primary cause of our present moral and religious degradation?",
+                    options: [
+                        "Lack of religious scriptures",
+                        "Our environment and wrong training",
+                        "Absence of temples and places of worship",
+                        "Modern technology and lifestyle."
+                    ],
+                    correct: 1},
+{
+                    id: 18,
+                    question: "According to Babuji, are we practicing concentration or meditation?",
+                    options: [
+                        "Concentration",
+                        "Meditation",
+                        "Both equally",
+                        "Neither"
+                    ],
+                    correct: 1},
+{
+                    id: 26,
+                    question: "According to Babuji, what is the problem with the artificial state of 'Aham Brahmasmi'?",
+                    options: [
+                        "It's too difficult to achieve",
+                        "It's the highest spiritual attainment",
+                        "It requires expensive training",
+                        "It's not false and imaginary, created by repetition"
+                    ],
+                    correct: 3},
+{
+                    id: 18,
+                    question: "What is the fundamental requirement for someone to free others from spiritual bondage?",
+                    options: [
+                        "They must have read many books",
+                        "They must be wealthy",
+                        "They must be famous",
+                        "They must be themselves free from bondages of Samskaras, Maya, and Ahankar"
+                    ],
+                    correct: 3},
+{
+                    id: 22,
+                    question: "By which circle are we almost free from egoism?",
+                    options: [
+                        "11th circle",
+                        "14th circle",
+                        "16th circle",
+                        "18th circle"
+                    ],
+                    correct: 2},
+{
+                    id: 13,
+                    question: "What does Babuji condemn regarding certain training methods?",
+                    options: [
+                        "Methods that are too easy",
+                        "Methods that tax the brain or overburden the mind",
+                        "Methods that are too inexpensive",
+                        "Methods that involve community participation"
+                    ],
+                    correct: 1},
+{
+                    id: 15,
+                    question: "How should one view children and family members to practice service?",
+                    options: [
+                        "As personal possessions",
+                        "As sources of attachment",
+                        "As children of God entrusted to our care",
+                        "As obstacles to spiritual progress"
+                    ],
+                    correct: 2},
+{
+                    id: 20,
+                    question: "What does Babuji say about the relationship between religion and spirituality?",
+                    options: [
+                        "They are the same thing",
+                        "Religion is higher than spirituality",
+                        "Spirituality begins where religion ends",
+                        "They should never be separated"
+                    ],
+                    correct: 2},
+{
+                    id: 12,
+                    question: "What was Bharata's response when all eyes turned to him to command Rama to return?",
+                    options: [
+                        "It is not for me to command but only to follow",
+                        "I will think about it",
+                        "Rama must return immediately",
+                        "I cannot make this decision"
+                    ],
+                    correct: 0},
+{
+                    id: 22,
+                    question: "According to Babuji, what is necessary for complete success in spiritual life?",
+                    options: [
+                        "High intelligence and scholarly knowledge",
+                        "Favorable circumstances and supportive environment",
+                        "Intense longing for the goal and iron will to achieve it",
+                        "Previous spiritual experience from past lives"
+                    ],
+                    correct: 2},
+{
+                    id: 10,
+                    question: "What becomes of one's will in the state of complete surrender?",
+                    options: [
+                        "It becomes stronger and more independent",
+                        "It disappears completely",
+                        "It becomes completely subservient to the will of the Master",
+                        "It becomes focused only on material success"
+                    ],
+                    correct: 2},
+{
+                    id: 11,
+                    question: "What should a conscientious Guru do if they cannot take a disciple further?",
+                    options: [
+                        "Keep the disciple anyway",
+                        "Direct the disciple to seek another more advanced Guru.",
+                        "Ask for more money",
+                        "Blame the disciple's lack of devotion"
+                    ],
+                    correct: 1},
+{
+                    id: 36,
+                    question: "What is a Rishi's designation in the spiritual hierarchy?",
+                    options: [
+                        "Dhruva",
+                        "Vasu",
+                        "Parishad",
+                        "Maha Parishad"
+                    ],
+                    correct: 1},
+{
+                    id: 18,
+                    question: "What is Viveka (discrimination)?",
+                    options: [
+                        "Choosing between good and bad actions",
+                        "Recognizing that worldly things are changeable forms of Maya and seeking the eternal",
+                        "Distinguishing between different religions",
+                        "Selecting the right spiritual teacher"
+                    ],
+                    correct: 1},
+{
+                    id: 40,
+                    question: "What is the highest godly post mentioned?",
+                    options: [
+                        "Parishad",
+                        "Dhruvadhipati",
+                        "Maha Parishad",
+                        "Vasu"
+                    ],
+                    correct: 2
+                },
+{
+                    id: 13,
+                    question: "What does 'Nishkam Upasana' mean according to Babuji?",
+                    options: [
+                        "Devotion with specific worldly desires",
+                        "Devotion without keeping any worldly object in view or caring for satisfaction of desires",
+                        "Devotion only on special occasion",
+                        "Devotion with multiple goals"
+                    ],
+                    correct: 1},
+{
+                    id: 7,
+                    question: "According to the text, what components contribute to our grossness in cruder forms?",
+                    options: [
+                        "Body, mind, and spirit",
+                        "Thoughts, actions, and words",
+                        "Manas (psyche), Chit (consciousness), Buddhi (intellect) and Ahankar (ego)",
+                        "Past, present, and future"
+                    ],
+                    correct: 2},
+{
+                    id: 7,
+                    question: "What is the sequence mentioned in the text regarding spiritual progression?",
+                    options: [
+                        "Religion → Reality → Spirituality → Bliss",
+                        "Spirituality → Religion → Reality → Bliss",
+                        "Religion → Spirituality → Reality → Bliss",
+                        "Reality → Religion → Spirituality → Bliss"
+                    ],
+                    correct: 2},
+{
+                    id: 17,
+                    question: "What quality makes a mother's heart special according to Babuji?",
+                    options: [
+                        "Strictness and discipline",
+                        "Intelligence and knowledge",
+                        "Wealth and social status",
+                        "Ability to forbear with patience all troubles while seeking son's comfort"
+                    ],
+                    correct: 3},
+{
+                    id: 13,
+                    question: "What is the real test of a Mahatma or Guru according to Babuji?",
+                    options: [
+                        "Their miracles and extraordinary ways",
+                        "Their extensive knowledge of scriptures",
+                        "Their practical attainments on the path of realization",
+                        "The number of disciples they have"
+                    ],
+                    correct: 2},
+{
+                    id: 16,
+                    question: "What is described as the highest possible point of human approach?",
+                    options: [
+                        "Union with incarnations like Rama and Krishna",
+                        "Achieving supernatural powers",
+                        "A state of complete negation, Nothingness or Zero",
+                        "Reaching heaven"
+                    ],
+                    correct: 2},
+{
+                    id: 17,
+                    question: "What excuse do people commonly give for not practicing meditation?",
+                    options: [
+                        "They don't believe in its effectiveness",
+                        "They are too busy and have no time",
+                        "They lack the proper environment",
+                        "They don't have a teacher"
+                    ],
+                    correct: 1},
+{
+                    id: 10,
+                    question: "How should one remain connected with the Supreme Power?",
+                    options: [
+                        "Only during meditation hours",
+                        "Only during religious ceremonies",
+                        "Only when facing problems",
+                        "With an unbroken chain of thought during all activities"
+                    ],
+                    correct: 1},
+{
+                    id: 29,
+                    question: "What does true faith represent in terms of courage?",
+                    options: [
+                        "Physical bravery in dangerous situations",
+                        "The courage to challenge authority",
+                        "Emotional courage in relationships",
+                        "Dauntless courage that leads to success"
+                    ],
+                    correct: 3},
+{
+                    id: 19,
+                    question: "What happens when you submit to a Guru who has pride and ego?",
+                    options: [
+                        "You inherit the same feeling of pride, hampering spiritual advancement",
+                        "You become more spiritual",
+                        "Nothing particular happens",
+                        "You gain worldly success"
+                    ],
+                    correct: 0},
+{
+                    id: 12,
+                    question: "According to Babuji, what causes rebirth?",
+                    options: [
+                        "Divine punishment for sins",
+                        "Unfulfilled desires and incomplete spiritual practices",
+                        "Samskaras that remain to be worked out through Bhog",
+                        "Attachment to a particular physical form"
+                    ],
+                    correct: 2},
+{
+                    id: 16,
+                    question: "What is described as the foundation of the entire structure of spirituality?",
+                    options: [
+                        "Meditation practice",
+                        "Knowledge of scriptures",
+                        "Devotional rituals",
+                        "Faith"
+                    ],
+                    correct: 3},
+{
+                    id: 4,
+                    question: "What is 'Anubhava Shakti'?",
+                    options: [
+                        "Physical strength",
+                        "Intuitive Capacity of the finest type",
+                        "Mental power",
+                        "Devotional capacity"
+                    ],
+                    correct: 1},
+{
+                    id: 24,
+                    question: "What helpful idea does Babuji suggest for spiritual pursuit?",
+                    options: [
+                        "Thinking of oneself as already enlightened",
+                        "Considering the Guru as the Supreme Divine force",
+                        "Avoiding all worldly responsibilities",
+                        "Practicing only ancient traditions"
+                    ],
+                    correct: 1},
+{
+                    id: 10,
+                    question: "According to Babuji, when does a disciple have the right to break from their Guru?",
+                    options: [
+                        "Never, under any circumstances",
+                        "Only with the Guru's permission",
+                        "When they find wrong selection, misjudged capacity, or need someone more advanced",
+                        "Only after many years of practice"
+                    ],
+                    correct: 2},
+{
+                    id: 6,
+                    question: "What are described as 'coverings round the soul'?",
+                    options: [
+                        "Physical bodies only",
+                        "Grosser forms of existence acquired",
+                        "Material possessions",
+                        "Emotional attachments"
+                    ],
+                    correct: 1},
+{
+                    id: 25,
+                    question: "When eating breakfast, what should one think according to the suggested practice?",
+                    options: [
+                        "About the nutritional value of food",
+                        "About gratitude for the food",
+                        "About the day's work ahead",
+                        "That the Master is breaking his fast"
+                    ],
+                    correct: 3},
+{
+                    id: 17,
+                    question: "In the diagram of spiritual circles, where does the state of liberation lie?",
+                    options: [
+                        "At the center",
+                        "In the outermost circle",
+                        "Between the 2nd and 3rd circles",
+                        "Between the 5th and 6th circles"
+                    ],
+                    correct: 2},
+{
+                    id: 5,
+                    question: "What do we begin to feel as self-surrender develops?",
+                    options: [
+                        "Physical weakness",
+                        "Mental confusion",
+                        "Ourselves overpowered by some great force",
+                        "Increased worldly desires"
+                    ],
+                    correct: 2},
+{
+                    id: 27,
+                    question: "What does Babuji say about the real state of 'Aham Brahmasmi'?",
+                    options: [
+                        "It's the final goal of spirituality",
+                        "It's not really a high attainment and consciousness of self still exists",
+                        "It should be the focus of all practice",
+                        "It's impossible to achieve"
+                    ],
+                    correct: 1},
+{
+                    id: 31,
+                    question: "What role does Nature play according to Babuji when samskaras need to be worked out?",
+                    options: [
+                        "Nature opposes the process and creates obstacles",
+                        "Nature remains neutral and uninvolved",
+                        "Nature helps by creating fields for Bhog to remove impressions",
+                        "Nature accelerates the formation of new samskaras"
+                    ],
+                    correct: 2},
+{
+                    id: 6,
+                    question: "What is self-surrender defined as by Babuji?",
+                    options: [
+                        "Complete loss of individual identity",
+                        "Blind obedience without understanding",
+                        "Emotional dependence on the Master",
+                        "A state of complete resignation to the Master's will with total disregard of self"
+                    ],
+                    correct: 3},
+{
+                    id: 8,
+                    question: "What brings about the effects that create virtue and vice?",
+                    options: [
+                        "Divine intervention",
+                        "Social conditioning",
+                        "Samskaras (impressions)",
+                        "Natural instincts"
+                    ],
+                    correct: 2},
+{
+                      id: 1,
+                    question: "According to Babuji, what is the general view most people take of the problem of life?",
+                    options: [
+                        "To achieve spiritual enlightenment",
+                        "To secure a decent living with desired comforts and prominence",
+                        "To understand the mysteries of existence",
+                        "To serve humanity selflessly"
+                    ],
+                    correct: 1},
+{
+                    id: 4,
+                    question: "According to Babuji, what is true renunciation (Vairagya)?",
+                    options: [
+                        "Leaving home and family to become a religious mendicant",
+                        "Giving away all material possessions and living in poverty",
+                        "Complete isolation from society and human contact",
+                        "Non-attachment to worldly objects while still possessing and using things as duty requires"
+                    ],
+                    correct: 3},
+{
+                    id: 11,
+                    question: "What does the term 'Bhog' refer to?",
+                    options: [
+                        "Material enjoyment and worldly pleasures",
+                        "Bhog does not only mean undergoing the effect of our past actions but it really means passing through the process of unfolding the intricacies of the point which we have already arrived at.",
+                        "Sacred food offered to deities",
+                        "A state of complete meditation"
+                    ],
+                    correct: 1},
+{
+                    id: 1,
+                    question: "What is the main limitation of books in spiritual practice according to Babuji?",
+                    options: [
+                        "They are too expensive to acquire.",
+                        "They may help with superficial knowledge but practical approach through them alone is impossible",
+                        "They contain outdated information",
+                        "They are written in difficult language."
+                    ],
+                    correct: 1},
+{
+                    id: 31,
+                    question: "What is the last of the six Sampattis?",
+                    options: [
+                        "Shradha (faith)",
+                        "Titiksha (fortitude)",
+                        "Samadhan (self-settledness to Master's will)",
+                        "Uparati (self-withdrawal)"
+                    ],
+                    correct: 1},
+{
+                    id: 15,
+                    question: "What is the relationship between knowledge and realization according to Babuji?",
+                    options: [
+                        "They are the same thing",
+                        "Knowledge is superior to realization",
+                        "Knowledge is brain achievement while realization is soul awakening, far beyond its scope",
+                        "Both are equally important"
+                    ],
+                    correct: 2},
+{
+                    id: 9,
+                    question: "What happens when a sound spiritual connection is established?",
+                    options: [
+                        "The disciple becomes immediately enlightened",
+                        "Spiritual force flows automatically according to the disciple's absorbing capacity.",
+                        "The Guru gains more power",
+                        "Material benefits start flowing"
+                    ],
+                    correct: 1},
+{
+                    id: 27,
+                    question: "How does a worthy master respond to emotional outbursts of love and devotion from disciples?",
+                    options: [
+                        "He encourages and amplifies them",
+                        "He immediately rejects such displays",
+                        "He puts up with them patiently, waiting for true faith to develop",
+                        "He uses them to manipulate the disciple"
+                    ],
+                    correct: 2},
+{
+                    id: 1,
+                    question: "What are the three elementary factors that contribute to success on the path of realization?",
+                    options: [
+                        "Love, devotion, and surrender",
+                        "Will, faith, and confidence",
+                        "Knowledge, experience, and wisdom",
+                        "Practice, discipline, and perseverance"
+                    ],
+                    correct: 1},
+{
+                    id: 17,
+                    question: "According to Babuji, what constitutes the 'rock' for building spiritual edifice?",
+                    options: [
+                        "Faith in reality, the right course, and a worthy Master",
+                        "Devotion to rituals and ceremonies",
+                        "Accumulation of spiritual knowledge",
+                        " Regular practice of meditation"
+                    ],
+                    correct: 0},
+{
+                    id: 30,
+                    question: "According to the Babuji's conclusion, what is the only thing that solves our problem of life?",
+                    options: [
+                        "True faith",
+                        "Perfect knowledge of scriptures",
+                        "Complete detachment from the world",
+                        "Continuous meditation practice"
+                    ],
+                    correct: 0},
+{
+                    id: 13,
+                    question: "According to Babuji, which scripture deals with the state of surrender?",
+                    options: [
+                        "The Ramayana",
+                        "The Upanishads",
+                        "The Bhagavad Gita",
+                        "The Vedas"
+                    ],
+                    correct: 2},
+{
+                    id: 1,
+                    question: "Why do most people believe they cannot spare time for devotion and worship?",
+                    options: [
+                        "They lack spiritual understanding",
+                        " They are too busy with worldly pursuits and material problems",
+                        "They don't believe in God",
+                        "They prefer other forms of spiritual practice"
+                    ],
+                    correct: 1},
+{
+                    id: 18,
+                    question: "What does Babuji say about longing for realization?",
+                    options: [
+                        "Material longing is superior to spiritual longing",
+                        "Both types of longing are equally harmful",
+                        "our longing for the realization of the goal is great, our negligent or sluggish habits will not stand in the way.",
+                        "It is perfectly aligned with ancient traditions"
+                    ],
+                    correct: 2},
+{
+                    id: 12,
+                    question: "What are the two main instruments for building the temple of spirituality?",
+                    options: [
+                        "Knowledge and wisdom",
+                        "Prayer and meditation",
+                        "Service and sacrifice",
+                        "Faith and devotion"
+                    ],
+                    correct: 2},
+{
+                    id: 14,
+                    question: "When does the state of surrender begin?",
+                    options: [
+                        "From the first day of spiritual practice",
+                        "After complete negation of all senses and faculties",
+                        "When one becomes wealthy",
+                        "During childhood"
+                    ],
+                    correct: 1},
+{
+                    id: 2,
+                    question: "According to Babuji, what is the very first thing to be seriously considered when selecting a spiritual path?",
+                    options: [
+                        "The popularity of the path",
+                        "The age and tradition of the path",
+                        "That the path is the right one leading directly to our goal",
+                        "The cost and accessibility of the path"
+                    ],
+                    correct: 2},
+{
+                    id: 5,
+                    question: "From where can the existence of the soul be traced back to?",
+                    options: [
+                        "Birth of the physical body",
+                        "The time of creation when soul existed in naked form as separate entity",
+                        "In forms and rituals",
+                        "In the innermost core of our heart"
+                    ],
+                    correct: 1},
+{
+                    id: 1,
+                    question: "What will you probably find if you are in quest of someone who has truly realized God?",
+                    options: [
+                        "None such among those who talk about God",
+                        "Many such people among religious speakers",
+                        "Only elderly religious leaders",
+                        "People in monasteries and ashrams"
+                    ],
+                    correct: 0},
+{
+                    id: 27,
+                    question: "What happens when one maintains the outlook that the Master is doing everything?",
+                    options: [
+                        "One loses individual identity completely",
+                        "One develops dependency issues",
+                        "One remains in constant remembrance and actions cause no impression",
+                        "One becomes lazy and irresponsible"
+                    ],
+                    correct: 2},
+{
+                    id: 10,
+                    question: "What analogy does Babuji use to explain the temporary nature of image worship?",
+                    options: [
+                        "Like training wheels on a bicycle",
+                        "Like teaching writing to a baby using printed letters",
+                        "Like learning to swim with floats",
+                        "Like using a ladder to climb"
+                    ],
+                    correct: 1},
+{
+                    id: 9,
+                    question: "According to the author, what is the main problem we face?",
+                    options: [
+                        "Deliverance from pain and misery",
+                        "Achieving worldly success",
+                        "Freedom from bondage, which is the ultimate cause of pain and misery",
+                        "Pleasing God for worldly gains"
+                    ],
+                    correct: 2},
+{
+                    id: 18,
+                    question: "What does devotion accomplish on the spiritual path?",
+                    options: [
+                        "Makes our passage smooth and creates a channel for Godly current",
+                        "Guarantees instant results",
+                        "Eliminates need for practice",
+                        "Provides material benefits"
+                    ],
+                    correct: 0},
+{
+                    id: 8,
+                    question: "When should a disciple be formally initiated according to Babuji?",
+                    options: [
+                        "Immediately upon meeting the Guru",
+                        "Only when true faith exists and Divine love takes prime root in the heart",
+                        "After paying appropriate fees",
+                        "When the Guru decides it's time"
+                    ],
+                    correct: 1},
+{
+                    id: 16,
+                    question: "What does Babuji say about domestic troubles in household life?",
+                    options: [
+                        "They should be avoided by leaving family life",
+                        "They are unnecessary obstacles to spiritual progress",
+                        "They serve as training grounds for patience and the greatest form of penance",
+                        "They indicate spiritual failure"
+                    ],
+                    correct: 2},
+{
+                    id: 25,
+                    question: "What does Babuji criticize about artificial methods of developing Gyan (Gnosticism)?",
+                    options: [
+                        "They are mechanical processes that lead to internal grossness",
+                        "They are too expensive",
+                        "They are too easy",
+                        "They require too much intelligence"
+                    ],
+                    correct: 0},
+{
+                    id: 3,
+                    question: "What is required to truly solve the question of births and deaths according to Babuji?",
+                    options: [
+                        "Theoretical knowledge of scriptures.",
+                        "Following different creeds.",
+                        "Practical experience in the spiritual field and acquiring 'Anubhava Shakti'",
+                        "Academic study of philosophy."
+                    ],
+                    correct: 2},
+{
+                    id: 9,
+                    question: "Why did ancient sages introduce solid forms of worship?",
+                    options: [
+                        "Because it was the most effective method",
+                        "To make worship more beautiful",
+                        "As a convenient means for masses who found worship of Immaterial Absolute difficult",
+                        "To create religious institutions"
+                    ],
+                    correct: 2},
+{
+                    id: 21,
+                    question: "What do aspirants typically feel during proper meditation?",
+                    options: [
+                        "Intense emotions and visions",
+                        "Simplicity and calmness",
+                        "Physical sensations",
+                        "Supernatural powers"
+                    ],
+                    correct: 1},
+{
+                    id: 22,
+                    question: "What is absolutely essential for proper spiritual training?",
+                    options: [
+                        "Expensive books",
+                        "A worthy master with power of transmission",
+                        "Living in a cave",
+                        "Giving up all possessions"
+                    ],
+                    correct: 1},
+{
+                    id: 27,
+                    question: "At the higher stage of self-surrender, what happens to one's discretionary power?",
+                    options: [
+                        "It becomes stronger",
+                        "It becomes more refined",
+                        "It becomes almost extinct",
+                        "It becomes focused on spiritual matters only"
+                    ],
+                    correct: 2},
+{
+                    id: 25,
+                    question: "What is the purpose of the detailed description of spiritual circles according to the author?",
+                    options: [
+                        "To confuse readers",
+                        "To show off knowledge",
+                        "To enable people to judge so-called great Doctors of Divinity who claim perfection",
+                        "To encourage spiritual practice"
+                    ],
+                    correct: 2},
+{    
+                    id: 1,
+                    question: "According to Babuji, what has happened to present-day religion?",
+                    options: [
+                        "It has evolved to meet modern needs.",
+                        "It has become only a relic of the past with outer forms intact but inner spirit lost",
+                        "It has become more relevant than ever",
+                        "It has successfully adapted to changing times."
+                    ],
+                    correct: 1},
+{
+                    id: 14,
+                    question: "What does Babuji say about having a goal of life in relation to 'Nishkam' devotion?",
+                    options: [
+                        "Having any goal makes devotion impure",
+                        "Goals should be avoided completely",
+                        "It doesn't stop us from fixing our mind upon the goal of life, which is essential",
+                        "Only worldly goals are prohibited"
+                    ],
+                    correct: 2},
+{
+                    id: 22,
+                    question: "What is the difference between transmission and natural radiation of Paramanus?",
+                    options: [
+                        "There is no difference",
+                        "Transmission is weaker",
+                        "Transmission is voluntary, targeted, and permanent; radiation is automatic, general, and temporary",
+                        "Radiation only comes from saints"
+                    ],
+                    correct: 2},
+{
+                    id: 11,
+                    question: "What does Babuji identify as the starting point of spiritual training?",
+                    options: [
+                        "Memorizing scriptures",
+                        "Inner cleaning or purification of Chakras",
+                        "Doing Prayer",
+                        "Donating to charity"
+                    ],
+                    correct: 1},
+{
+                    id: 15,
+                    question: "What does genuine faith in a worthy master help accomplish?",
+                    options: [
+                        "Guarantees material success",
+                        "Eliminates the need for personal effort",
+                        "Dispels doubt and removes difficulties from the spiritual path",
+                        "Provides instant enlightenment"
+                    ],
+                    correct: 2},
+{
+                    id: 16,
+                    question: "What benefit comes from treating family as God's children?",
+                    options: [
+                        "They become more obedient",
+                        "We get rid of undue attachment and remove obstacles from our path",
+                        "We earn more money",
+                        "We become popular in society"
+                    ],
+                    correct: 1},
+{
+                    id: 6,
+                    question: "What does 'God helps those who help themselves' mean?",
+                    options: [
+                        "We should depend entirely on our own efforts",
+                        "God only helps people who are wealthy",
+                        "Self-help is more important than prayer",
+                        "We must exert ourselves for our responsibilities while working according to God's will"
+                    ],
+                    correct: 3},
+{
+                    id: 29,
+                    question: "According to Babuji, what happens to desires when we achieve true renunciation (Vairagya)?",
+                    options: [
+                        "They multiply and become stronger",
+                        "They are completely destroyed forever",
+                        "They are redirected toward spiritual goals only",
+                        "We become free from desires and feel contented with what is available"
+                    ],
+                    correct: 3},
+{
+                    id: 6,
+                    question: "What does Babuji recommend for dealing with unwanted thoughts during meditation?",
+                    options: [
+                        "Forcefully suppress them through mental struggle",
+                        "Analyze them deeply to understand their origin",
+                        "Stop meditation immediately when they arise",
+                        "Treat them as uninvited guests and remain unmindful of them"
+                    ],
+                    correct: 3},
+{
+                    id: 26,
+                    question: "What does Babuji say about praying for worldly ends?",
+                    options: [
+                        "It is always appropriate and encouraged",
+                        "It should be the primary focus of prayer",
+                        "It is a folly except in exceptional cases when basic necessities are lacking",
+                        "It is completely forbidden under all circumstances"
+                    ],
+                    correct: 2},
+{
+                    id: 10,
+                    question: "What does Babuji claim about Raja Yoga compared to other spiritual practices?",
+                    options: [
+                        "It is one of many equally effective paths to realization",
+                        "It is only suitable for advanced practitioners",
+                        "It is the only practice that can lead to the ultimate destination and highest point of human approach",
+                        "It should be combined with other practices for best results"
+                    ],
+                    correct: 2},
+{
+                    id: 13,
+                    question: "What should one avoid when selecting a spiritual master?",
+                    options: [
+                        "Following him blindly due to outward display of knowledge",
+                        "Testing his knowledge",
+                        "Spending time to understand his methods",
+                        "Asking questions about his teachings"
+                    ],
+                    correct: 0},
+{
+                    id: 2,
+                    question: "What did the saint ask Maulana Rumi to do before accepting him as a disciple?",
+                    options: [
+                        "Memorize all spiritual texts",
+                        "Fast for 40 days",
+                        "Throw all his books into the river",
+                        "Give away all his wealth"
+                    ],
+                    correct: 2},
+{
+                    id: 12,
+                    question: "According to Babuji, what is Bhakti in relation to the spiritual goal?",
+                    options: [
+                        "The ultimate goal itself",
+                        "A means of achieving the goal, not the goal itself",
+                        "An unnecessary practice",
+                        "Only for beginners"
+                    ],
+                    correct: 1},
+{
+                    id: 5,
+                    question: "When should one preferably pray according to Babuji?",
+                    options: [
+                        "At bed-time",
+                        "During lunch break",
+                        "Early morning only",
+                        "Only on weekends"
+                    ],
+                    correct: 0},
+{
+                    id: 19,
+                    question: "How does the disciple get nourishment while in the Guru's mental sphere?",
+                    options: [
+                        "Through physical food and water",
+                        "Through reading spiritual books",
+                        "Through performing rituals",
+                        "By sucking energy from spiritual waves of the Guru's thoughts"
+                    ],
+                    correct: 3},
+{
+                    id: 2,
+                    question: "What are Samskaras according to Babuji?",
+                    options: [
+                        "Sacred mantras used in meditation",
+                        "Physical postures in yoga practice",
+                        "Impressions formed by thoughts and actions that create coverings around the soul",
+                        "Religious ceremonies and rituals"
+                    ],
+                    correct: 2},
+{
+                    id: 20,
+                    question: "Why do people often remain at the lowest spiritual level despite years of practice?",
+                    options: [
+                        "They lack proper guidance",
+                        "They meditate only at fixed hours and remain away from God most of the day",
+                        "They don't follow the right religion",
+                        "They are not meant for spiritual life"
+                    ],
+                    correct: 1},
+{
+                    id: 8,
+                    question: "What does Lord Krishna say in the Gita about worship of gods according to Babuji?",
+                    options: [
+                        "It leads directly to liberation",
+                        "It may lead you at most to their sphere only, which is limited",
+                        "It is the highest form of worship",
+                        "It is unnecessary"
+                    ],
+                    correct: 1},
+{
+                    id: 8,
+                    question: "According to Babuji, what is required for the true inner voice to be heard?",
+                    options: [
+                        "Regular fasting",
+                        "Expensive spiritual courses",
+                        "Living in isolation",
+                        "Mind must be in a state of perfect peace, moderation and free from all pollutions"
+                    ],
+                    correct: 3},
+{
+                    id: 3,
+                    question: "When do most people turn to God according to Babuji?",
+                    options: [
+                        "During regular worship times",
+                        "When they want to show devotion",
+                        "Only when they are in distress or misery",
+                        "During religious festivals"
+                    ],
+                    correct: 2},
+{
+                    id: 29,
+                    question: "What is Babuji's final advice about Guru selection?",
+                    options: [
+                        "Accept any available Guru quickly",
+                        "Choose based on popularity",
+                        "Select based on miraculous powers",
+                        "Better to remain without a Guru all life than submit to an unworthy one"
+                    ],
+                    correct: 3},
+{
+                    id: 1,
+                    question: "What is the purpose of practicing Bhakti or devotion?",
+                    options: [
+                        "To gain material benefits",
+                        "To achieve communion with the Supreme Master",
+                        "To become popular in society",
+                        "To develop intellectual knowledge"
+                    ],
+                    correct: 1},
+{
+                    id: 23,
+                    question: "What characterizes a person who makes rapid spiritual progress?",
+                    options: [
+                        "They meditate for many hours daily",
+                        "They read many spiritual books",
+                        "They retain the meditation effect throughout the day and remain in constant remembrance",
+                        "They perform elaborate rituals"
+                    ],
+                    correct: 2},
+{
+                    id: 10,
+                    question: "What does Babuji say about the difficulty of God realization?",
+                    options: [
+                        "It requires many lifetimes of hard labor",
+                        "It's impossible for ordinary people",
+                        "God is simple and can be achieved by equally simple means",
+                        "It requires expensive rituals"
+                    ],
+                    correct: 2},
+{
+                    id: 14,
+                    question: "How does Babuji compare the mind to a clock?",
+                    options: [
+                        "Both need regular winding to function properly",
+                        "Both become obsolete with technological advancement",
+                        "The mind keeps track of time like a clock",
+                        "The mind is like the pendulum of a clock. A clock goes all right so long as the movement of the pendulum is regulated."
+                    ],
+                    correct: 3},
+{
+                    id: 26,
+                    question: "When does real faith begin to assume the form of self-surrender?",
+                    options: [
+                        "At the beginning of spiritual practice",
+                        "At the final stage of Shraddha in the four Sadhanas of Yoga",
+                        "After reading spiritual texts",
+                        "During meditation practice"
+                    ],
+                    correct: 1},
+{
+                    id: 5,
+                    question: "What is the Babuji's view on the mind?",
+                    options: [
+                        "It is inherently evil and should be crushed or killed",
+                        "It is both the source of evil and good, requiring proper training rather than suppression to realize our highest self.",
+                        "It should be completely emptied of all thoughts during meditation",
+                        "It is irrelevant to spiritual progress and should be ignored"
+                    ],
+                    correct: 1},
+{
+                    id: 10,
+                    question: "What is described as a great impediment to spiritual advancement?",
+                    options: [
+                        "Lack of material resources",
+                        "Heaviness of mind or internal denseness caused by gross forms of worship",
+                        "Too much meditation",
+                        "Social isolation"
+                    ],
+                    correct: 1},
+{
+                    id: 38,
+                    question: "What is the sphere of work for a Dhruvadhipati?",
+                    options: [
+                        "A small locality",
+                        "A larger region than Dhruva",
+                        "The whole world",
+                        "Multiple worlds"
+                    ],
+                    correct: 2},
+{
+                    id: 21,
+                    question: "Why is the spiritual birth process generally delayed?",
+                    options: [
+                        "The Guru is not capable enough",
+                        "The disciple retains consciousness of his own thoughts and feelings",
+                        "External circumstances prevent it",
+                        "The timing is not astrologically favorable"
+                    ],
+                    correct: 1},
+{
+                    id: 5,
+                    question: "How does a true devotee view joy and sorrow?",
+                    options: [
+                        "Joy is good and sorrow is bad",
+                        "Both are meaningless to him; everything is a boon from the Beloved",
+                        "Joy should be celebrated and sorrow avoided",
+                        "Both should be analyzed philosophically"
+                    ],
+                    correct: 1},
+{
+                    id: 10,
+                    question: "What analogy is used to describe our movement within Maya?",
+                    options: [
+                        "Like fish swimming in water",
+                        "Like birds flying in the sky",
+                        "Like the rim of a wheel, going round with ceaseless motion ever farther from the pivot",
+                        "Like leaves blown by the wind"
+                    ],
+                    correct: 2},
+{
+                    id: 24,
+                    question: "What remains after crossing the 16th circle?",
+                    options: [
+                        "Pure consciousness",
+                        "Divine light",
+                        "A mere identity, which is still in gross form",
+                        "Absolute nothingness"
+                    ],
+                    correct: 2},
+{
+                    id: 33,
+                    question: "How many forms of Samadhi are described?",
+                    options: [
+                        "Two",
+                        "Four",
+                        "Five",
+                        "Three"
+                    ],
+                    correct: 3},
+{
+                    id: 29,
+                    question: "How is the genuine state of Aham Brahmasmi originally caused?",
+                    options: [
+                        "By mechanical repetition",
+                        "By consciousness (Chaitanyata) that develops under proper guidance",
+                        "By reading scriptures",
+                        "By performing rituals"
+                    ],
+                    correct: 1},
+{
+                    id: 24,
+                    question: "What is the positive approach to Vairagya suggested?",
+                    options: [
+                        "Accepting one thing only as real and sticking to it wholeheartedly",
+                        "Rejecting everything as illusion",
+                        "Avoiding all worldly activities",
+                        "Criticizing material possessions"
+                    ],
+                    correct: 0},
+{
+                    id: 13,
+                    question: "What is the fundamental basis of the temple of spirituality?",
+                    options: [
+                        "Love",
+                        "Faith",
+                        "Knowledge",
+                        "Discipline"
+                    ],
+                    correct: 0},
+{
+                    id: 24,
+                    question: "Faith is described as one of the six Sampattis of which Sadhana of Yoga?",
+                    options: [
+                        "The first Sadhana",
+                        "The third Sadhana",
+                        "The second Sadhana",
+                        "The fourth Sadhana"
+                    ],
+                    correct: 1},
+{
+                    id: 8,
+                    question: "What happens when we surrender ourselves to the great Master?",
+                    options: [
+                        "We attract a constant flow of the highest Divine force from Him",
+                        "We lose all personal abilities",
+                        "We become passive and inactive",
+                        "We gain control over others"
+                    ],
+                    correct: 3},
+{
+                    id: 25,
+                    question: "With what does submission begin?",
+                    options: [
+                        "Love and devotion",
+                        "Meditation practice",
+                        "Philosophical understanding",
+                        "Obedience"
+                    ],
+                    correct: 3},
+{
+                    id: 27,
+                    question: "How should a true spiritual teacher view their position?",
+                    options: [
+                        "As a master over disciples",
+                        "As someone superior to others",
+                        "As the humblest servant of God, serving humanity in the great Master's name",
+                        "As divinely appointed"
+                    ],
+                    correct: 2},
+{
+                    id: 23,
+                    question: "What characterizes Manamata disciples?",
+                    options: [
+                        "They have complete surrender to the Guru",
+                        "They approach the Guru with particular worldly ends in view",
+                        "They are the most advanced disciples",
+                        "They practice intense meditation"
+                    ],
+                    correct: 1},
+{
+                    id: 9,
+                    question: "How do we remain in relation to Maya?",
+                    options: [
+                        "We successfully avoid its influence",
+                        "We whirl round within its glossy sphere, clinging to objects thinking them to be Reality",
+                        "We control it through meditation",
+                        "We are unaffected by it"
+                    ],
+                    correct: 1},
+{
+                    id: 22,
+                    question: "What are the two main classifications of disciples mentioned by sages?",
+                    options: [
+                        "Manamata and Gurumata",
+                        "Devoted and casual",
+                        "Intelligent and simple",
+                        "Beginner and advanced"
+                    ],
+                    correct: 0},
+{
+                    id: 9,
+                    question: "What must be renounced to reach the final point of realization?",
+                    options: [
+                        "All material possessions only",
+                        "Family relationships only",
+                        "Samskaras, Maya, and egoism",
+                        "All social interactions"
+                    ],
+                    correct: 2},
+{
+                    id: 27,
+                    question: "Where does the Sahaj Marg system start in Ashtanga Yoga?",
+                    options: [
+                        "From Yama (ethical restraints)",
+                        "From Asana (physical postures)",
+                        "From Pranayama (breath control)",
+                        "From Dhyana, the seventh step, fixing mind on a point for meditation"
+                    ],
+                    correct: 3},
+{
+                    id: 5,
+                    question: "What is the main problem with modern Guru selection according to Babuji?",
+                    options: [
+                        "People are too busy to choose properly",
+                        "There are no real Gurus available",
+                        "People select anyone without regard to capabilities, often influenced by miracles or persuasion",
+                        "Spiritual texts don't provide guidance"
+                    ],
+                    correct: 2},
+{
+                    id: 19,
+                    question: "What creates disturbances and worries in our minds?",
+                    options: [
+                        "Physical illness",
+                        "Lack of money",
+                        "Conflicting ideas",
+                        "Social pressure"
+                    ],
+                    correct: 2},
+{
+                    id: 17,
+                    question: "What does Babuji recommend regarding ideas that creep into the mind during meditation?",
+                    options: [
+                        "Fight against them vigorously",
+                        "Stop meditation immediately",
+                        "Analyze each idea thoroughly",
+                        "Go on with meditation unmindful of the foreign ideas"
+                    ],
+                    correct: 3},
+{
+                    id: 16,
+                    question: "What was the first covering in man's composition after creation?",
+                    options: [
+                        "The consciousness of individuality",
+                        "Physical body",
+                        "Emotional feelings",
+                        "Mental thoughts"
+                    ],
+                    correct: 0},
+{
+                    id: 8,
+                    question: "According to Babuji, what is moderation?",
+                    options: [
+                        "Eating only vegetarian food and avoiding all pleasures",
+                        "Balance in all senses and faculties, using only what is naturally required",
+                        "Following a middle path between extreme wealth and poverty",
+                        "Meditating for exactly the same amount of time each day"
+                    ],
+                    correct: 1},
+{
+                    id: 4,
+                    question: "What characterizes a true devotee?",
+                    options: [
+                        "One who prays regularly for favors",
+                        "One who loves God merely for love's sake, not for worldly interest",
+                        "One who performs many rituals",
+                        "One who reads many scriptures"
+                    ],
+                    correct: 1},
+{
+                    id: 18,
+                    question: "What erroneous view of faith do some people hold?",
+                    options: [
+                        "That faith requires continuous effort",
+                        "That faith must be proven through actions",
+                        "That faith develops gradually over time",
+                        "That faith alone is enough regardless of path or guide"
+                    ],
+                    correct: 3},
+{
+                    id: 33,
+                    question: "According to Babuji, what is the result of giving attention to unwanted ideas to check them?",
+                    options: [
+                        "They gradually disappear",
+                        "They lose their power over us",
+                        "The mind becomes more disciplined",
+                        "Concentration is naturally there which breeds power and makes them stronger"
+                    ],
+                    correct: 3},
+{
+                    id: 8,
+                    question: "What is Maya described as?",
+                    options: [
+                        "Pure illusion with no reality",
+                        "A Godly power that brought creation into existence and regulates its working",
+                        "Evil force opposing God",
+                        "Human imagination"
+                    ],
+                    correct: 1},
+{
+                    id: 9,
+                    question: "Why is simply beginning things in God's name often ineffective?",
+                    options: [
+                        "Because it's too simple a practice",
+                        "Because it's only a matter of formality with no real significance",
+                        "Because it's an outdated custom",
+                        "Because it requires special training"
+                    ],
+                    correct: 1},
+{
+                    id: 30,
+                    question: "What does Babuji recommend as the right course of training for a spiritual aspirant?",
+                    options: [
+                        "Proceed under guidance of a true and worthy master",
+                        "Follow the most natural way",
+                        "Maintain due regard to inner cleanliness",
+                        "Practice complete moderation in senses and faculties"
+                    ],
+                    correct: [0, 1, 2 , 3], // A,B,C,D answers are correct
+                    multiSelect: true},
+{
+                    id: 9,
+                    question: "How does a person in complete surrender view their possessions?",
+                    options: [
+                        "As personal achievements to be proud of",
+                        "As nothing in the world belonging to them, but everything as sacred trust from Master",
+                        "As obstacles to spiritual progress",
+                        "As gifts from God to be enjoyed"
+                    ],
+                    correct: 1},
+{
+                    id: 21,
+                    question: "What is Yogic transmission according to the text?",
+                    options: [
+                        "A form of mesmerism or hypnotism",
+                        "The power to infuse Yogic energy by will force and remove spiritual obstructions",
+                        "Simply feeling calm in a saint's presence",
+                        "Learning through books"
+                    ],
+                    correct: 1},
+{
+                    id: 20,
+                    question: "After crossing the fifth circle, which region do we enter?",
+                    options: [
+                        "Heart region",
+                        "Mind region",
+                        "Central region",
+                        "Pind region"
+                    ],
+                    correct: 1},
+{
+                    id: 28,
+                    question: "According to Babuji,True faith is described as being beyond the scope of what?",
+                    options: [
+                        "Human understanding",
+                        "Religion",
+                        "Rational thought",
+                        "Spiritual practice"
+                    ],
+                    correct: 1},
+{
+                    id: 18,
+                    question: "What is 'Avyakta Gati'?",
+                    options: [
+                        "A type of meditation",
+                        "Undifferentiated state where one is totally free from bounds of Maya",
+                        "A spiritual practice",
+                        "A form of devotion"
+                    ],
+                    correct: 1},
+{
+                    id: 32,
+                    question: "What is the fourth and final Sadhana called?",
+                    options: [
+                        "Viveka",
+                        "Vairagya",
+                        "Mumukshu",
+                        "Samadhi"
+                    ],
+                    correct: 2},
+{
+                    id: 2,
+                    question: "What happens as we become closely intimate with the Master through devotion?",
+                    options: [
+                        "We gain supernatural powers",
+                        "We become wealthy and successful",
+                        "Every other object loses prominence in our eyes",
+                        "We become detached from all relationships"
+                    ],
+                    correct: 2},
+{
+                    id: 30,
+                    question: "What does 'Bhog' really mean in spiritual context?",
+                    options: [
+                        "Mental Suffering",
+                        "Passing through the process of unfolding the intricacies of the point already arrived at",
+                        "Material Enjoyment",
+                        "Physical Suffering"
+                    ],
+                    correct: 1
+                },
+{
+                    id: 14,
+                    question: "When is service to fellow beings considered service to God?",
+                    options: [
+                        "Always, regardless of motive",
+                        "Only when done in a temple",
+                        "Only when helping religious people",
+                        "When done selflessly without selfish motive"
+                    ],
+                    correct: 3},
+{
+                    id: 3,
+                    question: "Why do people remain entangled with Maya?",
+                    options: [
+                        "Because they lack proper education",
+                        "Because they attach primary importance to worldly interests alone",
+                        "Because they are inherently sinful",
+                        "Because they choose the wrong religion"
+                    ],
+                    correct: 1
+},
+{
+                    id: 19,
+                    question: "Which ancient sage is mentioned as having reached the state of Avyakta Gati?",
+                    options: [
+                        "Garga",
+                        "Atreya",
+                        "Raja Janak",
+                        "Narada"
+                    ],
+                    correct: 2
+},
+{
+                    id: 5,
+                    question: "What should one do before coming to a conclusion about a spiritual path?",
+                    options: [
+                        "Follow what the majority does",
+                        "Trust only ancient traditions",
+                        "Apply reason and experience with due consideration and trial",
+                        "Rely solely on emotional attraction"
+                    ],
+                    correct: 2},
+{
+                    id: 23,
+                    question: "What does the Sahaj Marg system start with instead of Viveka and Vairagya?",
+                    options: [
+                        "Physical exercises",
+                        "Reading scriptures",
+                        "Devotional singing",
+                        "The third Sadhana, specifically Sham (peaceful condition of mind)"
+                    ],
+                    correct: 3},
+{
+                    id: 30,
+                    question: "What is Titiksha?",
+                    options: [
+                        "The state of emotional excitement",
+                        "The state of fortitude where one is satisfied with what God allots",
+                        "The practice of severe austerities",
+                        "The study of sacred texts"
+                    ],
+                    correct: 1},
+{
+                    id: 20,
+                    question: "What makes Vairagya genuine and lasting?",
+                    options: [
+                        "Sudden emotional experiences",
+                        "Thorough cleaning and due moderation",
+                        "External circumstances",
+                        "Reading spiritual texts"
+                    ],
+                    correct: 1},
+{
+                    id: 2,
+                    question: "When do people typically turn their minds toward God?",
+                    options: [
+                        "During regular daily prayers",
+                        "When they are happy and successful",
+                        "When they are in deep distress or misery",
+                        "During religious festivals only"
+                    ],
+                    correct: 2},
+{
+                    id: 13,
+                    question: "What happens when one concentrates on solid idol form according to Babuji?",
+                    options: [
+                        "They become enlightened",
+                        "They develop psychic powers",
+                        "They become inwardly solid themselves",
+                        "They gain material benefits"
+                    ],
+                    correct: 2},
+{
+                    id: 12,
+                    question: "What does Saint Kabir say about worshipping stone?",
+                    options: [
+                        "It is the best form of worship",
+                        "If worshipping stone can reach God, he'd rather worship a mountain, or better yet, a grinding-stone that feeds the world",
+                        "Stone worship is ancient and sacred",
+                        "Stones contain divine energy"
+                    ],
+                    correct: 1},
+{
+                    id: 4,
+                    question: "Why should one NOT follow a path simply because it is the oldest?",
+                    options: [
+                        "Because old paths are always wrong",
+                        "Because the oldest path may be ill-suited to changed world conditions",
+                        "Because new paths are always better",
+                        "Because old paths are too difficult"
+                    ],
+                    correct: 1},
+{
+                    id: 26,
+                    question: "When does our submission in the true sense begin?",
+                    options: [
+                        "From the first meeting with the Master",
+                        "When we are perfectly convinced of his superior capabilities",
+                        "When we start regular practice",
+                        "When others recommend the Master"
+                    ],
+                    correct: 1},
+{
+                    id: 23,
+                    question: "What minimum spiritual level should a teacher reach before training others?",
+                    options: [
+                        "Basic meditation skills",
+                        "Knowledge of all scriptures",
+                        "Ability to perform miracles",
+                        "Approach up to Brahmand Mandal where everything appears in subtle form"
+                    ],
+                    correct: 3},
+{
+                    id: 23,
+                    question: "What does Babuji say about self-confidence in spiritual pursuit?",
+                    options: [
+                        "It can lead to spiritual pride and should be avoided",
+                        "It is essential, as we have the capacity to achieve the highest perfection",
+                        "It should be balanced with complete humility",
+                        "It is less important than faith in the teacher"
+                    ],
+                    correct: 1},
+{
+                    id: 19,
+                    question: "Can a person reach their spiritual destination by taking the opposite direction?",
+                    options: [
+                        "Yes, if they have enough faith",
+                        "Yes, if they try hard enough",
+                        "No, it's impossible regardless of faith",
+                        "Only with a perfect master"
+                    ],
+                    correct: 2},
+{
+                    id: 24,
+                    question: "What happens to inadequately prepared spiritual teachers who train others prematurely?",
+                    options: [
+                        "They become more powerful",
+                        "They lose their own power and get contaminated with disciples' Samskaras and grossness",
+                        "Nothing happens",
+                        "They gain more disciples"
+                    ],
+                    correct: 1},
+{
+                    id: 23,
+                    question: "Which ancient sage does Babuji believe could have secured approach up to the 16th circle?",
+                    options: [
+                        "Raja Janak",
+                        "Tulsidas",
+                        "Vyasa",
+                        "Kabir"
+                    ],
+                    correct: 3},
+{
+                    id: 6,
+                    question: "What is Para Brahma described as?",
+                    options: [
+                        "The creator of the universe",
+                        "Beyond quality, activity, or consciousness",
+                        "The supreme judge",
+                        "The protector of devotees"
+                    ],
+                    correct: 1},
+{
+                    id: 26,
+                    question: "What does Babuji say about someone who thinks of themselves as a Guru?",
+                    options: [
+                        "They are blessed by God",
+                        "It's a natural progression",
+                        "It shows proper confidence",
+                        "If the idea crosses their mind even once, they become unworthy of being a Guru for his whole life"
+                    ],
+                    correct: 3},
+{
+                    id: 15,
+                    question: "How did Chaitanya Mahaprabhu conduct Sankirtans?",
+                    options: [
+                        "In public spaces for everyone",
+                        "Behind closed doors with only thoroughly known good and pious people",
+                        "In temples with priests",
+                        "In forests alone"
+                    ],
+                    correct: 1},
+{
+                    id: 26,
+                    question: "How should one handle tempting distractions, like seeing an attractive dance?",
+                    options: [
+                        "Think that the Master, not you, is seeing the dance",
+                        "Immediately look away and pray",
+                        "Ignore it completely",
+                        "Consider it a test of faith"
+                    ],
+                    correct: 0},
+{
+                    id: 4,
+                    question: "Why do most self-effort practitioners remain stuck at preliminary stages?",
+                    options: [
+                        "They lack dedication",
+                        "They face slippery conditions where they go up but slip down again",
+                        "They don't have enough time",
+                        "They are not intelligent enough"
+                    ],
+                    correct: 1},
+{
+                    id: 16,
+                    question: "What should happen when the mind is properly directed towards God?",
+                    options: [
+                        "We should renounce all worldly activities",
+                        "We feel ourselves in touch with the Supreme Power in all our actions",
+                        "We should stop working entirely",
+                        "We should move to a monastery"
+                    ],
+                    correct: 1},
+{
+                    id: 25,
+                    question: "What happens to faith before reaching the final stage of Shraddha?",
+                    options: [
+                        "It remains constant and unchanging",
+                        "It grows stronger automatically",
+                        "It is artificial and can be formed, lost, or regained many times",
+                        "It becomes unnecessary"
+                    ],
+                    correct: 2},
+{
+                    id: 3,
+                    question: "What often happens when someone adopts a wrong spiritual course?",
+                    options: [
+                        "They become more determined",
+                        "They lose sight of the real thing and are led into false conceptions",
+                        "They automatically find the right path",
+                        "They develop stronger willpower"
+                    ],
+                    correct: 1},
+{
+                    id: 23,
+                    question: "What does Babuji say about people who think initiation alone is enough?",
+                    options: [
+                        "They are completely correct",
+                        "They need complete surrender and the master must be of especially high calibre",
+                        "Initiation is meaningless",
+                        "They should seek multiple initiations"
+                    ],
+                    correct: 1},
+{
+                    id: 6,
+                    question: "What does Babuji warn regarding seeking guidance?",
+                    options: [
+                        "Seeking guidance from gods and demi-gods",
+                        "Seeking guidance from departed souls",
+                        "Following the so-called 'inner voice'",
+                        "Reading religious books"
+                    ],
+                    correct: [0, 1, 2], // A,B,C are correct
+                    multiSelect: true},
+{
+                    id: 11,
+                    question: "How can one accomplish constant connection with God during daily activities?",
+                    options: [
+                        "By stopping all worldly work",
+                        "By treating all actions as Divine duty entrusted by the Great Master",
+                        "By changing one's profession to religious work",
+                        "By moving to a monastery"
+                    ],
+                    correct: 1},
+{
+                    id: 15,
+                    question: "From which sphere did Rama and Krishna descend according to Babuji?",
+                    options: [
+                        "Brahmalok",
+                        "Vaikunth",
+                        "Mahamaya",
+                        "Kailash"
+                    ],
+                    correct: 2},
+{
+                    id: 21,
+                    question: "What is the story of Kabirdas at the cremation ground meant to illustrate?",
+                    options: [
+                        "The power of holy men",
+                        "That temporary Vairagya from sudden causes is short-lived, while true detachment remains constant",
+                        "The importance of visiting cremation grounds",
+                        "How to recognize holy people"
+                    ],
+                    correct: 1},
+{
+                    id: 19,
+                    question: "According to Babuji, what happens when we try to suppress the mind by force?",
+                    options: [
+                        "It becomes completely still and peaceful",
+                        "It rebounds and counteracts, causing greater disturbance",
+                        "It gradually becomes weaker and more controllable",
+                        "It transforms into a higher state of consciousness"
+                    ],
+                    correct: 1},
+{
+                    id: 16,
+                    question: "What is most needed according to Babuji to secure absolute freedom from bondage?",
+                    options: [
+                        "More rituals and ceremonies",
+                        "Following traditional practices",
+                        "To become the lightest and finest, corresponding with godly attributes",
+                        "Studying more scriptures"
+                    ],
+                    correct: 2},
+{
+                    id: 3,
+                    question: "What does Babuji say about miseries and sufferings?",
+                    options: [
+                        "They should be avoided at all costs through desire fulfillment.",
+                        "They are completely unnecessary and harmful to spiritual progress.",
+                        "They are like bitter medicine that can contribute to spiritual betterment when properly understood",
+                        "They are signs of divine punishment for past sins."
+                    ],
+                    correct: 2},
+{
+                    id: 7,
+                    question: "What is the real cause of diversion from the path of duty?",
+                    options: [
+                        "Lack of time due to work",
+                        "Financial constraints",
+                        "Misdirected activities of the undisciplined mind",
+                        "Family responsibilities"
+                    ],
+                    correct: 2},
+{
+                    id: 4,
+                    question: "What condition does self-surrender bring about in the mind?",
+                    options: [
+                        "Increased mental activity",
+                        "A stationary condition stopping oscillations of the mind",
+                        "Complete unconsciousness",
+                        "Enhanced emotional reactions"
+                    ],
+                    correct: 3},
+{
+                    id: 3,
+                    question: "According to Babuji, what are the indicators of proper spiritual progress?",
+                    options: [
+                        "Internal peace and calmness.",
+                        "Simplicity and lightness",
+                        "Expensive religious ceremonies",
+                        "Moderation in senses and faculties."
+                    ],
+                    correct: [0, 1, 3], // A,B,D are correct
+                    multiSelect: true},
+{
+                    id: 5,
+                    question: "According to Babuji, what is his view on spiritual attainment in household life (Grihastha Ashram)?",
+                    options: [
+                        "It's impossible to achieve",
+                        "It's inferior to renunciation",
+                        "Higher attainments in spirituality are possible in household life",
+                        "It requires special permissions"
+                    ],
+                    correct: 2},
+{
+                    id: 12,
+                    question: "What is the main limitation of Gurus who base their teaching on scriptural knowledge?",
+                    options: [
+                        "They don't know enough texts",
+                        "They may be at the lowest level regarding practical attainments despite impressive learning",
+                        "They charge too much money",
+                        "They don't attract enough followers"
+                    ],
+                    correct: 1},
+{
+                    id: 17,
+                    question: "What effect do vibrations from mixed groups in chanting have?",
+                    options: [
+                        "They purify everyone equally",
+                        "The pious effect of pure minds gets spoiled by evil effect of impious minds",
+                        "They create harmony among all participants",
+                        "They have no particular effect"
+                    ],
+                    correct: 1},
+{
+                    id: 14,
+                    question: "How does Babuji define a true Mahatma?",
+                    options: [
+                        "As a great personality with impressive powers",
+                        "As the most insignificant being beyond all feelings of greatness, dwelling in complete self-negation",
+                        "As someone who knows all scriptures",
+                        "As a person who can perform miracles."
+                    ],
+                    correct: 1},
+{
+                    id: 28,
+                    question: "What is the ultimate spiritual destination according to the author?",
+                    options: [
+                        "The state of Aham Brahmasmi",
+                        "Complete negation where everything ends, including the idea of 'I'",
+                        "Accumulation of spiritual powers",
+                        "Recognition by other spiritual teachers"
+                    ],
+                    correct: 1
+                }
+            ];
+
+            useEffect(() => {
+                let timer;
+                if (gameStarted && !gameOver && timeLeft > 0 && !showResult) {
+                    timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
+                } else if (timeLeft === 0 && !showResult) {
+                    handleTimeUp();
+                }
+                return () => clearTimeout(timer);
+            }, [timeLeft, gameStarted, gameOver, showResult]);
+
+            const handleTimeUp = () => {
+                // Move to next question without awarding points
+                setShowResult(true);
+                setSelectedAnswers([]);
+                setQuestionsAnswered(questionsAnswered + 1);
+                setCanProceed(true);
+            };
+
+            const handleAnswerClick = (answerIndex) => {
+                if (showResult) return;
+                
+                const currentQ = questions[currentQuestion];
+                
+                if (currentQ.multiSelect) {
+                    // Handle multiple selection
+                    const newSelectedAnswers = selectedAnswers.includes(answerIndex)
+                        ? selectedAnswers.filter(index => index !== answerIndex)
+                        : [...selectedAnswers, answerIndex];
+                    
+                    setSelectedAnswers(newSelectedAnswers);
+                } else {
+                    // Handle single selection
+                    setSelectedAnswers([answerIndex]);
+                    setShowResult(true);
+                    setQuestionsAnswered(questionsAnswered + 1);
+                    setCanProceed(true);
+                    
+                    const isCorrect = answerIndex === currentQ.correct;
+                    
+                    if (isCorrect) {
+                        setTotalPoints(totalPoints + pointsPerQuestion);
+                        setCorrectAnswers(correctAnswers + 1);
+                    }
+                }
+            };
+
+            const handleSubmitMultiSelect = () => {
+                const currentQ = questions[currentQuestion];
+                setShowResult(true);
+                setQuestionsAnswered(questionsAnswered + 1);
+                setCanProceed(true);
+                
+                // Check if all correct answers are selected and no wrong answers
+                const correctAnswersArray = Array.isArray(currentQ.correct) ? currentQ.correct : [currentQ.correct];
+                const isCorrect = selectedAnswers.length === correctAnswersArray.length && 
+                                 selectedAnswers.every(answer => correctAnswersArray.includes(answer));
+                
+                if (isCorrect) {
+                    setTotalPoints(totalPoints + pointsPerQuestion);
+                    setCorrectAnswers(correctAnswers + 1);
+                }
+            };
+
+            const handleNextQuestion = () => {
+                if (currentQuestion < questions.length - 1) {
+                    setCurrentQuestion(currentQuestion + 1);
+                    setSelectedAnswers([]);
+                    setShowResult(false);
+                    setTimeLeft(60);
+                    setCanProceed(false);
+                } else {
+                    setGameOver(true);
+                }
+            };
+
+            const startGame = () => {
+                setGameStarted(true);
+                setTimeLeft(60);
+            };
+
+            const restartGame = () => {
+                setCurrentQuestion(0);
+                setSelectedAnswers([]);
+                setShowResult(false);
+                setGameStarted(false);
+                setGameOver(false);
+                setTimeLeft(60);
+                setTotalPoints(0);
+                setQuestionsAnswered(0);
+                setCorrectAnswers(0);
+                setCanProceed(false);
+            };
+
+            // Start Screen
+            if (!gameStarted) {
+                return (
+                    <div className="min-h-screen kbc-bg flex items-center justify-center p-4">
+                        <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl shadow-2xl p-8 max-w-2xl w-full text-center border-2 border-yellow-500">
+                            <div className="mb-8">
+                                <h1 className="text-5xl font-bold gold-text mb-4 sparkle">
+                                    Heartfulness Quiz on Designing Destiny
+                                </h1>
+                                <h2 className="text-3xl font-bold text-white mb-2">
+                                    Knowledge Challenge
+                                </h2>
+                                <p className="text-gray-300 text-lg">
+                                    Test your knowledge and earn points!
+                                </p>
+                            </div>
+                            
+                            <div className="bg-gray-800 rounded-2xl p-6 mb-8 border border-gray-600">
+                                <h3 className="text-xl font-bold text-yellow-400 mb-4">Game Rules:</h3>
+                                <div className="text-left text-gray-300 space-y-2">
+                                    <p>• Answer questions to complete the quiz</p>
+                                    <p>• Each question has 60 seconds time limit</p>
+                                    <p>• Earn 100 points for each correct answer</p>
+                                    <p>• Use the "Next" button to proceed to the next question</p>
+                                    <p>• For multiple choice questions, select all correct answers</p>
+                                    <p>• Click submit button for multiple choice questions</p>
+                                    <p>• Game continues even if you answer incorrectly</p>
+                                </div>
+                            </div>
+                            
+                            <button
+                                onClick={startGame}
+                                className="bg-gradient-to-r from-yellow-500 to-orange-500 text-black font-bold py-4 px-8 rounded-2xl hover:from-yellow-400 hover:to-orange-400 transform hover:scale-105 transition-all duration-300 shadow-lg text-xl"
+                            >
+                                START QUIZ
+                            </button>
+                        </div>
+                    </div>
+                );
+            }
+
+            // Game Over Screen
+            if (gameOver) {
+                const percentage = Math.round((correctAnswers / questions.length) * 100);
+                
+                return (
+                    <div className="min-h-screen kbc-bg flex items-center justify-center p-4">
+                        <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl shadow-2xl p-8 max-w-2xl w-full text-center border-2 border-yellow-500">
+                            <div className="mb-8">
+                                <h1 className="text-4xl font-bold gold-text mb-4 sparkle">
+                                    Quiz Complete!
+                                </h1>
+                                <h2 className="text-2xl font-bold text-white mb-4">
+                                    Final Results
+                                </h2>
+                                
+                                <div className="bg-gray-800 rounded-2xl p-6 mb-6 border border-gray-600">
+                                    <h3 className="text-xl font-bold text-yellow-400 mb-2">Your Total Score:</h3>
+                                    <div className="text-6xl font-bold gold-text mb-4 sparkle">
+                                        {totalPoints} Points
+                                    </div>
+                                    <p className="text-gray-300">
+                                        {percentage >= 80 
+                                            ? "🎉 Excellent! You have great knowledge of Heartfulness!" 
+                                            : percentage >= 60 
+                                            ? "👍 Good job! You have solid understanding of Heartfulness." 
+                                            : percentage >= 40
+                                            ? "📚 Not bad! Consider reviewing more about Heartfulness meditation."
+                                            : "🔄 Keep learning! There's always room for improvement."}
+                                    </p>
+                                </div>
+                                
+                                <div className="grid grid-cols-2 gap-4 mb-6">
+                                    <div className="bg-gray-800 rounded-2xl p-4 border border-gray-600">
+                                        <p className="text-green-400 font-bold mb-2">Correct Answers:</p>
+                                        <p className="text-white text-2xl">{correctAnswers} / {questions.length}</p>
+                                    </div>
+                                    <div className="bg-gray-800 rounded-2xl p-4 border border-gray-600">
+                                        <p className="text-blue-400 font-bold mb-2">Accuracy:</p>
+                                        <p className="text-white text-2xl">{percentage}%</p>
+                                    </div>
+                                </div>
+                                
+                                <div className="bg-gray-800 rounded-2xl p-4 mb-6 border border-gray-600">
+                                    <div className="flex justify-between items-center mb-2">
+                                        <span className="text-white font-bold">Score Progress</span>
+                                        <span className="text-yellow-400 font-bold">{totalPoints} / {questions.length * 100}</span>
+                                    </div>
+                                    <div className="w-full bg-gray-700 rounded-full h-4">
+                                        <div
+                                            className="bg-gradient-to-r from-green-500 to-blue-500 h-4 rounded-full transition-all duration-500"
+                                            style={{ width: `${(totalPoints / (questions.length * 100)) * 100}%` }}
+                                        ></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button
+                                onClick={restartGame}
+                                className="bg-gradient-to-r from-green-500 to-blue-500 text-white font-bold py-4 px-8 rounded-2xl hover:from-green-400 hover:to-blue-400 transform hover:scale-105 transition-all duration-300 shadow-lg text-xl"
+                            >
+                                PLAY AGAIN
+                            </button>
+                        </div>
+                    </div>
+                );
+            }
+
+            const currentQ = questions[currentQuestion];
+
+            return (
+                <div className="min-h-screen kbc-bg p-4">
+                    {/* Header */}
+                    <div className="max-w-7xl mx-auto mb-6">
+                        <div className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl shadow-lg p-4 flex items-center justify-between border-2 border-yellow-600">
+                            <div className="flex items-center space-x-6">
+                                <div className="text-2xl font-bold gold-text">
+                                    Question {currentQuestion + 1} / {questions.length}
+                                </div>
+                                <div className="text-xl font-bold text-white">
+                                    Score: <span className="gold-text">{totalPoints} Points</span>
+                                </div>
+                            </div>
+                            
+                            <div className="flex items-center space-x-4">
+                                <div className={`text-2xl font-bold ${timeLeft <= 10 ? 'text-red-500' : 'text-green-500'}`}>
+                                    ⏰ {timeLeft}s
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-4 gap-6">
+                        {/* Score Tracker */}
+                        <div className="lg:col-span-1">
+                            <div className="prize-ladder rounded-2xl p-4 h-fit">
+                                <h3 className="text-xl font-bold gold-text mb-4 text-center">Score Tracker</h3>
+                                <div className="space-y-4">
+                                    <div className="bg-gray-700 rounded-lg p-4 text-center">
+                                        <div className="text-3xl font-bold gold-text mb-2">{totalPoints}</div>
+                                        <div className="text-gray-300">Total Points</div>
+                                    </div>
+                                    <div className="bg-gray-700 rounded-lg p-4 text-center">
+                                        <div className="text-2xl font-bold text-green-400 mb-2">{correctAnswers}</div>
+                                        <div className="text-gray-300">Correct</div>
+                                    </div>
+                                    <div className="bg-gray-700 rounded-lg p-4 text-center">
+                                        <div className="text-2xl font-bold text-red-400 mb-2">{questionsAnswered - correctAnswers}</div>
+                                        <div className="text-gray-300">Wrong</div>
+                                    </div>
+                                    <div className="bg-gray-700 rounded-lg p-4 text-center">
+                                        <div className="text-lg font-bold text-blue-400 mb-2">
+                                            {questionsAnswered > 0 ? Math.round((correctAnswers / questionsAnswered) * 100) : 0}%
+                                        </div>
+                                        <div className="text-gray-300">Accuracy</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Main Game Area */}
+                        <div className="lg:col-span-3">
+                            {/* Question */}
+                            <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl shadow-lg p-8 mb-6 border-2 border-yellow-600">
+                                <h2 className="text-2xl md:text-3xl font-bold text-white leading-relaxed text-center">
+                                    {currentQ.question}
+                                </h2>
+                                {currentQ.multiSelect && (
+                                    <p className="text-yellow-400 text-center mt-4 text-lg font-semibold">
+                                        ⚠️ Multiple Choice Question - Select ALL correct answers
+                                    </p>
+                                )}
+                            </div>
+
+                            {/* Options */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                                {currentQ.options.map((option, index) => {
+                                    const isSelected = selectedAnswers.includes(index);
+                                    const correctAnswersArray = Array.isArray(currentQ.correct) ? currentQ.correct : [currentQ.correct];
+                                    const isCorrect = correctAnswersArray.includes(index);
+                                    
+                                    let buttonClass = "option-button text-white font-bold py-6 px-6 rounded-2xl shadow-lg transition-all duration-300 text-left";
+                                    
+                                    if (currentQ.multiSelect && isSelected && !showResult) {
+                                        buttonClass += ' border-yellow-400 bg-yellow-900';
+                                    }
+                                    
+                                    if (showResult) {
+                                        if (isCorrect) {
+                                            buttonClass += ' correct-answer';
+                                        } else if (isSelected && !isCorrect) {
+                                            buttonClass += ' wrong-answer';
+                                        }
+                                    }
+
+                                    return (
+                                        <button
+                                            key={index}
+                                            onClick={() => handleAnswerClick(index)}
+                                            disabled={showResult}
+                                            className={buttonClass}
+                                        >
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-lg">
+                                                    <span className="font-bold text-yellow-400 mr-3">
+                                                        {String.fromCharCode(65 + index)}.
+                                                    </span>
+                                                    {option}
+                                                </span>
+                                                <div className="flex items-center space-x-2">
+                                                    {currentQ.multiSelect && isSelected && !showResult && (
+                                                        <svg className="w-6 h-6 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                                        </svg>
+                                                    )}
+                                                    {showResult && (
+                                                        <div className="ml-2">
+                                                            {isCorrect ? (
+                                                                <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                                                </svg>
+                                                            ) : isSelected && !isCorrect ? (
+                                                                <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                                                                </svg>
+                                                            ) : null}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+
+                            {/* Submit Button for Multi-Select Questions */}
+                            {currentQ.multiSelect && !showResult && (
+                                <div className="text-center mb-6">
+                                    <button
+                                        onClick={handleSubmitMultiSelect}
+                                        disabled={selectedAnswers.length === 0}
+                                        className="bg-gradient-to-r from-green-500 to-blue-500 text-white font-bold py-4 px-8 rounded-2xl hover:from-green-400 hover:to-blue-400 transform hover:scale-105 transition-all duration-300 shadow-lg text-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                                    >
+                                        Submit Answers ({selectedAnswers.length} selected)
+                                    </button>
+                                </div>
+                            )}
+
+                            {/* Next Button */}
+                            {canProceed && (
+                                <div className="text-center mb-6">
+                                    <button
+                                        onClick={handleNextQuestion}
+                                        className="bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold py-4 px-8 rounded-2xl hover:from-blue-400 hover:to-purple-400 transform hover:scale-105 transition-all duration-300 shadow-lg text-xl"
+                                    >
+                                        {currentQuestion < questions.length - 1 ? 'Next Question' : 'Finish Quiz'}
+                                        <svg className="w-6 h-6 ml-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            )}
+
+                            {/* Progress Bar */}
+                            <div className="mt-8">
+                                <div className="bg-gray-800 rounded-2xl shadow-lg p-4 border border-gray-600">
+                                    <div className="flex justify-between items-center mb-2">
+                                        <span className="text-white font-bold">Progress</span>
+                                        <span className="text-yellow-400 font-bold">{currentQuestion + 1} / {questions.length}</span>
+                                    </div>
+                                    <div className="w-full bg-gray-700 rounded-full h-3">
+                                        <div
+                                            className="bg-gradient-to-r from-yellow-500 to-orange-500 h-3 rounded-full transition-all duration-500"
+                                            style={{ width: `${((currentQuestion + 1) / questions.length) * 100}%` }}
+                                        ></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<HeartfulnessQuiz />, document.getElementById('root'));
+    </script>
+</body>
+</html>
