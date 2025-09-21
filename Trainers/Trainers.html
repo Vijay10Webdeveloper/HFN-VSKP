@@ -833,19 +833,53 @@
     }
 
     function downloadMasterCSV() {
-      if (!masterRecords.length) { showAlert('No master records to download', 'error'); return; }
-      const csv = buildMergedCSV(masterRecords);
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  if (!masterRecords.length) {
+    showAlert('No master records to download', 'error');
+    return;
+  }
+
+  const csv = buildMergedCSV(masterRecords);
+  const filename = `meditation_attendance_master_${new Date().toISOString().slice(0,10)}.csv`;
+
+  try {
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+
+    // --- Detect if mobile Safari / iOS ---
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+    if (isIOS) {
+      // On iOS, force open in a new tab (download attr often ignored)
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const dataUrl = e.target.result;
+        const link = document.createElement('a');
+        link.href = dataUrl;
+        link.target = '_blank';
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      };
+      reader.readAsDataURL(blob);
+    } else {
+      // Standard browsers & Android Chrome
       const link = document.createElement('a');
       const url = URL.createObjectURL(blob);
       link.href = url;
-      link.download = `meditation_attendance_master_${new Date().toISOString().slice(0,10)}.csv`;
+      link.download = filename;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
-      showAlert('Download started', 'success');
     }
+
+    showAlert('Download started', 'success');
+  } catch (err) {
+    console.error('Download error', err);
+    showAlert('Download failed. Your browser may not support direct CSV download.', 'error');
+  }
+}
+
 
     function clearMasterRecords() {
       if (!confirm('Clear all master records? This cannot be undone.')) return;
