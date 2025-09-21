@@ -1,0 +1,1636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heartfulness Knowledge Quiz</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+        
+       body { 
+            margin: 0; 
+            font-family:  -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            background: linear-gradient(135deg, #0a0a2e 0%, #16213e 50%, #0f3460 100%);
+            overflow-x: hidden;
+        }
+        
+        .kbc-bg {
+            background: radial-gradient(circle at center, #1a1a3e 0%, #0a0a2e 100%);
+            position: relative;
+        }
+        
+        .kbc-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><radialGradient id="g" cx="50%" cy="50%" r="50%"><stop offset="0%" style="stop-color:%23ffffff;stop-opacity:0.05"/><stop offset="100%" style="stop-color:%23ffffff;stop-opacity:0"/></radialGradient></defs><circle cx="50" cy="50" r="50" fill="url(%23g)"/></svg>') center/200px 200px;
+            animation: pulse 3s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.7; }
+        }
+        
+        .gold-text {
+            background: linear-gradient(45deg, #ffd700, #ffed4e, #ffd700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+        
+        .option-button {
+            background: linear-gradient(145deg, #2a2a4a 0%, #1a1a3a 100%);
+            border: 2px solid #4a4a6a;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .option-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .option-button:hover::before {
+            left: 100%;
+        }
+        
+        .option-button:hover {
+            border-color: #ffd700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .correct-answer {
+            background: linear-gradient(145deg, #22c55e 0%, #16a34a 100%);
+            border-color: #22c55e;
+            box-shadow: 0 0 30px rgba(34, 197, 94, 0.5);
+            animation: correctPulse 1s ease-in-out infinite;
+        }
+        
+        .wrong-answer {
+            background: linear-gradient(145deg, #ef4444 0%, #dc2626 100%);
+            border-color: #ef4444;
+            box-shadow: 0 0 30px rgba(239, 68, 68, 0.5);
+            animation: wrongShake 0.5s ease-in-out;
+        }
+        
+        @keyframes correctPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        
+        @keyframes wrongShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        .prize-ladder {
+            background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid #374151;
+        }
+        
+        .current-prize {
+            background: linear-gradient(145deg, #ffd700 0%, #f59e0b 100%);
+            color: #0f172a;
+            font-weight: bold;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { box-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
+            to { box-shadow: 0 0 20px rgba(255, 215, 0, 0.8); }
+        }
+        
+        .sparkle {
+            animation: sparkle 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes sparkle {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        
+        const HeartfulnessQuiz = () => {
+            const [currentQuestion, setCurrentQuestion] = useState(0);
+            const [selectedAnswers, setSelectedAnswers] = useState([]);
+            const [showResult, setShowResult] = useState(false);
+            const [gameStarted, setGameStarted] = useState(false);
+            const [gameOver, setGameOver] = useState(false);
+            const [timeLeft, setTimeLeft] = useState(60);
+            const [totalPoints, setTotalPoints] = useState(0);
+            const [questionsAnswered, setQuestionsAnswered] = useState(0);
+            const [correctAnswers, setCorrectAnswers] = useState(0);
+            const [canProceed, setCanProceed] = useState(false);
+
+            const pointsPerQuestion = 100;
+
+            const questions =
+          [
+  {
+    "id": 1,
+    "question": "According to Babuji, what is the primary basis for true world peace?",
+    "options": [
+      "Proper regulation of the individual mind",
+      "Bilateral treaties between nations",
+      "Economic prosperity for all",
+      "Strengthening armies"
+    ],
+    "correct": 0
+  },
+  {
+    "id": 2,
+    "question": "What does Babuji say about austerities and physical mortification?",
+    "options": [
+      "They are the fastest path to Realisation",
+      "They only suppress evils temporarily and can harden the mind",
+      "They guarantee removal of ego",
+      "They are irrelevant for beginners"
+    ],
+    "correct": 1
+  },
+  {
+    "id": 3,
+    "question": "How does Babuji describe the role of a true Master or guru?",
+    "options": [
+      "A person who accumulates social fame",
+      "A guide who has transcended sensory limits and can work on the disciple’s inner state",
+      "A ritual expert who teaches ceremonies",
+      "A priest who performs sacrifices"
+    ],
+    "correct": 1
+  },
+  {
+    "id": 4,
+    "question": "What is pranahuti in Sahaj Marg described as?",
+    "options": [
+      "A kind of hypnotic control",
+      "A regulated transmission of the Master’s power into the abhyasi",
+      "A set of ritual mantras",
+      "A physical exercise regimen"
+    ],
+    "correct": 1
+  },
+  {
+    "id": 5,
+    "question": "What is the problem with depending on miracles to win faith, according to Babuji?",
+    "options": [
+      "Miracles always hurt people",
+      "Miracles please the senses but do not produce deep, lasting faith",
+      "Miracles are the only path to devotion",
+      "Miracles teach correct ritual performance"
+    ],
+    "correct": 1
+  },
+  {
+    "id": 6,
+    "question": "How should the abhyasi handle extraneous thoughts during meditation?",
+    "options": [
+      "Fight them off aggressively",
+      "Stop meditating until they disappear",
+      "Let them come and continue the practice without struggling",
+      "Repeat long mantras until they are gone"
+    ],
+    "correct": 2
+  },
+  {
+    "id": 7,
+    "question": "What does Babuji say about the Shastras' practical utility?",
+    "options": [
+      "They are perfect and universally applicable",
+      "They are mainly for beginners and reflect local conditions",
+      "They are useless for all seekers",
+      "They should be followed literally by everyone"
+    ],
+    "correct": 1
+  },
+  {
+    "id": 8,
+    "question": "Which ashrama does Babuji consider not a bar to Realisation and often very suitable?",
+    "options": [
+      "Sannyasa",
+      "Grihastha (householder)",
+      "Vanaprastha",
+      "Brahmacharya"
+    ],
+    "correct": 1
+  },
+  {
+    "id": 9,
+    "question": "What does Babuji indicate about concentration obtained by forceful suppression?",
+    "options": [
+      "It refines one to the highest subtleties",
+      "It makes the mind heavy, dull and gross and connects one to matter",
+      "It is identical with absorption",
+      "It immediately opens the Central Region"
+    ],
+    "correct": 1
+  },
+  {
+    "id": 10,
+    "question": "What practice does Babuji recommend in the evening to purge the mind?",
+    "options": [
+      "Lengthy scripted rituals",
+      "An easy posture for half an hour visualizing grossness melting away like smoke",
+      "Fast until dawn",
+      "Study the Shastras carefully"
+    ],
+    "correct": 1
+  },
+  {
+    "id": 11,
+    "question": "How does Babuji advise one should begin meditation on the heart?",
+    "options": [
+      "By thinking once that the Godly light within is attracting you",
+      "By forcefully emptying the mind",
+      "By chanting loudly for an hour",
+      "By visualizing many deities"
+    ],
+    "correct": 0
+  },
+  {
+    "id": 12,
+    "question": "What is Babuji’s view of ‘non-concentration’ as a spiritual state?",
+    "options": [
+      "A disorder to be eliminated",
+      "A natural absorption where thoughts flow but do not encumber the mind",
+      "A state of complete blankness",
+      "A type of trance induced by drugs"
+    ],
+    "correct": 1
+  },
+  {
+    "id": 13,
+    "question": "Which of the following does Babuji say the Master primarily helps the abhyasi with?",
+    "options": [
+      "Teaching ritual minutiae",
+      "Washing the disciple’s body",
+      "Cleaning the chakras and removing undesirable matter by transmission",
+      "Giving political advice"
+    ],
+    "correct": 2
+  },
+  {
+    "id": 14,
+    "question": "What attitude toward the body does Babuji encourage during meditation?",
+    "options": [
+      "Focus on bodily sensations",
+      "Remain away from idea of the body by fixing attention on the subtlest",
+      "Perform vigorous physical exercises",
+      "Constantly monitor the breath closely"
+    ],
+    "correct": 1
+  },
+  {
+    "id": 15,
+    "question": "How does Babuji describe his own devotion to his Master?",
+    "options": [
+      "As an intellectual study",
+      "As love-madness; he sought only his Master and nothing else",
+      "As a ritual obligation",
+      "As a social duty"
+    ],
+    "correct": 1
+  },
+  {
+    "id": 16,
+    "question": "What does Babuji caution against when pursuing concentration for its own sake?",
+    "options": [
+      "That it will always guarantee success",
+      "That forcing the mind leads to failure and heaviness",
+      "That it replaces the Master",
+      "That it increases love"
+    ],
+    "correct": 1
+  },
+  {
+    "id": 17,
+    "question": "What does Babuji recommend if one cannot meditate during the day?",
+    "options": [
+      "Give up meditation entirely",
+      "Do the evening cleaning and meditate for fifteen minutes, then an hour after a short sleep",
+      "Meditate only once a week",
+      "Rely solely on chanting"
+    ],
+    "correct": 1
+  },
+  {
+    "id": 18,
+    "question": "How does Babuji view the relationship between guru and God for a seeker who uses the guru as a means?",
+    "options": [
+      "They are equal and independent objects of equal love",
+      "They create a trinity including the seeker’s self and so may block unity",
+      "Guru is irrelevant if God is sought",
+      "God is inferior to the guru"
+    ],
+    "correct": 1
+  },
+  {
+    "id": 19,
+    "question": "What is Babuji’s instruction about struggling with intrusive thoughts during meditation?",
+    "options": [
+      "Struggle until they disappear",
+      "Do not struggle; continue your work without forcing the mind",
+      "Shout loudly to remove them",
+      "Read scriptures until calm"
+    ],
+    "correct": 1
+  },
+  {
+    "id": 20,
+    "question": "Which of the following best captures Babuji’s opinion of Hatha Yoga in the passage you provided earlier?",
+    "options": [
+      "Hatha yoga opens all chakras swiftly",
+      "Hatha yoga has no access beyond the ajna chakra and often increases ego",
+      "Hatha yoga is the only valid path",
+      "Hatha yoga is identical to pranahuti"
+    ],
+    "correct": 1
+  },
+  {
+    "id": 21,
+    "question": "What practical attitude does Babuji recommend for householders (grihasthas)?",
+    "options": [
+      "Grihastha life is a bar to spiritual progress",
+      "Grihastha ashrama can be the best place for higher approach if duty is done as worship",
+      "Householders should always renounce their duties",
+      "Only sannyasis can attain Realisation"
+    ],
+    "correct": 1
+  },
+  {
+    "id": 22,
+    "question": "How does Babuji say a disciple should view duties?",
+    "options": [
+      "Duty is always an obstacle to spirituality",
+      "Duty is itself worship if seen as the order of God",
+      "Duty is irrelevant",
+      "Duties must be ignored for higher practice"
+    ],
+    "correct": 1
+  },
+  {
+    "id": 23,
+    "question": "What is Babuji’s view on transmission being ‘missing’ in many organizations?",
+    "options": [
+      "He finds it surprising and sad that transmission is absent in many organizations",
+      "He believes transmission is unimportant",
+      "He thinks transmission should be publicized with miracles",
+      "He thinks scriptures alone suffice"
+    ],
+    "correct": 0
+  },
+  {
+    "id": 24,
+    "question": "What does Babuji say is mostly responsible for delays in giving Godly force to aspirants?",
+    "options": [
+      "The Master’s stinginess",
+      "Deficiency in the abhyasi’s capacity",
+      "Worldly obstacles alone",
+      "Lack of rituals"
+    ],
+    "correct": 1
+  },
+  {
+    "id": 25,
+    "question": "How does Babuji suggest one should cultivate constant remembrance in daily life?",
+    "options": [
+      "By thinking with firm conviction during leisure that God pervades everywhere",
+      "By isolating oneself permanently",
+      "By performing long public rituals",
+      "By reading scriptures only in the morning"
+    ],
+    "correct": 0
+  },
+  {
+    "id": 26,
+    "question": "What is Babuji’s recommended posture and duration for morning meditation?",
+    "options": [
+      "A complex posture for two hours",
+      "An easy posture for one hour in the grey of morning or at a fixed convenient hour",
+      "Standing with eyes open for thirty minutes",
+      "Lying down and meditating for three hours"
+    ],
+    "correct": 1
+  },
+  {
+    "id": 27,
+    "question": "What does Babuji say about the teacher who only uses bookish knowledge?",
+    "options": [
+      "He is most effective in transmission",
+      "He may fail the abhyasi because the prescribed process is unnatural and gross",
+      "He is better than a Master who uses pranahuti",
+      "He is the ideal spiritual guide"
+    ],
+    "correct": 1
+  },
+  {
+    "id": 28,
+    "question": "Which is Babuji’s advice about concentration vs. meditation?",
+    "options": [
+      "Forceful concentration is superior to meditation",
+      "Concentration by force leads to heaviness; meditation leading to natural absorption is the true aim",
+      "Concentration should always be practiced for hours without guidance",
+      "Concentration and meditation are identical"
+    ],
+    "correct": 1
+  },
+  {
+    "id": 29,
+    "question": "How does Babuji suggest one should take up the thought (sankalpa) for practice?",
+    "options": [
+      "With an imposed, forceful resolve",
+      "With a subtle sankalpa, gently and naturally without artificial imposition",
+      "By reciting it angrily",
+      "By making it public"
+    ],
+    "correct": 1
+  },
+  {
+    "id": 30,
+    "question": "What is Babuji’s opinion about meditation on pictures of saints?",
+    "options": [
+      "He fully recommends it for everyone",
+      "He is not in favour of meditating on pictures of saints",
+      "He thinks it is the best method for all abhyasis",
+      "He equates it with pranahuti"
+    ],
+    "correct": 1
+  },
+  {
+    "id": 31,
+    "question": "What is Babuji’s advice regarding past karmas while practicing?",
+    "options": [
+      "Constantly analyze and weaken yourself with past karmas",
+      "Do not weaken yourself by thinking of past karmas; adjust to conditions and utilize them",
+      "Confess past karmas publicly",
+      "Rituals alone will remove past karmas"
+    ],
+    "correct": 1
+  },
+  {
+    "id": 32,
+    "question": "What quality in the Master does Babuji call rare and necessary for true transmission?",
+    "options": [
+      "Public popularity",
+      "Capacity for transmission and practical, inward capability (like Vivekananda)",
+      "Ability to write many books",
+      "Strict ritual observance"
+    ],
+    "correct": 1
+  },
+  {
+    "id": 33,
+    "question": "What does Babuji say about the role of love and devotion in the seeker?",
+    "options": [
+      "They must be forced through rituals",
+      "They will develop automatically when one is convinced about the Master’s merits",
+      "They are irrelevant",
+      "They are obstacles"
+    ],
+    "correct": 1
+  },
+  {
+    "id": 34,
+    "question": "What is Babuji’s attitude to giving physical service when people do not need spiritual help?",
+    "options": [
+      "He refuses to help physically",
+      "He is prepared to offer physical service to give comfort and ease",
+      "He only offers spiritual help",
+      "He demands payment for physical service"
+    ],
+    "correct": 1
+  },
+  {
+    "id": 35,
+    "question": "What sign of spiritual improvement does Babuji suggest the abhyasi might feel?",
+    "options": [
+      "A slight lightness as complexities melt away and spiritual force flows in",
+      "Intense bodily pain",
+      "Complete absence of any feeling",
+      "Instant omniscience"
+    ],
+    "correct": 0
+  },
+  {
+    "id": 36,
+    "question": "What does Babuji tell about awakening kundalini in his system?",
+    "options": [
+      "The abhyasi must forcefully raise kundalini himself",
+      "Kundalini is taken up by the Master in the end; the abhyasi does nothing about it himself",
+      "Kundalini has no role",
+      "Kundalini always rises automatically without guidance"
+    ],
+    "correct": 1
+  },
+  {
+    "id": 37,
+    "question": "How does Babuji view persons who only associate with him for rest or friendship?",
+    "options": [
+      "He rejects them outright",
+      "He finds some usefulness since their presence may give comfort, but it may not be enough for Realisation",
+      "He insists they must become abhyasis",
+      "He thinks they are obstructive"
+    ],
+    "correct": 1
+  },
+  {
+    "id": 38,
+    "question": "What kind of prayer does Babuji recommend at bedtime in the most supplicant mood?",
+    "options": [
+      "A short prayer imploring the Master’s mercy and acknowledging Him as the real goal of life",
+      "A recitation of long mantras in public",
+      "A ritual offering of food",
+      "A chant to request material gains"
+    ],
+    "correct": 0
+  },
+  {
+    "id": 39,
+    "question": "How does Babuji say one should interpret teacherly capability?",
+    "options": [
+      "By their show of miracles",
+      "By their practical ability to work on an aspirant’s inner state and by their merit as guides",
+      "By their public popularity",
+      "By the number of followers they have"
+    ],
+    "correct": 1
+  },
+  {
+    "id": 40,
+    "question": "What does Babuji say about love being shared between guru and God?",
+    "options": [
+      "Love easily admits dual loyalties",
+      "Love admits no dual loyalties; one can’t equally love two parallel objects",
+      "One must always divide love equally",
+      "Love is only for God, not the guru"
+    ],
+    "correct": 1
+  },
+  {
+    "id": 41,
+    "question": "What is the purpose of evening cleaning according to Babuji?",
+    "options": [
+      "To melt away grossness and prepare for spiritual receptivity",
+      "To accumulate wealth",
+      "To memorize scriptures",
+      "To increase ritual power"
+    ],
+    "correct": 0
+  },
+  {
+    "id": 42,
+    "question": "How does Babuji describe the effect of hypnotic concentration?",
+    "options": [
+      "It elevates consciousness to the Central Region",
+      "It creates heaviness and rigidity making one insusceptible to finer influence",
+      "It ensures realization quickly",
+      "It transforms ego into humility"
+    ],
+    "correct": 1
+  },
+  {
+    "id": 43,
+    "question": "What must the abhyasi avoid when practicing meditation?",
+    "options": [
+      "Struggling with thoughts and forcing the mind",
+      "Sitting in an easy posture",
+      "Thinking of divine light",
+      "Morning practice"
+    ],
+    "correct": 0
+  },
+  {
+    "id": 44,
+    "question": "What does Babuji compare concentration by suppression to?",
+    "options": [
+      "A narrow path to liberation",
+      "A marshy condition from which it is hard to escape",
+      "A flight to higher regions",
+      "An effortless absorption"
+    ],
+    "correct": 1
+  },
+  {
+    "id": 45,
+    "question": "What is the best way to proceed with sankalpa in meditation?",
+    "options": [
+      "By holding a subtle idea gently without artificial imposition",
+      "By loudly chanting it",
+      "By repeating it forcefully",
+      "By ignoring it entirely"
+    ],
+    "correct": 0
+  },
+  {
+    "id": 46,
+    "question": "What does Babuji say about vairagya?",
+    "options": [
+      "It comes naturally as cleaning removes complexities",
+      "It requires renouncing all duties",
+      "It is identical to ritual fasting",
+      "It depends only on study of scriptures"
+    ],
+    "correct": 0
+  },
+  {
+    "id": 47,
+    "question": "What is the real purpose of discipline in early practice?",
+    "options": [
+      "To prepare the mind for surrender and devotion",
+      "To secure social respect",
+      "To gain physical health",
+      "To ensure ritual accuracy"
+    ],
+    "correct": 0
+  },
+  {
+    "id": 48,
+    "question": "What does Babuji say about miracles as a foundation of faith?",
+    "options": [
+      "They are a true measure of saintliness",
+      "They fail to create real faith and can mislead",
+      "They guarantee union with God",
+      "They bring permanent vairagya"
+    ],
+    "correct": 1
+  },
+  {
+    "id": 49,
+    "question": "What must one link oneself with to move stage by stage closer to God?",
+    "options": [
+      "One’s own ego",
+      "The power of the Divine",
+      "Ritual chanting",
+      "Scriptural debates"
+    ],
+    "correct": 1
+  },
+  {
+    "id": 50,
+    "question": "What is the proper feeling in prayer as Babuji explains?",
+    "options": [
+      "Like a most miserable man laying down miseries before the Supreme",
+      "Like a scholar expounding scriptures",
+      "Like a ritualist offering sacrifice",
+      "Like a devotee seeking worldly prosperity"
+    ],
+    "correct": 0
+  },
+  {
+    "id": 51,
+    "question": "What happens when remembrance of God pervades during daily activities?",
+    "options": [
+      "It keeps the seeker linked with Him everywhere",
+      "It makes the seeker forget duties",
+      "It guarantees fame",
+      "It creates ritual perfection"
+    ],
+    "correct": 0
+  },
+  {
+    "id": 52,
+    "question": "What does Babuji say about dwelling on past karmas?",
+    "options": [
+      "It weakens progress and should be avoided",
+      "It guarantees humility",
+      "It ensures salvation",
+      "It creates ritual authority"
+    ],
+    "correct": 0
+  },
+  {
+    "id": 53,
+    "question": "What is the ultimate goal in the spiritual march?",
+    "options": [
+      "Unity and then beyond unity to what lies beyond",
+      "Mastery of rituals",
+      "Accumulating wealth",
+      "Becoming a scholar"
+    ],
+    "correct": 0
+  },
+  {
+    "id": 54,
+    "question": "What is the abhyasi advised to do at night if unable to meditate during the day?",
+    "options": [
+      "Do cleaning for fifteen minutes and then meditate for about an hour after a short sleep",
+      "Skip meditation entirely",
+      "Perform ritual offerings",
+      "Read scriptures until sleep comes"
+    ],
+    "correct": 0
+  },
+  {
+    "id": 55,
+    "question": "What is the effect of true love according to Babuji?",
+    "options": [
+      "It admits no dual loyalties, not even between lover and beloved",
+      "It allows multiple objects equally",
+      "It is best expressed through ritual",
+      "It is weaker than discipline"
+    ],
+    "correct": 0
+  },
+  {
+    "id": 56,
+    "question": "What does Babuji emphasize about the role of the Master in raising kundalini?",
+    "options": [
+      "It is exclusively the outlook of the Master, not the abhyasi",
+      "The abhyasi must do it himself forcefully",
+      "It rises naturally without guidance",
+      "It is unnecessary in spiritual progress"
+    ],
+    "correct": 0
+  },
+  {
+    "id": 57,
+    "question": "What is the Master bound to do by his guru-dakshina?",
+    "options": [
+      "To spread spirituality without reserve or distinction",
+      "To perform rituals daily",
+      "To accumulate wealth for the lineage",
+      "To restrict teaching to a select few"
+    ],
+    "correct": 0
+  },
+  {
+    "id": 58,
+    "question": "What is the real source of bondage according to Babuji?",
+    "options": [
+      "Ego linking actions to self as doer",
+      "Worldly possessions alone",
+      "Family responsibilities",
+      "Lack of scriptural knowledge"
+    ],
+    "correct": 0
+  },
+  {
+    "id": 59,
+    "question": "What is the state of absorption in Sahaj Marg compared to?",
+    "options": [
+      "A natural state where concentration arises by itself",
+      "A forced state of dullness",
+      "A trance of intoxication",
+      "A hypnotic sleep"
+    ],
+    "correct": 0
+  },
+  {
+    "id": 60,
+    "question": "What happens when the disciple sits with faith and devotion?",
+    "options": [
+      "The Master’s transmission works more effectively",
+      "The Master withdraws support",
+      "Rituals automatically happen",
+      "The abhyasi feels greater ego"
+    ],
+    "correct": 0
+  },
+  {
+    "id": 61,
+    "question": "What example does Babuji give to show the rarity of great transmitters?",
+    "options": [
+      "Swami Vivekananda had the capacity but such personalities are rare",
+      "Every guru naturally transmits",
+      "Any ritualist can transmit",
+      "Transmission is found in all organizations"
+    ],
+    "correct": 0
+  },
+  {
+    "id": 62,
+    "question": "What did Babuji seek when he first came to spirituality?",
+    "options": [
+      "His Master alone, not even Realisation of God",
+      "Wealth and social honor",
+      "Scriptural knowledge",
+      "Fame and followers"
+    ],
+    "correct": 0
+  },
+  {
+    "id": 63,
+    "question": "What does Babuji say about linking success and failure to personal effort?",
+    "options": [
+      "It creates joy at success and grief at failure, keeping bondage intact",
+      "It always guarantees vairagya",
+      "It ensures humility",
+      "It simplifies progress"
+    ],
+    "correct": 0
+  },
+  {
+    "id": 64,
+    "question": "What is the Master’s invention in the spiritual field according to Babuji?",
+    "options": [
+      "The abhyasi’s approach to the Central Region through pranahuti",
+      "A new scripture",
+      "A ritual chant",
+      "A temple architecture"
+    ],
+    "correct": 0
+  },
+  {
+    "id": 65,
+    "question": "What does Babuji warn about following rituals strictly without inner change?",
+    "options": [
+      "They may create bondage rather than freedom",
+      "They always free one",
+      "They ensure transmission",
+      "They guarantee humility"
+    ],
+    "correct": 0
+  },
+  {
+    "id": 66,
+    "question": "What is Babuji’s advice about reacting to outer disturbances during meditation?",
+    "options": [
+      "Do not feel disturbed; think they are helping you deepen absorption",
+      "Stop meditating immediately",
+      "Argue against disturbances",
+      "Perform rituals instead"
+    ],
+    "correct": 0
+  },
+  {
+    "id": 67,
+    "question": "What is the key difference between abhyasi’s own effort and Master’s transmission?",
+    "options": [
+      "Transmission works on subtler levels beyond abhyasi’s reach",
+      "Both are identical",
+      "Effort is superior",
+      "Transmission is irrelevant"
+    ],
+    "correct": 0
+  },
+  {
+    "id": 68,
+    "question": "What does Babuji say about the human heart’s capacity for love?",
+    "options": [
+      "It is not a caravanserai; it cannot hold two parallel objects of love",
+      "It can hold many equally",
+      "It grows with multiple objects",
+      "It should hold only rituals"
+    ],
+    "correct": 0
+  },
+  {
+    "id": 69,
+    "question": "What is the ultimate prescription for spiritual progress according to Babuji?",
+    "options": [
+      "A transmission-assisted practical method with love, devotion, remembrance, and moral living",
+      "Only study of scriptures",
+      "Only ritual sacrifices",
+      "Only austerities"
+    ],
+    "correct": 0
+  },
+  {
+    "id": 70,
+    "question": "What is Babuji’s view about teachers who demand personal service?",
+    "options": [
+      "It is strongly condemned as misuse",
+      "It shows their greatness",
+      "It ensures disciple’s humility",
+      "It proves transmission"
+    ],
+    "correct": 0
+  },
+  {
+    "id": 71,
+    "question": "What is the benefit of doing evening cleaning before night meditation?",
+    "options": [
+      "It removes grossness and prepares deeper receptivity",
+      "It multiplies wealth",
+      "It ensures social respect",
+      "It sharpens memory of scriptures"
+    ],
+    "correct": 0
+  },
+  {
+    "id": 72,
+    "question": "What is Babuji’s view of the Shastras written in specific regions?",
+    "options": [
+      "They reflect geographical and cultural conditions, not universal rules",
+      "They are eternally fixed for all",
+      "They deny God",
+      "They must always be literal"
+    ],
+    "correct": 0
+  },
+  {
+    "id": 73,
+    "question": "What is the proper mood for offering prayer at bedtime?",
+    "options": [
+      "As if a miserable man imploring mercy with tearful eyes",
+      "As if debating a scholar",
+      "As if demanding wealth",
+      "As if reciting rituals loudly"
+    ],
+    "correct": 0
+  },
+  {
+    "id": 74,
+    "question": "What is the sign that complexities are melting in the abhyasi?",
+    "options": [
+      "A feeling of lightness in meditation",
+      "Sudden wealth",
+      "Louder chanting",
+      "Growing ego"
+    ],
+    "correct": 0
+  },
+  {
+    "id": 75,
+    "question": "What is the outcome when love for the Master dominates?",
+    "options": [
+      "The seeker becomes blind to everything but Him",
+      "The seeker loses devotion",
+      "The seeker gains wealth",
+      "The seeker becomes ritualistic"
+    ],
+    "correct": 0
+  },
+  {
+    "id": 76,
+    "question": "What is the role of discipline when mental submission is hard?",
+    "options": [
+      "Start with physical discipline which later leads to mental discipline",
+      "Avoid discipline completely",
+      "Replace with rituals",
+      "Depend on wealth"
+    ],
+    "correct": 0
+  },
+  {
+    "id": 77,
+    "question": "What does Babuji mean by ‘covering of nakedness’?",
+    "options": [
+      "The last sheath of the body to be shed before liberation",
+      "A ritual garment",
+      "A symbolic scripture",
+      "A cloak of wealth"
+    ],
+    "correct": 0
+  },
+  {
+    "id": 78,
+    "question": "What is the reason transmission is considered unique?",
+    "options": [
+      "It introduces from the beginning the condition that lies at the farthest end",
+      "It guarantees miracles",
+      "It replaces meditation entirely",
+      "It is only symbolic"
+    ],
+    "correct": 0
+  },
+  {
+    "id": 79,
+    "question": "What is the effect of pursuing spirituality for show?",
+    "options": [
+      "It binds the seeker in ego and display",
+      "It guarantees liberation",
+      "It ensures humility",
+      "It always wins Master’s grace"
+    ],
+    "correct": 0
+  },
+  {
+    "id": 80,
+    "question": "What happens when the seeker wrongly equates God and guru separately?",
+    "options": [
+      "He remains fixed in trinity and multiplicity",
+      "He attains unity instantly",
+      "He gains liberation immediately",
+      "He transcends ego"
+    ],
+    "correct": 0
+  },
+  {
+    "id": 81,
+    "question": "What is the danger of using physical force in concentration?",
+    "options": [
+      "It leads to grossness and heaviness",
+      "It ensures realization",
+      "It enhances love",
+      "It builds humility"
+    ],
+    "correct": 0
+  },
+  {
+    "id": 82,
+    "question": "What is the proper way to think during morning meditation?",
+    "options": [
+      "That divine light in the heart is attracting you",
+      "That wealth will appear",
+      "That rituals will succeed",
+      "That scriptures are being memorized"
+    ],
+    "correct": 0
+  },
+  {
+    "id": 83,
+    "question": "What is the effect of remembrance while at work?",
+    "options": [
+      "It keeps thought of God pervading in all places",
+      "It increases worldly desires",
+      "It replaces prayer",
+      "It builds rituals"
+    ],
+    "correct": 0
+  },
+  {
+    "id": 84,
+    "question": "What is the meaning of absorption (real concentration)?",
+    "options": [
+      "A spontaneous state of meditation without effort",
+      "A forced trance",
+      "A ritual chant",
+      "A drug-induced sleep"
+    ],
+    "correct": 0
+  },
+  {
+    "id": 85,
+    "question": "What happens if one links self with Divine power?",
+    "options": [
+      "One advances stage by stage closer to God",
+      "One always fails",
+      "One remains bound",
+      "One gains only wealth"
+    ],
+    "correct": 0
+  },
+  {
+    "id": 86,
+    "question": "What is the essence of love as Babuji quotes?",
+    "options": [
+      "Love admits many loyalties",
+      "Love thrives on multiplicity",
+       "The love-lane is too narrow for I and Thou both",
+      "Love is primarily ritual"
+    ],
+    "correct": 2
+  },
+  {
+    "id": 87,
+    "question": "What is the main reason discipline must precede surrender?",
+    "options": [
+      "Because it ensures rituals",
+      "Because it creates fame",
+      "Because it increases wealth",
+      "Because it builds the habit of submission step by step"
+    ],
+    "correct": 3
+  },
+  {
+    "id": 88,
+    "question": "What is the Master’s stance on physical afflictions?",
+    "options": [
+      "He avoids them at all cost",
+      "He considers them meaningless",
+      "He prays to escape them",
+      "He feels joy in bearing them if they bring comfort to others",
+    ],
+    "correct": 3
+  },
+  {
+    "id": 89,
+    "question": "What is the immediate result of Master’s cleaning work?",
+    "options": [
+      "Rituals succeed",
+      "Complexities are removed and calmness increases",
+      "Wealth grows",
+      "Scriptures are memorized"
+    ],
+    "correct": 1
+  },
+  {
+    "id": 90,
+    "question": "What is the first step of surrender according to Babuji?",
+    "options": [
+      "Scriptural study",
+      "Discipline, even if only physical",
+      "Ritual chanting",
+      "Worldly detachment"
+    ],
+    "correct": 1
+  },
+  {
+    "id": 91,
+    "question": "What does Babuji consider the abhyasi’s greatest deficiency?",
+    "options": [
+      "Lack of capacity to hold higher transmission",
+      "Lack of rituals",
+      "Lack of scriptures",
+      "Lack of wealth"
+    ],
+    "correct": 0
+  },
+  {
+    "id": 92,
+    "question": "What is Babuji’s assurance to those who entrust themselves to him?",
+    "options": [
+      "He will guarantee wealth",
+      "He will relieve them of duties",
+      "He will provide fame",
+      "He promises full support for their perfection if they also do the needful"
+    ],
+    "correct": 3
+  },
+  {
+    "id": 93,
+    "question": "What does Babuji emphasize about constant remembrance?",
+    "options": [
+      "It is a special feature of spirituality and should be cultivated",
+      "It is a distraction",
+      "It is optional",
+      "It is identical to ritual"
+    ],
+    "correct": 0
+  },
+  {
+    "id": 94,
+    "question": "What is the outcome of surrender when teacher’s merit is recognized?",
+    "options": [
+      "Wealth increases",
+      "Love and devotion develop automatically",
+      "Rituals expand",
+      "Fame spreads"
+    ],
+    "correct": 1
+  },
+  {
+    "id": 95,
+    "question": "What does Babuji consider the true meaning of service?",
+    "options": [
+      "Service is to help spiritually and even physically when needed",
+      "Service is only ritual attendance",
+      "Service is only financial offerings",
+      "Service is irrelevant"
+    ],
+    "correct": 0
+  },
+  {
+    "id": 96,
+    "question": "What is the abhyasi asked to imagine in evening practice?",
+    "options": [
+      "Grossness leaving as smoke from the back",
+      "Wealth flowing in",
+      "Scriptures glowing",
+      "A ritual being done"
+    ],
+    "correct": 0
+  },
+  {
+    "id": 97,
+    "question": "What is Babuji’s own claim about seeking Realisation?",
+    "options": [
+      "He aimed only for heaven",
+       "He sought only his Master, not even Realisation of God",
+      "He desired only wealth",
+      "He wanted fame"
+    ],
+    "correct": 1
+  },
+  {
+    "id": 98,
+    "question": "What is the result of sincere abhyas with faith and devotion?",
+    "options": [
+      "Wealth increases",
+      "Rituals succeed",
+      "Family expands",
+      "The desired goal comes of itself"
+    ],
+    "correct": 3
+  },
+  {
+    "id": 99,
+    "question": "What is the danger of personal ego in effort?",
+    "options": [
+      "It guarantees success",
+      "It builds humility",
+      "It binds the seeker and prevents progress",
+      "It always frees one"
+    ],
+    "correct": 2
+  },
+  {
+    "id": 100,
+    "question": "What is the core of Babuji’s teaching about Master’s support?",
+    "options": [
+      "The Master performs rituals for the disciple",
+      "The Master ensures wealth",
+      "The Master guarantees fame",
+      "The Master cleans, transmits, and supports while the abhyasi practices with faith and surrender"
+    ],
+    "correct": 3
+  }
+]
+;
+
+            useEffect(() => {
+                let timer;
+                if (gameStarted && !gameOver && timeLeft > 0 && !showResult) {
+                    timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
+                } else if (timeLeft === 0 && !showResult) {
+                    handleTimeUp();
+                }
+                return () => clearTimeout(timer);
+            }, [timeLeft, gameStarted, gameOver, showResult]);
+
+            const handleTimeUp = () => {
+                // Move to next question without awarding points
+                setShowResult(true);
+                setSelectedAnswers([]);
+                setQuestionsAnswered(questionsAnswered + 1);
+                setCanProceed(true);
+            };
+
+            const handleAnswerClick = (answerIndex) => {
+                if (showResult) return;
+                
+                const currentQ = questions[currentQuestion];
+                
+                if (currentQ.multiSelect) {
+                    // Handle multiple selection
+                    const newSelectedAnswers = selectedAnswers.includes(answerIndex)
+                        ? selectedAnswers.filter(index => index !== answerIndex)
+                        : [...selectedAnswers, answerIndex];
+                    
+                    setSelectedAnswers(newSelectedAnswers);
+                } else {
+                    // Handle single selection
+                    setSelectedAnswers([answerIndex]);
+                    setShowResult(true);
+                    setQuestionsAnswered(questionsAnswered + 1);
+                    setCanProceed(true);
+                    
+                    const isCorrect = answerIndex === currentQ.correct;
+                    
+                    if (isCorrect) {
+                        setTotalPoints(totalPoints + pointsPerQuestion);
+                        setCorrectAnswers(correctAnswers + 1);
+                    }
+                }
+            };
+
+            const handleSubmitMultiSelect = () => {
+                const currentQ = questions[currentQuestion];
+                setShowResult(true);
+                setQuestionsAnswered(questionsAnswered + 1);
+                setCanProceed(true);
+                
+                // Check if all correct answers are selected and no wrong answers
+                const correctAnswersArray = Array.isArray(currentQ.correct) ? currentQ.correct : [currentQ.correct];
+                const isCorrect = selectedAnswers.length === correctAnswersArray.length && 
+                                 selectedAnswers.every(answer => correctAnswersArray.includes(answer));
+                
+                if (isCorrect) {
+                    setTotalPoints(totalPoints + pointsPerQuestion);
+                    setCorrectAnswers(correctAnswers + 1);
+                }
+            };
+
+            const handleNextQuestion = () => {
+                if (currentQuestion < questions.length - 1) {
+                    setCurrentQuestion(currentQuestion + 1);
+                    setSelectedAnswers([]);
+                    setShowResult(false);
+                    setTimeLeft(60);
+                    setCanProceed(false);
+                } else {
+                    setGameOver(true);
+                }
+            };
+
+            const startGame = () => {
+                setGameStarted(true);
+                setTimeLeft(60);
+            };
+
+            const restartGame = () => {
+                setCurrentQuestion(0);
+                setSelectedAnswers([]);
+                setShowResult(false);
+                setGameStarted(false);
+                setGameOver(false);
+                setTimeLeft(60);
+                setTotalPoints(0);
+                setQuestionsAnswered(0);
+                setCorrectAnswers(0);
+                setCanProceed(false);
+            };
+
+            // Start Screen
+            if (!gameStarted) {
+                return (
+                    <div className="min-h-screen kbc-bg flex items-center justify-center p-4">
+                        <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl shadow-2xl p-8 max-w-2xl w-full text-center border-2 border-yellow-500">
+                            <div className="mb-8">
+                                <h1 className="text-5xl font-bold gold-text mb-4 sparkle">
+                                    Heartfulness Quiz on Complete Works of RamChandra
+                                </h1>
+                                <h2 className="text-3xl font-bold text-white mb-2">
+                                    Knowledge Challenge
+                                </h2>
+                                <p className="text-gray-300 text-lg">
+                                    Test your knowledge and earn points!
+                                </p>
+                            </div>
+                            
+                            <div className="bg-gray-800 rounded-2xl p-6 mb-8 border border-gray-600">
+                                <h3 className="text-xl font-bold text-yellow-400 mb-4">Game Rules:</h3>
+                                <div className="text-left text-gray-300 space-y-2">
+                                    <p>• Answer questions to complete the quiz</p>
+                                    <p>• Each question has 60 seconds time limit</p>
+                                    <p>• Earn 100 points for each correct answer</p>
+                                    <p>• Use the "Next" button to proceed to the next question</p>
+                                    <p>• For multiple choice questions, select all correct answers</p>
+                                    <p>• Click submit button for multiple choice questions</p>
+                                    <p>• Game continues even if you answer incorrectly</p>
+                                </div>
+                            </div>
+                            
+                            <button
+                                onClick={startGame}
+                                className="bg-gradient-to-r from-yellow-500 to-orange-500 text-black font-bold py-4 px-8 rounded-2xl hover:from-yellow-400 hover:to-orange-400 transform hover:scale-105 transition-all duration-300 shadow-lg text-xl"
+                            >
+                                START QUIZ
+                            </button>
+                        </div>
+                    </div>
+                );
+            }
+
+            // Game Over Screen
+            if (gameOver) {
+                const percentage = Math.round((correctAnswers / questions.length) * 100);
+                
+                return (
+                    <div className="min-h-screen kbc-bg flex items-center justify-center p-4">
+                        <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl shadow-2xl p-8 max-w-2xl w-full text-center border-2 border-yellow-500">
+                            <div className="mb-8">
+                                <h1 className="text-4xl font-bold gold-text mb-4 sparkle">
+                                    Quiz Complete!
+                                </h1>
+                                <h2 className="text-2xl font-bold text-white mb-4">
+                                    Final Results
+                                </h2>
+                                
+                                <div className="bg-gray-800 rounded-2xl p-6 mb-6 border border-gray-600">
+                                    <h3 className="text-xl font-bold text-yellow-400 mb-2">Your Total Score:</h3>
+                                    <div className="text-6xl font-bold gold-text mb-4 sparkle">
+                                        {totalPoints} Points
+                                    </div>
+                                    <p className="text-gray-300">
+                                        {percentage >= 80 
+                                            ? "🎉 Excellent! You have great knowledge of Heartfulness!" 
+                                            : percentage >= 60 
+                                            ? "👍 Good job! You have solid understanding of Heartfulness." 
+                                            : percentage >= 40
+                                            ? "📚 Not bad! Consider reviewing more about Heartfulness meditation."
+                                            : "🔄 Keep learning! There's always room for improvement."}
+                                    </p>
+                                </div>
+                                
+                                <div className="grid grid-cols-2 gap-4 mb-6">
+                                    <div className="bg-gray-800 rounded-2xl p-4 border border-gray-600">
+                                        <p className="text-green-400 font-bold mb-2">Correct Answers:</p>
+                                        <p className="text-white text-2xl">{correctAnswers} / {questions.length}</p>
+                                    </div>
+                                    <div className="bg-gray-800 rounded-2xl p-4 border border-gray-600">
+                                        <p className="text-blue-400 font-bold mb-2">Accuracy:</p>
+                                        <p className="text-white text-2xl">{percentage}%</p>
+                                    </div>
+                                </div>
+                                
+                                <div className="bg-gray-800 rounded-2xl p-4 mb-6 border border-gray-600">
+                                    <div className="flex justify-between items-center mb-2">
+                                        <span className="text-white font-bold">Score Progress</span>
+                                        <span className="text-yellow-400 font-bold">{totalPoints} / {questions.length * 100}</span>
+                                    </div>
+                                    <div className="w-full bg-gray-700 rounded-full h-4">
+                                        <div
+                                            className="bg-gradient-to-r from-green-500 to-blue-500 h-4 rounded-full transition-all duration-500"
+                                            style={{ width: `${(totalPoints / (questions.length * 100)) * 100}%` }}
+                                        ></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button
+                                onClick={restartGame}
+                                className="bg-gradient-to-r from-green-500 to-blue-500 text-white font-bold py-4 px-8 rounded-2xl hover:from-green-400 hover:to-blue-400 transform hover:scale-105 transition-all duration-300 shadow-lg text-xl"
+                            >
+                                PLAY AGAIN
+                            </button>
+                        </div>
+                    </div>
+                );
+            }
+
+            const currentQ = questions[currentQuestion];
+
+            return (
+                <div className="min-h-screen kbc-bg p-4">
+                    {/* Header */}
+                    <div className="max-w-7xl mx-auto mb-6">
+                        <div className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl shadow-lg p-4 flex items-center justify-between border-2 border-yellow-600">
+                            <div className="flex items-center space-x-6">
+                                <div className="text-2xl font-bold gold-text">
+                                    Question {currentQuestion + 1} / {questions.length}
+                                </div>
+                                <div className="text-xl font-bold text-white">
+                                    Score: <span className="gold-text">{totalPoints} Points</span>
+                                </div>
+                            </div>
+                            
+                            <div className="flex items-center space-x-4">
+                                <div className={`text-2xl font-bold ${timeLeft <= 10 ? 'text-red-500' : 'text-green-500'}`}>
+                                    ⏰ {timeLeft}s
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-4 gap-6">
+                        {/* Score Tracker */}
+                        <div className="lg:col-span-1">
+                            <div className="prize-ladder rounded-2xl p-4 h-fit">
+                                <h3 className="text-xl font-bold gold-text mb-4 text-center">Score Tracker</h3>
+                                <div className="space-y-4">
+                                    <div className="bg-gray-700 rounded-lg p-4 text-center">
+                                        <div className="text-3xl font-bold gold-text mb-2">{totalPoints}</div>
+                                        <div className="text-gray-300">Total Points</div>
+                                    </div>
+                                    <div className="bg-gray-700 rounded-lg p-4 text-center">
+                                        <div className="text-2xl font-bold text-green-400 mb-2">{correctAnswers}</div>
+                                        <div className="text-gray-300">Correct</div>
+                                    </div>
+                                    <div className="bg-gray-700 rounded-lg p-4 text-center">
+                                        <div className="text-2xl font-bold text-red-400 mb-2">{questionsAnswered - correctAnswers}</div>
+                                        <div className="text-gray-300">Wrong</div>
+                                    </div>
+                                    <div className="bg-gray-700 rounded-lg p-4 text-center">
+                                        <div className="text-lg font-bold text-blue-400 mb-2">
+                                            {questionsAnswered > 0 ? Math.round((correctAnswers / questionsAnswered) * 100) : 0}%
+                                        </div>
+                                        <div className="text-gray-300">Accuracy</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Main Game Area */}
+                        <div className="lg:col-span-3">
+                            {/* Question */}
+                            <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl shadow-lg p-8 mb-6 border-2 border-yellow-600">
+                                <h2 className="text-2xl md:text-3xl font-bold text-white leading-relaxed text-center">
+                                    {currentQ.question}
+                                </h2>
+                                {currentQ.multiSelect && (
+                                    <p className="text-yellow-400 text-center mt-4 text-lg font-semibold">
+                                        ⚠️ Multiple Choice Question - Select ALL correct answers
+                                    </p>
+                                )}
+                            </div>
+
+                            {/* Options */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                                {currentQ.options.map((option, index) => {
+                                    const isSelected = selectedAnswers.includes(index);
+                                    const correctAnswersArray = Array.isArray(currentQ.correct) ? currentQ.correct : [currentQ.correct];
+                                    const isCorrect = correctAnswersArray.includes(index);
+                                    
+                                    let buttonClass = "option-button text-white font-bold py-6 px-6 rounded-2xl shadow-lg transition-all duration-300 text-left";
+                                    
+                                    if (currentQ.multiSelect && isSelected && !showResult) {
+                                        buttonClass += ' border-yellow-400 bg-yellow-900';
+                                    }
+                                    
+                                    if (showResult) {
+                                        if (isCorrect) {
+                                            buttonClass += ' correct-answer';
+                                        } else if (isSelected && !isCorrect) {
+                                            buttonClass += ' wrong-answer';
+                                        }
+                                    }
+
+                                    return (
+                                        <button
+                                            key={index}
+                                            onClick={() => handleAnswerClick(index)}
+                                            disabled={showResult}
+                                            className={buttonClass}
+                                        >
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-lg">
+                                                    <span className="font-bold text-yellow-400 mr-3">
+                                                        {String.fromCharCode(65 + index)}.
+                                                    </span>
+                                                    {option}
+                                                </span>
+                                                <div className="flex items-center space-x-2">
+                                                    {currentQ.multiSelect && isSelected && !showResult && (
+                                                        <svg className="w-6 h-6 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                                        </svg>
+                                                    )}
+                                                    {showResult && (
+                                                        <div className="ml-2">
+                                                            {isCorrect ? (
+                                                                <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                                                </svg>
+                                                            ) : isSelected && !isCorrect ? (
+                                                                <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                                                                </svg>
+                                                            ) : null}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+
+                            {/* Submit Button for Multi-Select Questions */}
+                            {currentQ.multiSelect && !showResult && (
+                                <div className="text-center mb-6">
+                                    <button
+                                        onClick={handleSubmitMultiSelect}
+                                        disabled={selectedAnswers.length === 0}
+                                        className="bg-gradient-to-r from-green-500 to-blue-500 text-white font-bold py-4 px-8 rounded-2xl hover:from-green-400 hover:to-blue-400 transform hover:scale-105 transition-all duration-300 shadow-lg text-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                                    >
+                                        Submit Answers ({selectedAnswers.length} selected)
+                                    </button>
+                                </div>
+                            )}
+
+                            {/* Next Button */}
+                            {canProceed && (
+                                <div className="text-center mb-6">
+                                    <button
+                                        onClick={handleNextQuestion}
+                                        className="bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold py-4 px-8 rounded-2xl hover:from-blue-400 hover:to-purple-400 transform hover:scale-105 transition-all duration-300 shadow-lg text-xl"
+                                    >
+                                        {currentQuestion < questions.length - 1 ? 'Next Question' : 'Finish Quiz'}
+                                        <svg className="w-6 h-6 ml-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            )}
+
+                            {/* Progress Bar */}
+                            <div className="mt-8">
+                                <div className="bg-gray-800 rounded-2xl shadow-lg p-4 border border-gray-600">
+                                    <div className="flex justify-between items-center mb-2">
+                                        <span className="text-white font-bold">Progress</span>
+                                        <span className="text-yellow-400 font-bold">{currentQuestion + 1} / {questions.length}</span>
+                                    </div>
+                                    <div className="w-full bg-gray-700 rounded-full h-3">
+                                        <div
+                                            className="bg-gradient-to-r from-yellow-500 to-orange-500 h-3 rounded-full transition-all duration-500"
+                                            style={{ width: `${((currentQuestion + 1) / questions.length) * 100}%` }}
+                                        ></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<HeartfulnessQuiz />, document.getElementById('root'));
+    </script>
+</body>
+</html>

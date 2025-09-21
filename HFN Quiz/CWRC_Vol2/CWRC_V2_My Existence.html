@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heartfulness Knowledge Quiz</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+        
+       body { 
+            margin: 0; 
+            font-family:  -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            background: linear-gradient(135deg, #0a0a2e 0%, #16213e 50%, #0f3460 100%);
+            overflow-x: hidden;
+        }
+        
+        .kbc-bg {
+            background: radial-gradient(circle at center, #1a1a3e 0%, #0a0a2e 100%);
+            position: relative;
+        }
+        
+        .kbc-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><radialGradient id="g" cx="50%" cy="50%" r="50%"><stop offset="0%" style="stop-color:%23ffffff;stop-opacity:0.05"/><stop offset="100%" style="stop-color:%23ffffff;stop-opacity:0"/></radialGradient></defs><circle cx="50" cy="50" r="50" fill="url(%23g)"/></svg>') center/200px 200px;
+            animation: pulse 3s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.7; }
+        }
+        
+        .gold-text {
+            background: linear-gradient(45deg, #ffd700, #ffed4e, #ffd700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+        
+        .option-button {
+            background: linear-gradient(145deg, #2a2a4a 0%, #1a1a3a 100%);
+            border: 2px solid #4a4a6a;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .option-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .option-button:hover::before {
+            left: 100%;
+        }
+        
+        .option-button:hover {
+            border-color: #ffd700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .correct-answer {
+            background: linear-gradient(145deg, #22c55e 0%, #16a34a 100%);
+            border-color: #22c55e;
+            box-shadow: 0 0 30px rgba(34, 197, 94, 0.5);
+            animation: correctPulse 1s ease-in-out infinite;
+        }
+        
+        .wrong-answer {
+            background: linear-gradient(145deg, #ef4444 0%, #dc2626 100%);
+            border-color: #ef4444;
+            box-shadow: 0 0 30px rgba(239, 68, 68, 0.5);
+            animation: wrongShake 0.5s ease-in-out;
+        }
+        
+        @keyframes correctPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        
+        @keyframes wrongShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        .prize-ladder {
+            background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid #374151;
+        }
+        
+        .current-prize {
+            background: linear-gradient(145deg, #ffd700 0%, #f59e0b 100%);
+            color: #0f172a;
+            font-weight: bold;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { box-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
+            to { box-shadow: 0 0 20px rgba(255, 215, 0, 0.8); }
+        }
+        
+        .sparkle {
+            animation: sparkle 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes sparkle {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        
+        const HeartfulnessQuiz = () => {
+            const [currentQuestion, setCurrentQuestion] = useState(0);
+            const [selectedAnswers, setSelectedAnswers] = useState([]);
+            const [showResult, setShowResult] = useState(false);
+            const [gameStarted, setGameStarted] = useState(false);
+            const [gameOver, setGameOver] = useState(false);
+            const [timeLeft, setTimeLeft] = useState(60);
+            const [totalPoints, setTotalPoints] = useState(0);
+            const [questionsAnswered, setQuestionsAnswered] = useState(0);
+            const [correctAnswers, setCorrectAnswers] = useState(0);
+            const [canProceed, setCanProceed] = useState(false);
+
+            const pointsPerQuestion = 100;
+
+            const questions = [
+  { "id": 1, "question": "Babuji describes his life not as life in the literal sense, but as what?", "options": ["A dream-like illusion", "A temporary spark", "An eternal existence", "A passing shadow"], "correct": 2 },
+  { "id": 3, "question": "What quality must one develop to acquire the capacity for revival of consciousness?", "options": ["Worldly power", "Physical strength", "Absorption in the inner state", "Accumulated wealth"], "correct": 2 },
+  { "id": 4, "question": "What metaphor does Babuji use to explain negating oneself?", "options": ["Like fire turning to ash", "Like being dead in the hands of a dresser", "Like a tree losing its leaves", "Like water evaporating"], "correct": 1 },
+  { "id": 5, "question": "The state of faith begins from what, according to Babuji?", "options": ["Avoiding worldly people", "Reading holy texts only", "Trusting and believing that everything from the Master is right", "Performing rituals daily"], "correct": 2 },
+  { "id": 6, "question": "At a lower level, how does faith appear?", "options": ["As wisdom without effort", "In a crude form with self-elevation in the background", "As a fully developed surrender", "As direct union with God"], "correct": 1 },
+  { "id": 7, "question": "What is the beginning of real faith?", "options": ["When one starts meditating", "When one performs rituals perfectly", "When conscious knowledge of belief is lost", "When one studies scriptures"], "correct": 2 },
+  { "id": 8, "question": "What usually holds people back in their progress?", "options": ["Opposition from others", "Their thoughts of self, family, and society", "Physical illness", "Lack of money"], "correct": 1 },
+  { "id": 9, "question": "According to Babuji, it is good to serve others but better to focus on what first?", "options": ["Family welfare", "Earning wealth", "One's own moral uplift", "Worldly progress"], "correct": 2 },
+  { "id": 10, "question": "What does Babuji describe as one of the greatest gifts of God?", "options": ["Material prosperity", "Physical health", "Social respect", "Mental equilibrium"], "correct": 3 },
+  { "id": 11, "question": "What kind of seeker should one be?", "options": ["Willing to change Masters frequently", "Concerned with wealth accumulation", "Blind to worldly charms, inspired with one object, firm on the path", "Interested in rituals only"], "correct": 2 },
+  { "id": 12, "question": "What is the key to success stressed by sages?", "options": ["Worldly education", "Fame and recognition", "Intense longing with proper means and earnest endeavors", "Physical strength and courage"], "correct": 2 },
+  { "id": 13, "question": "What can help an abhyasi advance up to negation?", "options": ["His social influence", "His wealth", "The grace of the Master", "His physical fitness"], "correct": 2 },
+  { "id": 14, "question": "What induces the Master to bestow grace?", "options": ["Accumulating wealth", "Regular attendance at meetings", "Performing austerities", "Intense love and devotion from the abhyasi"], "correct": 3 },
+  { "id": 15, "question": "What accompanies love in the heart, according to Babuji?", "options": ["Worldly fame", "Joyful sleep", "Peace without devotion", "Restlessness"], "correct": 3 },
+  { "id": 16, "question": "What does irritation at reprimanding words indicate?", "options": ["Strong faith", "Attachment to egoistic feelings", "Detachment from ego", "Spiritual maturity"], "correct": 1 },
+  { "id": 17, "question": "According to Babuji, who alone is the giver of negation?", "options": ["God", "Nature", "The disciple", "Society"], "correct": 0 },
+  { "id": 18, "question": "From whom did Babuji receive all that he had?", "options": ["His Master", "His family", "His disciples", "His society"], "correct": 0 },
+  { "id": 19, "question": "What must an abhyasi be to his guide?", "options": ["As indifferent as a stranger", "As powerful as the Master", "As submissive as a schoolboy to his teacher", "As demanding as a ruler"], "correct": 2 },
+  { "id": 20, "question": "What is a real guide never eager for?", "options": ["Wealth", "Disciples", "Service", "Fame or honour"], "correct": 3 },
+  { "id": 21, "question": "What kind of spiritual training does Babuji call unique to their sanstha?", "options": ["The training of worldly duties", "The training of rituals", "The masterly training of Sahaj Marg", "The training of yoga postures"], "correct": 2 },
+  { "id": 22, "question": "What do people generally prefer over liberation?", "options": ["Faith", "Material wealth and prosperity", "Silence", "Self-negation"], "correct": 1 },
+  { "id": 23, "question": "According to Babuji, what is better: raw wood or crude furniture?", "options": ["Crude furniture, because it is useful", "Raw wood, because it can be shaped properly", "Furniture, because it is ready-made", "Neither, both are same"], "correct": 1 },
+  { "id": 24, "question": "What does Babuji say about ungodly ways being treated as godly?", "options": ["Nature's stern eye is now directed towards it", "It helps spirituality", "It is harmless", "It is acceptable to God"], "correct": 0 },
+  { "id": 26, "question": "What does attainment of complete negation mean?", "options": ["Vacuumization up to its farthest limit", "Becoming socially famous", "Union with nature", "Accumulating scriptures"], "correct": 0 },
+  { "id": 27, "question": "What great power of negation cannot be challenged?", "options": ["Not even by kings", "Not even by gods like Brahma, Vishnu and Mahesh", "Not even by nature", "Not even by ordinary men"], "correct": 1 },
+  { "id": 28, "question": "For proceeding towards vacuumization, what is absolutely essential?", "options": ["Physical exercises", "Worldly knowledge", "Social recognition", "A proper guide"], "correct": 3 },
+  { "id": 29, "question": "What does it mean when a person is in complete subjection to the will of God?", "options": ["He abandons spirituality", "The Divine will works through his Master in every way", "He becomes socially famous", "He becomes detached from his Master"], "correct": 1 },
+  { "id": 30, "question": "According to Babuji, even after negation has been achieved, what remains?", "options": ["Only social service remains", "Much to cover, even millions of years may be too short", "Nothing remains", "Only worldly duties remain"], "correct": 1 }
+]
+
+;
+
+            useEffect(() => {
+                let timer;
+                if (gameStarted && !gameOver && timeLeft > 0 && !showResult) {
+                    timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
+                } else if (timeLeft === 0 && !showResult) {
+                    handleTimeUp();
+                }
+                return () => clearTimeout(timer);
+            }, [timeLeft, gameStarted, gameOver, showResult]);
+
+            const handleTimeUp = () => {
+                // Move to next question without awarding points
+                setShowResult(true);
+                setSelectedAnswers([]);
+                setQuestionsAnswered(questionsAnswered + 1);
+                setCanProceed(true);
+            };
+
+            const handleAnswerClick = (answerIndex) => {
+                if (showResult) return;
+                
+                const currentQ = questions[currentQuestion];
+                
+                if (currentQ.multiSelect) {
+                    // Handle multiple selection
+                    const newSelectedAnswers = selectedAnswers.includes(answerIndex)
+                        ? selectedAnswers.filter(index => index !== answerIndex)
+                        : [...selectedAnswers, answerIndex];
+                    
+                    setSelectedAnswers(newSelectedAnswers);
+                } else {
+                    // Handle single selection
+                    setSelectedAnswers([answerIndex]);
+                    setShowResult(true);
+                    setQuestionsAnswered(questionsAnswered + 1);
+                    setCanProceed(true);
+                    
+                    const isCorrect = answerIndex === currentQ.correct;
+                    
+                    if (isCorrect) {
+                        setTotalPoints(totalPoints + pointsPerQuestion);
+                        setCorrectAnswers(correctAnswers + 1);
+                    }
+                }
+            };
+
+            const handleSubmitMultiSelect = () => {
+                const currentQ = questions[currentQuestion];
+                setShowResult(true);
+                setQuestionsAnswered(questionsAnswered + 1);
+                setCanProceed(true);
+                
+                // Check if all correct answers are selected and no wrong answers
+                const correctAnswersArray = Array.isArray(currentQ.correct) ? currentQ.correct : [currentQ.correct];
+                const isCorrect = selectedAnswers.length === correctAnswersArray.length && 
+                                 selectedAnswers.every(answer => correctAnswersArray.includes(answer));
+                
+                if (isCorrect) {
+                    setTotalPoints(totalPoints + pointsPerQuestion);
+                    setCorrectAnswers(correctAnswers + 1);
+                }
+            };
+
+            const handleNextQuestion = () => {
+                if (currentQuestion < questions.length - 1) {
+                    setCurrentQuestion(currentQuestion + 1);
+                    setSelectedAnswers([]);
+                    setShowResult(false);
+                    setTimeLeft(60);
+                    setCanProceed(false);
+                } else {
+                    setGameOver(true);
+                }
+            };
+
+            const startGame = () => {
+                setGameStarted(true);
+                setTimeLeft(60);
+            };
+
+            const restartGame = () => {
+                setCurrentQuestion(0);
+                setSelectedAnswers([]);
+                setShowResult(false);
+                setGameStarted(false);
+                setGameOver(false);
+                setTimeLeft(60);
+                setTotalPoints(0);
+                setQuestionsAnswered(0);
+                setCorrectAnswers(0);
+                setCanProceed(false);
+            };
+
+            // Start Screen
+            if (!gameStarted) {
+                return (
+                    <div className="min-h-screen kbc-bg flex items-center justify-center p-4">
+                        <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl shadow-2xl p-8 max-w-2xl w-full text-center border-2 border-yellow-500">
+                            <div className="mb-8">
+                                <h1 className="text-5xl font-bold gold-text mb-4 sparkle">
+                                    Heartfulness Quiz on Complete Works of RamChandra
+                                </h1>
+                                <h2 className="text-3xl font-bold text-white mb-2">
+                                    Knowledge Challenge
+                                </h2>
+                                <p className="text-gray-300 text-lg">
+                                    Test your knowledge and earn points!
+                                </p>
+                            </div>
+                            
+                            <div className="bg-gray-800 rounded-2xl p-6 mb-8 border border-gray-600">
+                                <h3 className="text-xl font-bold text-yellow-400 mb-4">Game Rules:</h3>
+                                <div className="text-left text-gray-300 space-y-2">
+                                    <p>• Answer questions to complete the quiz</p>
+                                    <p>• Each question has 60 seconds time limit</p>
+                                    <p>• Earn 100 points for each correct answer</p>
+                                    <p>• Use the "Next" button to proceed to the next question</p>
+                                    <p>• For multiple choice questions, select all correct answers</p>
+                                    <p>• Click submit button for multiple choice questions</p>
+                                    <p>• Game continues even if you answer incorrectly</p>
+                                </div>
+                            </div>
+                            
+                            <button
+                                onClick={startGame}
+                                className="bg-gradient-to-r from-yellow-500 to-orange-500 text-black font-bold py-4 px-8 rounded-2xl hover:from-yellow-400 hover:to-orange-400 transform hover:scale-105 transition-all duration-300 shadow-lg text-xl"
+                            >
+                                START QUIZ
+                            </button>
+                        </div>
+                    </div>
+                );
+            }
+
+            // Game Over Screen
+            if (gameOver) {
+                const percentage = Math.round((correctAnswers / questions.length) * 100);
+                
+                return (
+                    <div className="min-h-screen kbc-bg flex items-center justify-center p-4">
+                        <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl shadow-2xl p-8 max-w-2xl w-full text-center border-2 border-yellow-500">
+                            <div className="mb-8">
+                                <h1 className="text-4xl font-bold gold-text mb-4 sparkle">
+                                    Quiz Complete!
+                                </h1>
+                                <h2 className="text-2xl font-bold text-white mb-4">
+                                    Final Results
+                                </h2>
+                                
+                                <div className="bg-gray-800 rounded-2xl p-6 mb-6 border border-gray-600">
+                                    <h3 className="text-xl font-bold text-yellow-400 mb-2">Your Total Score:</h3>
+                                    <div className="text-6xl font-bold gold-text mb-4 sparkle">
+                                        {totalPoints} Points
+                                    </div>
+                                    <p className="text-gray-300">
+                                        {percentage >= 80 
+                                            ? "🎉 Excellent! You have great knowledge of Heartfulness!" 
+                                            : percentage >= 60 
+                                            ? "👍 Good job! You have solid understanding of Heartfulness." 
+                                            : percentage >= 40
+                                            ? "📚 Not bad! Consider reviewing more about Heartfulness meditation."
+                                            : "🔄 Keep learning! There's always room for improvement."}
+                                    </p>
+                                </div>
+                                
+                                <div className="grid grid-cols-2 gap-4 mb-6">
+                                    <div className="bg-gray-800 rounded-2xl p-4 border border-gray-600">
+                                        <p className="text-green-400 font-bold mb-2">Correct Answers:</p>
+                                        <p className="text-white text-2xl">{correctAnswers} / {questions.length}</p>
+                                    </div>
+                                    <div className="bg-gray-800 rounded-2xl p-4 border border-gray-600">
+                                        <p className="text-blue-400 font-bold mb-2">Accuracy:</p>
+                                        <p className="text-white text-2xl">{percentage}%</p>
+                                    </div>
+                                </div>
+                                
+                                <div className="bg-gray-800 rounded-2xl p-4 mb-6 border border-gray-600">
+                                    <div className="flex justify-between items-center mb-2">
+                                        <span className="text-white font-bold">Score Progress</span>
+                                        <span className="text-yellow-400 font-bold">{totalPoints} / {questions.length * 100}</span>
+                                    </div>
+                                    <div className="w-full bg-gray-700 rounded-full h-4">
+                                        <div
+                                            className="bg-gradient-to-r from-green-500 to-blue-500 h-4 rounded-full transition-all duration-500"
+                                            style={{ width: `${(totalPoints / (questions.length * 100)) * 100}%` }}
+                                        ></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button
+                                onClick={restartGame}
+                                className="bg-gradient-to-r from-green-500 to-blue-500 text-white font-bold py-4 px-8 rounded-2xl hover:from-green-400 hover:to-blue-400 transform hover:scale-105 transition-all duration-300 shadow-lg text-xl"
+                            >
+                                PLAY AGAIN
+                            </button>
+                        </div>
+                    </div>
+                );
+            }
+
+            const currentQ = questions[currentQuestion];
+
+            return (
+                <div className="min-h-screen kbc-bg p-4">
+                    {/* Header */}
+                    <div className="max-w-7xl mx-auto mb-6">
+                        <div className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl shadow-lg p-4 flex items-center justify-between border-2 border-yellow-600">
+                            <div className="flex items-center space-x-6">
+                                <div className="text-2xl font-bold gold-text">
+                                    Question {currentQuestion + 1} / {questions.length}
+                                </div>
+                                <div className="text-xl font-bold text-white">
+                                    Score: <span className="gold-text">{totalPoints} Points</span>
+                                </div>
+                            </div>
+                            
+                            <div className="flex items-center space-x-4">
+                                <div className={`text-2xl font-bold ${timeLeft <= 10 ? 'text-red-500' : 'text-green-500'}`}>
+                                    ⏰ {timeLeft}s
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-4 gap-6">
+                        {/* Score Tracker */}
+                        <div className="lg:col-span-1">
+                            <div className="prize-ladder rounded-2xl p-4 h-fit">
+                                <h3 className="text-xl font-bold gold-text mb-4 text-center">Score Tracker</h3>
+                                <div className="space-y-4">
+                                    <div className="bg-gray-700 rounded-lg p-4 text-center">
+                                        <div className="text-3xl font-bold gold-text mb-2">{totalPoints}</div>
+                                        <div className="text-gray-300">Total Points</div>
+                                    </div>
+                                    <div className="bg-gray-700 rounded-lg p-4 text-center">
+                                        <div className="text-2xl font-bold text-green-400 mb-2">{correctAnswers}</div>
+                                        <div className="text-gray-300">Correct</div>
+                                    </div>
+                                    <div className="bg-gray-700 rounded-lg p-4 text-center">
+                                        <div className="text-2xl font-bold text-red-400 mb-2">{questionsAnswered - correctAnswers}</div>
+                                        <div className="text-gray-300">Wrong</div>
+                                    </div>
+                                    <div className="bg-gray-700 rounded-lg p-4 text-center">
+                                        <div className="text-lg font-bold text-blue-400 mb-2">
+                                            {questionsAnswered > 0 ? Math.round((correctAnswers / questionsAnswered) * 100) : 0}%
+                                        </div>
+                                        <div className="text-gray-300">Accuracy</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Main Game Area */}
+                        <div className="lg:col-span-3">
+                            {/* Question */}
+                            <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl shadow-lg p-8 mb-6 border-2 border-yellow-600">
+                                <h2 className="text-2xl md:text-3xl font-bold text-white leading-relaxed text-center">
+                                    {currentQ.question}
+                                </h2>
+                                {currentQ.multiSelect && (
+                                    <p className="text-yellow-400 text-center mt-4 text-lg font-semibold">
+                                        ⚠️ Multiple Choice Question - Select ALL correct answers
+                                    </p>
+                                )}
+                            </div>
+
+                            {/* Options */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                                {currentQ.options.map((option, index) => {
+                                    const isSelected = selectedAnswers.includes(index);
+                                    const correctAnswersArray = Array.isArray(currentQ.correct) ? currentQ.correct : [currentQ.correct];
+                                    const isCorrect = correctAnswersArray.includes(index);
+                                    
+                                    let buttonClass = "option-button text-white font-bold py-6 px-6 rounded-2xl shadow-lg transition-all duration-300 text-left";
+                                    
+                                    if (currentQ.multiSelect && isSelected && !showResult) {
+                                        buttonClass += ' border-yellow-400 bg-yellow-900';
+                                    }
+                                    
+                                    if (showResult) {
+                                        if (isCorrect) {
+                                            buttonClass += ' correct-answer';
+                                        } else if (isSelected && !isCorrect) {
+                                            buttonClass += ' wrong-answer';
+                                        }
+                                    }
+
+                                    return (
+                                        <button
+                                            key={index}
+                                            onClick={() => handleAnswerClick(index)}
+                                            disabled={showResult}
+                                            className={buttonClass}
+                                        >
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-lg">
+                                                    <span className="font-bold text-yellow-400 mr-3">
+                                                        {String.fromCharCode(65 + index)}.
+                                                    </span>
+                                                    {option}
+                                                </span>
+                                                <div className="flex items-center space-x-2">
+                                                    {currentQ.multiSelect && isSelected && !showResult && (
+                                                        <svg className="w-6 h-6 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                                        </svg>
+                                                    )}
+                                                    {showResult && (
+                                                        <div className="ml-2">
+                                                            {isCorrect ? (
+                                                                <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                                                </svg>
+                                                            ) : isSelected && !isCorrect ? (
+                                                                <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                                                                </svg>
+                                                            ) : null}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+
+                            {/* Submit Button for Multi-Select Questions */}
+                            {currentQ.multiSelect && !showResult && (
+                                <div className="text-center mb-6">
+                                    <button
+                                        onClick={handleSubmitMultiSelect}
+                                        disabled={selectedAnswers.length === 0}
+                                        className="bg-gradient-to-r from-green-500 to-blue-500 text-white font-bold py-4 px-8 rounded-2xl hover:from-green-400 hover:to-blue-400 transform hover:scale-105 transition-all duration-300 shadow-lg text-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                                    >
+                                        Submit Answers ({selectedAnswers.length} selected)
+                                    </button>
+                                </div>
+                            )}
+
+                            {/* Next Button */}
+                            {canProceed && (
+                                <div className="text-center mb-6">
+                                    <button
+                                        onClick={handleNextQuestion}
+                                        className="bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold py-4 px-8 rounded-2xl hover:from-blue-400 hover:to-purple-400 transform hover:scale-105 transition-all duration-300 shadow-lg text-xl"
+                                    >
+                                        {currentQuestion < questions.length - 1 ? 'Next Question' : 'Finish Quiz'}
+                                        <svg className="w-6 h-6 ml-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            )}
+
+                            {/* Progress Bar */}
+                            <div className="mt-8">
+                                <div className="bg-gray-800 rounded-2xl shadow-lg p-4 border border-gray-600">
+                                    <div className="flex justify-between items-center mb-2">
+                                        <span className="text-white font-bold">Progress</span>
+                                        <span className="text-yellow-400 font-bold">{currentQuestion + 1} / {questions.length}</span>
+                                    </div>
+                                    <div className="w-full bg-gray-700 rounded-full h-3">
+                                        <div
+                                            className="bg-gradient-to-r from-yellow-500 to-orange-500 h-3 rounded-full transition-all duration-500"
+                                            style={{ width: `${((currentQuestion + 1) / questions.length) * 100}%` }}
+                                        ></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<HeartfulnessQuiz />, document.getElementById('root'));
+    </script>
+</body>
+</html>

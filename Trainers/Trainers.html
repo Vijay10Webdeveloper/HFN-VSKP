@@ -1,91 +1,1413 @@
 <!DOCTYPE html>
 <html lang="en">
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=<device-width>, initial-scale=1.0">
-  <title>Heartfulness Vizag</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-  <link href="./Trainer_style.css" rel="stylesheet">
-  <link href="../hdrftr_style.css" rel="stylesheet">
-  <link href="../Kbsettings.css" rel="stylesheet">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Meditation Session Attendance Management</title>
+
+  <!-- Chart.js CDN for charts in Individual student reports -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    /* --- styles (kept similar to your previous look & feel) --- */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --text-dark: #333;
+      --border-radius: 12px;
+      --primary-color: #2c3e50;
+      --secondary-color: #e74c3c;
+      --accent-color: #f39c12;
+      --light-bg: #ecf0f1;
+      --dark-bg: #34495e;
+      --text-color: #2c3e50;
+      --light-text: #7f8c8d;
+      --white: #ffffff;
+      --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      --shadow-hover: 0 8px 15px rgba(0, 0, 0, 0.2);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Header Styles */
+    .header-section {
+      background: var(--white);
+      box-shadow: var(--shadow);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      backdrop-filter: blur(10px);
+    }
+
+    .header-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative; /* added so absolute mobile nav positions relative to this */
+    }
+
+    .logo {
+      height: 50px;
+      transition: var(--transition);
+    }
+
+    .logo:hover { transform: scale(1.05); }
+
+    .nav-menu {
+      display: flex;
+      list-style: none;
+      gap: 2rem;
+    }
+
+    .nav-menu a {
+      text-decoration: none;
+      color: var(--text-color);
+      font-weight: 600;
+      padding: 0.5rem 1rem;
+      border-radius: var(--border-radius);
+      transition: var(--transition);
+      position: relative;
+    }
+
+    .nav-menu a:hover,
+    .nav-menu a.active {
+      background: linear-gradient(135deg, var(--secondary-color), var(--accent-color));
+      color: var(--white);
+      transform: translateY(-2px);
+    }
+
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 1.6rem;
+      color: var(--text-color);
+      cursor: pointer;
+      padding: 6px 10px;
+      border-radius: 8px;
+      transition: var(--transition);
+    }
+
+    .menu-toggle:focus { outline: 2px solid rgba(44,62,80,0.12); }
+
+    .login-container { max-width:500px; margin:10% auto; background: rgba(255,255,255,0.95); border-radius:15px; box-shadow:0 20px 40px rgba(0,0,0,0.1); padding:40px; text-align:center; }
+    .login-header { background: linear-gradient(135deg,#2c3e50 0%,#34495e 100%); color:white; padding:30px; margin:-40px -40px 30px -40px; border-radius:15px 15px 0 0; }
+    .login-header h1 { font-size:2em; margin-bottom:10px; text-shadow:2px 2px 4px rgba(0,0,0,0.3); }
+    .login-form { display:flex; flex-direction:column; gap:20px; }
+    .login-input { padding:15px; border:2px solid #ddd; border-radius:8px; font-size:16px; transition:border-color .3s; }
+    .login-input:focus { outline:none; border-color:#3498db; box-shadow:0 0 10px rgba(52,152,219,0.1); }
+    .login-btn { background: linear-gradient(135deg,#3498db 0%,#2980b9 100%); color:white; padding:15px 30px; border:none; border-radius:8px; cursor:pointer; font-size:16px; font-weight:bold; transition:all .3s; }
+    .login-btn:hover { transform:translateY(-2px); box-shadow:0 5px 15px rgba(52,152,219,.3); }
+    .login-error { background:#f8d7da; border:1px solid #f5c6cb; color:#721c24; padding:15px; border-radius:8px; margin-top:15px; font-weight:bold; display:none; text-align:left; white-space:pre-wrap; }
+    .login-info { background:#d1ecf1; border:1px solid #bee5eb; color:#0c5460; padding:15px; border-radius:8px; margin-bottom:20px; font-size:14px; line-height:1.5; text-align:left; }
+    .main-app { display:none; }
+    .main-app.authenticated { display:block; }
+    .container { max-width:1400px; margin:0 auto; background:rgba(255,255,255,0.95); border-radius:15px; box-shadow:0 20px 40px rgba(0,0,0,0.1); overflow:hidden; }
+    .header { background: linear-gradient(135deg,#2c3e50 0%,#34495e 100%); color:white; padding:30px; text-align:center; position:relative; }
+    .logout-btn { position:absolute; top:20px; right:20px; background:rgba(255,255,255,0.2); color:white; border:1px solid rgba(255,255,255,0.3); padding:8px 15px; border-radius:5px; cursor:pointer; font-size:12px; transition:all .3s; }
+    .logout-btn:hover { background: rgba(255,255,255,0.3); }
+    .user-info { position:absolute; top:20px; left:20px; font-size:12px; opacity:0.85; }
+    .header h1 { font-size:2.2em; margin-bottom:8px; text-shadow:2px 2px 4px rgba(0,0,0,0.3); }
+    .content { padding:30px; }
+    .tabs { display:flex; margin-bottom:30px; border-bottom:2px solid #dee2e6; gap:10px; flex-wrap:wrap; }
+    .tab { padding:12px 20px; background:#f8f9fa; border:1px solid #dee2e6; cursor:pointer; transition:all .2s; font-weight:bold; border-radius:6px; }
+    .tab.active { background:#3498db; color:white; border-color:#3498db; }
+    .tab-content { display:none; }
+    .tab-content.active { display:block; }
+    .section { background:#f8f9fa; padding:20px; border-radius:10px; margin-bottom:20px; border-left:5px solid #3498db; }
+    .form-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px; }
+    .form-group label { font-weight:bold; color:#555; margin-bottom:6px; display:block; }
+    .file-input-wrapper { position:relative; display:inline-block; cursor:pointer; background: linear-gradient(135deg,#9b59b6 0%,#8e44ad 100%); color:white; padding:10px 18px; border-radius:8px; font-weight:bold; }
+    .btn { background: linear-gradient(135deg,#3498db 0%,#2980b9 100%); color:white; padding:10px 16px; border:none; border-radius:8px; cursor:pointer; font-size:14px; font-weight:bold; }
+    .btn:hover { transform:translateY(-2px); box-shadow:0 6px 18px rgba(52,152,219,0.2); }
+    .btn-small { padding:8px 12px; font-size:13px; }
+    .btn-success { background: linear-gradient(135deg,#27ae60 0%,#2ecc71 100%); }
+    .btn-danger { background: linear-gradient(135deg,#e74c3c 0%,#c0392b 100%); }
+    .btn-warning { background: linear-gradient(135deg,#f39c12 0%,#e67e22 100%); }
+    .student-list { padding:12px 0; }
+    .student-item { display:flex; justify-content:space-between; align-items:center; padding:12px; margin-bottom:8px; background:white; border-radius:8px; border:1px solid #eee; }
+    .student-name { font-weight:bold; color:#2c3e50; }
+    .student-id { color:#666; font-size:12px; }
+    .attendance-badge { padding:5px 10px; border-radius:12px; color:white; font-weight:bold; font-size:12px; }
+    .report-table { width:100%; border-collapse:collapse; background:white; }
+    .report-table th, .report-table td { padding:10px 12px; border-bottom:1px solid #eee; text-align:left; }
+    .data-preview { max-height:420px; overflow:auto; border:1px solid #dee2e6; border-radius:8px; background:white; padding:8px; }
+    .alert { padding:12px; margin-bottom:12px; border-radius:8px; font-weight:bold; }
+    .alert-success { background:#d4edda; border:1px solid #c3e6cb; color:#155724; }
+    .alert-error { background:#f8d7da; border:1px solid #f5c6cb; color:#721c24; }
+    .alert-info { background:#d1ecf1; border:1px solid #bee5eb; color:#0c5460; }
+    .chart-controls { display:flex; gap:10px; align-items:center; margin-bottom:12px; flex-wrap:wrap; }
+
+    /* Responsive Design: Mobile nav adjustments */
+    @media (max-width: 768px) {
+      .menu-toggle {
+        display: block;
+        z-index: 1200; /* ensure the toggle sits above the menu */
+      }
+
+      /* position the menu absolute under header-container so it aligns correctly regardless of header height */
+      .nav-menu {
+        position: absolute;
+        top: 100%;               /* sits directly below the header container */
+        left: -100%;
+        width: 100%;
+        height: auto;            /* let content determine height */
+        background: var(--white);
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 1.25rem 1rem;
+        transition: var(--transition);
+        box-shadow: var(--shadow);
+        gap: 1rem;
+        z-index: 1100;
+      }
+
+      .nav-menu.active { left: 0; }
+
+      /* make nav links full width and easy to tap */
+      .nav-menu a {
+        display: block;
+        width: 100%;
+        padding: 0.75rem 1rem;
+        text-align: center;
+        border-radius: 8px;
+      }
+
+      /* slightly reduce gap on very small screens */
+      .nav-menu { gap: 0.75rem; }
+    }
+
+    /* Footer */
+    .footer {
+      background: var(--primary-color);
+      color: white;
+      padding: 2rem 0;
+      text-align: center;
+      margin-top: 3rem;
+    }
+
+    .container {
+      background: var(--primary-color);
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+      padding: 0.5rem 1rem;
+      border-radius: var(--border-radius);
+      transition: var(--transition);
+    }
+
+    .footer-links a:hover {
+      background: rgba(255,255,255,0.2);
+      transform: translateY(-2px);
+    }
+
+    .footer a:hover {
+      background: var(--secondary-color);
+    }
+  </style>
 </head>
-<body>  
-
-<!-------------------------------------------------------------------------->
-<div class="container pt-1" >
-  <div class="header">
-    <div class="row">
-      <div class="col-sm-8">
-    <img src="../Images/advancing-in-love-black.png" class="logo" alt="Heartfulness" style="margin-top: 2px;">  
+<body>
+  <!-- Header - Fixed Structure -->
+  <header class="header-section">
+    <div class="header-container">
+      <img src="../Images/advancing-in-love-black.png" alt="Heartfulness" class="logo">
+      <nav>
+        <ul class="nav-menu" id="nav-menu">
+          <li><a href="../Home/Home.html" class="active">HOME</a></li>
+          <li><a href="../NewSeeker/Newseekers.html">NEW SEEKERS</a></li>
+          <li><a href="../Abhyasi/Abhyasi.html">ABHYASIS</a></li>
+          <li><a href="./Trainers.html">TRAINERS</a></li>
+        </ul>
+        <!-- Accessible hamburger — no external icon dependency -->
+        <button class="menu-toggle" id="menu-toggle" aria-expanded="false" aria-controls="nav-menu" aria-label="Toggle navigation">☰</button>
+      </nav>
     </div>
-    <div class="col-sm-4">
-    <i class="fa fa-bars" id="menu-icon"></i>
-    <nav id="nav-links" >
-      <ul>
-        <li><a class="active" href="../Home/Home.html"><b>HOME</b></a></li>
-        <li><a href="../NewSeeker/Newseekers.html"><b>NEW SEEKERS</b></a></li>
-        <li><a href="../Abhyasi/Abhyasi.html"><b>ABHYASIS</b></a></li>
-        <li><a href="../Trainers/Trainers.html"><b>TRAINERS</b></a></li>
-      </ul>
-    </nav>
-  </div>
-  </div>
-</div>
-</div>
+  </header>
 
-<!------------------------------------------------------------------------------>
-  <div class="container">
-<form action="/action_page.php" method="post">
-  <div class="imgcontainer">
-    <img src="./Trainer login.jpeg" alt="HFN" class="avatar">
-  </div>
+  <!-- Login -->
+  <div id="loginScreen" class="login-container">
+    <div class="login-header">
+      <h1>🔐 Access Required</h1>
+      <p>Meditation Session Attendance System</p>
+    </div>
 
-  <div class="container">
-    <label for="uname"><b>Username</b></label>
-    <input type="text" placeholder="Enter Username" name="uname" required>
+    <div class="login-info">
+      <strong>Secure Access</strong><br>
+      Enter authorized credentials to access the system.
+    </div>
 
-    <label for="psw"><b>Password</b></label>
-    <input type="password" placeholder="Enter Password" name="psw" required>
-        
-    <button type="submit">Login</button>
-    <label>
-      <input type="checkbox" checked="checked" name="remember"> Remember me
-    </label>
+    <div class="login-form">
+      <input id="emailInput" class="login-input" type="email" placeholder="Enter your email" onkeypress="handleLoginKeyPress(event)" />
+      <div style="position:relative;">
+        <input id="passwordInput" class="login-input" type="password" placeholder="Enter your password" onkeypress="handleLoginKeyPress(event)" />
+        <button id="passwordToggle" onclick="togglePasswordVisibility()" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer;">👁️</button>
+      </div>
+      <button class="login-btn" onclick="authenticateUser()">🚪 Login to System</button>
+    </div>
+
+    <div id="loginError" class="login-error"></div>
   </div>
 
-  <div class="container" style="background-color:#f1f1f1">
-    <button type="button" class="cancelbtn">Cancel</button>
-    <span class="psw">Forgot <a href="#">password?</a></span>
-  </div>
-</form>
-</div>
-<!-------------------------------------------------------------------------------------------->
+  <!-- Main App -->
+  <div id="mainApp" class="main-app">
+    <div class="container">
+      <div class="header">
+        <div class="user-info" id="userInfo">👤 Logged in as: <span id="currentUser"></span></div>
+        <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+        <h1>🧘 Meditation Session Attendance Management</h1>
+        <p>Attendance tracking with in-browser master record storage</p>
+      </div>
 
-<div class="container pt-2 pb-2">
-  <section id="footer">
-    <a href="../Requests/Requests.html" ><b>REQUESTS</b></a>
-    <a href="../HFNContactUs/HFNContactUs.html" ><b>CONTACT US</b></a>
-    <a href="../FAQs/FAQs.html"><b>FAQs</b></a>
-  </section>
-  </div>
-  
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-<script>
-document.getElementById('menu-icon').addEventListener('click', function() {
-  var navLinks = document.getElementById('nav-links');
-  var menuIcon = document.getElementById('menu-icon');
-  
-  if (navLinks.classList.contains('vertical-links')) {
-    navLinks.classList.remove('vertical-links');
-    menuIcon.classList.remove('fa-times');
-    menuIcon.classList.add('fa-bars');
-  } else {
-    navLinks.classList.add('vertical-links');
-    menuIcon.classList.remove('fa-bars');
-    menuIcon.classList.add('fa-times');
-  }
-});
+      <div class="content">
+        <div class="tabs">
+          <div class="tab active" onclick="switchTab('attendance')">📋 Mark Attendance</div>
+          <div class="tab" onclick="switchTab('records')">📂 View All Records</div>
+          <div class="tab" onclick="switchTab('import')">📥 Import Data</div>
+          <div class="tab" onclick="switchTab('reports')">📊 Generate Reports</div>
+        </div>
 
-</script>
+        <div id="alertContainer"></div>
+
+        <!-- Attendance -->
+        <div id="attendance-tab" class="tab-content active">
+          <div class="section">
+            <h2>👥 Manage Abhyasis</h2>
+            <div style="display:flex; gap:8px; align-items:center; margin-bottom:12px; flex-wrap:wrap;">
+              <input id="studentName" type="text" placeholder="Enter Abhyasi name" style="padding:10px; border-radius:6px; border:1px solid #ddd; flex:1;" />
+              <input id="studentId" type="text" placeholder="Enter Abhyasi ID" style="padding:10px; border-radius:6px; border:1px solid #ddd; width:160px;" />
+              <input id="studentContact" type="text" placeholder="Enter Contact number" style="padding:10px; border-radius:6px; border:1px solid #ddd; width:180px;" />
+              <!-- FIXED: call addAbhyasi (was addStudent causing error) -->
+              <button class="btn btn-small" onclick="addAbhyasi()">Add Abhyasi</button>
+            </div>
+            <div id="studentsList"></div>
+          </div>
+
+          <div class="section">
+            <h2>📋 Session Information</h2>
+            <div class="form-grid">
+              <div>
+                <label for="sessionName">Session Name</label>
+                <select id="sessionName" style="padding:10px; border-radius:6px; border:1px solid #ddd; width:100%;">
+                  <option value="Sunday">Sunday</option>
+                  <option value="Monday">Monday</option>
+                  <option value="Tuesday">Tuesday</option>
+                  <option value="Wednesday">Wednesday</option>
+                  <option value="Thursday">Thursday</option>
+                  <option value="Friday">Friday</option>
+                  <option value="Saturday">Saturday</option>
+                </select>
+              </div>
+              <div>
+                <label for="sessionType">Session Type</label>
+                <select id="sessionType" style="padding:10px; border-radius:6px; border:1px solid #ddd; width:100%;">
+                  <option value="Group meditation session">Group meditation session</option>
+                  <option value="Face to face individual sittings">Face to face individual sittings</option>
+                </select>
+              </div>
+              <div>
+                <label for="trainer">Trainer</label>
+                <input id="trainer" type="text" placeholder="Trainer name" style="padding:10px; border-radius:6px; border:1px solid #ddd; width:100%;" />
+              </div>
+              <div>
+                <label for="classDate">Date</label>
+                <input id="classDate" type="date" onchange="updateCurrentDate()" style="padding:10px; border-radius:6px; border:1px solid #ddd; width:100%;" />
+              </div>
+            </div>
+          </div>
+
+          <div class="section attendance-section">
+            <div style="background:linear-gradient(135deg,#8e44ad 0%,#9b59b6 100%); color:white; padding:12px; border-radius:8px;">
+              <h3 style="margin:0;">✅ Today's Attendance</h3>
+            </div>
+            <div style="padding:12px;">
+              <strong id="currentDate"></strong>
+            </div>
+            <div class="student-list" id="attendanceList"></div>
+            <div style="text-align:center; padding:16px;">
+              <button class="btn btn-success" onclick="saveAttendance()">💾 Save Today's Attendance</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Records -->
+        <div id="records-tab" class="tab-content">
+          <div class="section">
+            <h2>📂 All Attendance Records (Master)</h2>
+
+            <div style="margin-bottom:12px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+              <button class="btn btn-success" onclick="showRecords()">📋 Show All Records</button>
+              <button class="btn" onclick="downloadMasterCSV()">⬇️ Download Master CSV</button>
+              <button class="btn btn-danger" onclick="clearMasterRecords()">🗑️ Clear Master Records</button>
+            </div>
+
+            <div id="allRecordsContainer" class="data-preview" style="background:white; padding:8px;">
+              <p style="color:#666; font-style:italic;">No records shown. Click "Show All Records" to display stored master records.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Import -->
+        <div id="import-tab" class="tab-content">
+          <div class="section">
+            <h2>📥 Import Attendance Data</h2>
+            <p style="color:#666;">Preferred header (exported by this app):</p>
+            <pre style="background:#fff;padding:8px;border-radius:6px;color:#333;">Date,Day of Week,Abhyasi Name,Abhyasi ID,Session Name,Trainer,Present,Month,Year</pre>
+            <p style="color:#666;">This importer tolerates simpler files (e.g. Date,Abhyasi Name,Abhyasi ID,Session Name,Trainer,Present).</p>
+
+            <div style="margin-bottom:12px;">
+              <label class="file-input-wrapper">
+                📂 Choose CSV File
+                <input id="csvFileInput" type="file" accept=".csv" style="display:none" onchange="handleFileSelect(event)" />
+              </label>
+            </div>
+
+            <div id="importPreview" style="display:none;">
+              <h3>Import Preview</h3>
+              <p id="importSummary"></p>
+              <div style="max-height:320px; overflow:auto; border:1px solid #eee; padding:8px; background:white;">
+                <table class="report-table" id="importPreviewTable"><thead><tr><th>Date</th><th>Day</th><th>Name</th><th>ID</th><th>Session</th><th>Trainer</th><th>Present</th></tr></thead><tbody id="importPreviewBody"></tbody></table>
+              </div>
+              <div style="margin-top:12px;">
+                <button class="btn btn-success" onclick="confirmImport()">✅ Import Data</button>
+                <button class="btn" onclick="cancelImport()">❌ Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reports -->
+        <div id="reports-tab" class="tab-content">
+          <div class="section">
+            <h2>📊 Generate Reports</h2>
+
+            <!-- Range selector: choose Month range or Date/Week range -->
+            <div style="margin-bottom:12px; display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+              <label style="font-weight:bold;">Range mode:</label>
+              <label><input type="radio" name="rangeMode" value="month" checked onchange="onRangeModeChange()"> Month range</label>
+              <label><input type="radio" name="rangeMode" value="date" onchange="onRangeModeChange()"> Date / Week range</label>
+            </div>
+
+            <div class="form-grid" style="align-items:end;">
+              <div id="monthRangeGroup">
+                <label for="startMonth">Start Month</label>
+                <input id="startMonth" type="month" style="padding:10px; border:1px solid #ddd; border-radius:6px; width:100%;" />
+              </div>
+              <div id="endMonthGroup">
+                <label for="endMonth">End Month</label>
+                <input id="endMonth" type="month" style="padding:10px; border:1px solid #ddd; border-radius:6px; width:100%;" />
+              </div>
+
+              <div id="dateRangeGroup" style="display:none;">
+                <label for="startDate">Start Date</label>
+                <input id="startDate" type="date" style="padding:10px; border:1px solid #ddd; border-radius:6px; width:100%;" />
+              </div>
+              <div id="dateRangeGroup2" style="display:none;">
+                <label for="endDate">End Date</label>
+                <input id="endDate" type="date" style="padding:10px; border:1px solid #ddd; border-radius:6px; width:100%;" />
+              </div>
+
+              <div>
+                <label for="reportType">Report Type</label>
+                <select id="reportType" style="padding:10px; border:1px solid #ddd; border-radius:6px; width:100%;">
+                  <option value="monthly">Monthly Summary</option>
+                  <option value="detailed">Detailed Records</option>
+                  <option value="student">Individual Abhyasi</option>
+                </select>
+              </div>
+              <div id="studentSelectGroup" style="display:none;">
+                <label for="reportStudent">Select Abhyasi</label>
+                <select id="reportStudent" style="padding:10px; border:1px solid #ddd; border-radius:6px; width:100%;"></select>
+              </div>
+            </div>
+
+            <div style="margin-top:12px;">
+              <button class="btn" onclick="generateReport()">📊 Generate Report</button>
+            </div>
+
+            <div id="reportResults" style="display:none; margin-top:12px;"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /***** AUTH & APP STATE *****/
+    const AUTHORIZED_USERS = {
+      'admin@sundayclass.com': { password: 'ADmin123', name: 'System Administrator', role: 'Admin' },
+      'mvijay108@gmail.com': { password: 'mycall10', name: 'Trainer', role: 'Trainer' },
+      'principal@school.edu': { password: 'principal456', name: 'Principal', role: 'Principal' },
+      'coordinator@church.org': { password: 'coord789', name: 'Coordinator', role: 'Coordinator' }
+    };
+
+    const PASSWORD_SETTINGS = { minLength: 6, maxAttempts: 3, lockoutTime: 15 };
+    let failedAttempts = {};
+    let lockedUsers = {};
+    let currentUser = null;
+    let isAuthenticated = false;
+
+    // App data
+    let abhyasis = []; // { name, id, contact }
+    let attendanceHistory = {}; // date -> array of records
+    let masterRecords = []; // persisted to localStorage
+    const MASTER_KEY = 'meditation_master_records_v1';
+    const APP_DATA_KEY = 'meditation_app_data_v1';
+
+    // DOM init
+    document.addEventListener('DOMContentLoaded', () => {
+      // set defaults
+      document.getElementById('classDate').valueAsDate = new Date();
+      const now = new Date();
+      const thisMonth = now.toISOString().slice(0,7);
+      document.getElementById('startMonth').value = thisMonth;
+      document.getElementById('endMonth').value = thisMonth;
+      document.getElementById('startDate').valueAsDate = new Date();
+      document.getElementById('endDate').valueAsDate = new Date();
+      updateCurrentDate();
+
+      loadFailedAttempts();
+      checkStoredAuthentication();
+      loadSavedData();
+      loadMasterRecords();
+      updateStudentsList();
+      updateAttendanceList();
+
+      // Mobile nav: update ARIA expanded state when menu toggles
+      const menuToggle = document.getElementById('menu-toggle');
+      const navMenu = document.getElementById('nav-menu');
+      if (menuToggle && navMenu) {
+        menuToggle.addEventListener('click', () => {
+          const expanded = navMenu.classList.contains('active');
+          menuToggle.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+        });
+      }
+    });
+
+    function togglePasswordVisibility() {
+      const pw = document.getElementById('passwordInput');
+      const btn = document.getElementById('passwordToggle');
+      if (pw.type === 'password') { pw.type = 'text'; btn.textContent = '🙈'; }
+      else { pw.type = 'password'; btn.textContent = '👁️'; }
+    }
+
+    function handleLoginKeyPress(e) { if (e.key === 'Enter') authenticateUser(); }
+
+    function authenticateUser() {
+      const email = document.getElementById('emailInput').value.trim().toLowerCase();
+      const password = document.getElementById('passwordInput').value;
+      const loginError = document.getElementById('loginError');
+      loginError.style.display = 'none'; loginError.textContent = '';
+
+      if (!email) return showLoginError('Please enter an email address.');
+      if (!password) return showLoginError('Please enter your password.');
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return showLoginError('Please enter a valid email address.');
+
+      if (!AUTHORIZED_USERS[email]) { recordFailedAttempt(email); return showLoginError(`❌ Access Denied: Email "${email}" is not authorized.`); }
+
+      if (AUTHORIZED_USERS[email].password !== password) {
+        recordFailedAttempt(email);
+        const attempts = failedAttempts[email] || 0;
+        const remaining = PASSWORD_SETTINGS.maxAttempts - attempts;
+        if (remaining > 0) return showLoginError(`❌ Incorrect password for "${email}". ${remaining} attempts remaining.`);
+        else return showLoginError(`🔒 Account locked for ${PASSWORD_SETTINGS.lockoutTime} minutes.`);
+      }
+
+      clearFailedAttempts(email);
+      currentUser = email; isAuthenticated = true;
+      localStorage.setItem('authenticatedUser', email);
+      localStorage.setItem('authTime', new Date().toISOString());
+      showMainApp();
+    }
+
+    function checkStoredAuthentication() {
+      try {
+        const storedUser = localStorage.getItem('authenticatedUser');
+        const time = localStorage.getItem('authTime');
+        if (storedUser && time && AUTHORIZED_USERS[storedUser]) {
+          const hoursDiff = (new Date() - new Date(time)) / (1000*60*60);
+          if (hoursDiff < 24) {
+            currentUser = storedUser; isAuthenticated = true;
+            showMainApp();
+            return;
+          }
+        }
+      } catch (err) { console.error(err); }
+      showLoginScreen();
+    }
+
+    function recordFailedAttempt(email) {
+      if (!failedAttempts[email]) failedAttempts[email] = 0;
+      failedAttempts[email]++;
+      if (failedAttempts[email] >= PASSWORD_SETTINGS.maxAttempts) {
+        lockedUsers[email] = new Date().getTime() + PASSWORD_SETTINGS.lockoutTime * 60 * 1000;
+      }
+      localStorage.setItem('failedAttempts', JSON.stringify(failedAttempts));
+      localStorage.setItem('lockedUsers', JSON.stringify(lockedUsers));
+      console.warn('Failed login', email);
+    }
+
+    function loadFailedAttempts() {
+      try {
+        const fa = localStorage.getItem('failedAttempts');
+        const lu = localStorage.getItem('lockedUsers');
+        if (fa) failedAttempts = JSON.parse(fa);
+        if (lu) lockedUsers = JSON.parse(lu);
+      } catch (err) { failedAttempts = {}; lockedUsers = {}; }
+    }
+
+    function clearFailedAttempts(email) {
+      delete failedAttempts[email]; delete lockedUsers[email];
+      localStorage.setItem('failedAttempts', JSON.stringify(failedAttempts));
+      localStorage.setItem('lockedUsers', JSON.stringify(lockedUsers));
+    }
+
+    function showLoginError(msg) {
+      const div = document.getElementById('loginError');
+      div.textContent = msg;
+      div.style.display = 'block';
+      document.getElementById('passwordInput').value = '';
+      document.getElementById('passwordInput').focus();
+    }
+
+    function showMainApp() {
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('mainApp').classList.add('authenticated');
+      const info = AUTHORIZED_USERS[currentUser];
+      document.getElementById('currentUser').textContent = `${info.name} (${info.role})`;
+      updateStudentsList();
+      updateAttendanceList();
+      displayAllRecords();
+    }
+
+    function showLoginScreen() {
+      document.getElementById('loginScreen').style.display = 'block';
+      document.getElementById('mainApp').classList.remove('authenticated');
+    }
+
+    function logout() {
+      if (!confirm('Are you sure you want to logout?')) return;
+      currentUser = null; isAuthenticated = false;
+      localStorage.removeItem('authenticatedUser');
+      localStorage.removeItem('authTime');
+      showLoginScreen();
+    }
+
+    /***** ABHYASIS MANAGEMENT (consistent) *****/
+    function addAbhyasi() {
+      const name = document.getElementById('studentName').value.trim();
+      const id = document.getElementById('studentId').value.trim();
+      const contact = document.getElementById('studentContact').value.trim();
+      if (!name || !id) { showAlert('Please enter Abhyasi name and ID', 'error'); return; }
+      if (abhyasis.find(a => a.id === id)) { showAlert('Abhyasi ID already exists', 'error'); return; }
+      abhyasis.push({ name, id, contact });
+      document.getElementById('studentName').value = '';
+      document.getElementById('studentId').value = '';
+      document.getElementById('studentContact').value = '';
+      updateStudentsList();
+      updateAttendanceList();
+      saveData();
+      showAlert(`Abhyasi "${name}" added`, 'success');
+    }
+
+    function editAbhyasi(index) {
+      const a = abhyasis[index];
+      const container = document.getElementById(`student-${index}`);
+      if (!container) return;
+      container.innerHTML = `
+        <div style="flex:1; display:flex; gap:8px; flex-wrap:wrap;">
+          <input id="editName-${index}" value="${a.name}" style="padding:6px; flex:1;" />
+          <input id="editId-${index}" value="${a.id}" style="padding:6px; width:120px;" />
+          <input id="editContact-${index}" value="${a.contact || ''}" style="padding:6px; width:160px;" />
+        </div>
+        <div style="display:flex; gap:6px;">
+          <button class="btn btn-success btn-small" onclick="saveEditAbhyasi(${index})">Save</button>
+          <button class="btn btn-warning btn-small" onclick="updateStudentsList()">Cancel</button>
+        </div>
+      `;
+    }
+
+    function saveEditAbhyasi(index) {
+      const name = document.getElementById(`editName-${index}`).value.trim();
+      const id = document.getElementById(`editId-${index}`).value.trim();
+      const contact = document.getElementById(`editContact-${index}`).value.trim();
+      if (!name || !id) { showAlert('Name & ID required', 'error'); return; }
+      // Prevent duplicate ID (unless unchanged)
+      const duplicate = abhyasis.find((a,i) => a.id === id && i !== index);
+      if (duplicate) { showAlert('Another Abhyasi with this ID exists', 'error'); return; }
+      abhyasis[index] = { name, id, contact };
+      saveData();
+      updateStudentsList();
+      updateAttendanceList();
+      showAlert('Abhyasi updated successfully', 'success');
+    }
+
+    function removeAbhyasi(index) {
+      const a = abhyasis[index];
+      if (!confirm(`Remove ${a.name}?`)) return;
+      abhyasis.splice(index,1);
+      updateStudentsList(); updateAttendanceList(); saveData();
+      showAlert(`Abhyasi "${a.name}" removed`, 'success');
+    }
+
+    function updateStudentsList() {
+      const container = document.getElementById('studentsList');
+      if (!abhyasis.length) {
+        container.innerHTML = '<p style="color:#666; font-style:italic;">No Abhyasis yet.</p>';
+        return;
+      }
+      container.innerHTML = abhyasis.map((a,i) => `
+        <div class="student-item" id="student-${i}">
+          <div>
+            <div class="student-name">${escapeHtml(a.name)}</div>
+            <div class="student-id">ID: ${escapeHtml(a.id)}${a.contact ? ' | ' + escapeHtml(a.contact) : ''}</div>
+          </div>
+          <div style="display:flex; gap:6px;">
+            <button class="btn btn-warning btn-small" onclick="editAbhyasi(${i})">Edit</button>
+            <button class="btn btn-danger btn-small" onclick="removeAbhyasi(${i})">Remove</button>
+          </div>
+        </div>`).join('');
+    }
+
+    /***** ATTENDANCE UI *****/
+    function updateAttendanceList() {
+      const container = document.getElementById('attendanceList');
+      if (!abhyasis.length) { container.innerHTML = '<p style="text-align:center;color:#666;">Add Abhyasis first to mark attendance.</p>'; return; }
+      container.innerHTML = abhyasis.map((s,i) => `
+        <div class="student-item" id="attendance-row-${i}">
+          <div>
+            <div class="student-name">${escapeHtml(s.name)}</div>
+            <div class="student-id">ID: ${escapeHtml(s.id)}</div>
+          </div>
+          <label style="display:flex; align-items:center; gap:8px;">
+            <input id="attendance-${i}" type="checkbox" />
+            <span style="font-size:13px; color:#666;">Present</span>
+          </label>
+        </div>`).join('');
+    }
+
+    function updateCurrentDate() {
+      const dateVal = document.getElementById('classDate').value;
+      if (!dateVal) return;
+      const d = new Date(dateVal);
+      document.getElementById('currentDate').textContent = d.toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+    }
+
+    /***** SAVE ATTENDANCE & MASTER RECORDS *****/
+    function loadMasterRecords() {
+      try {
+        const raw = localStorage.getItem(MASTER_KEY);
+        masterRecords = raw ? JSON.parse(raw) : [];
+      } catch (err) { console.error('Failed to load masterRecords', err); masterRecords = []; }
+    }
+
+    function saveMasterRecords() {
+      try {
+        localStorage.setItem(MASTER_KEY, JSON.stringify(masterRecords));
+      } catch (err) { console.error('Failed to save masterRecords', err); }
+    }
+
+    function addNewRecordsToMaster(newRecords) {
+      masterRecords = masterRecords.concat(newRecords);
+      masterRecords = removeDuplicateRecords(masterRecords);
+      saveMasterRecords();
+    }
+
+    function saveAttendance() {
+      if (!checkAuthentication()) return;
+      const date = document.getElementById('classDate').value;
+      if (!date) { showAlert('Please select a date', 'error'); return; }
+      if (!abhyasis.length) { showAlert('No abhyasis to save attendance for', 'error'); return; }
+      const sessionName = document.getElementById('sessionName').value || 'Sunday';
+      const trainer = document.getElementById('trainer').value || 'Not specified';
+      const sessionType = document.getElementById('sessionType').value || '';
+
+      const attendanceData = [];
+      let presentCount = 0;
+      abhyasis.forEach((s,i) => {
+        const checked = document.getElementById(`attendance-${i}`) ? document.getElementById(`attendance-${i}`).checked : false;
+        attendanceData.push({
+          date,
+          name: s.name,
+          id: s.id,
+          sessionName,
+          trainer,
+          sessionType,
+          present: !!checked,
+          savedBy: currentUser
+        });
+        if (checked) presentCount++;
+      });
+
+      // Save in attendanceHistory (per-date)
+      attendanceHistory[date] = attendanceData;
+      saveData();
+
+      // Add to masterRecords
+      addNewRecordsToMaster(attendanceData);
+
+      // NEW: display friendly "attendance saved" message
+      showAlert('Attendance is saved.', 'success');
+
+      // reset toggles
+      abhyasis.forEach((s,i) => {
+        const cb = document.getElementById(`attendance-${i}`);
+        if (cb) cb.checked = false;
+        const item = document.getElementById(`attendance-row-${i}`);
+        if (item) item.style.background = '';
+      });
+
+      displayAllRecords();
+    }
+
+    /***** DISPLAY / DOWNLOAD MASTER *****/
+    function showRecords() {
+      const container = document.getElementById('allRecordsContainer');
+      if (!masterRecords.length) { container.innerHTML = '<p style="color:#666; font-style:italic;">No master records stored yet.</p>'; return; }
+
+      let html = `<table class="report-table"><thead><tr><th>Date</th><th>Name</th><th>ID</th><th>Session</th><th>Type</th><th>Trainer</th><th>Status</th></tr></thead><tbody>`;
+      masterRecords.forEach(r => {
+        html += `<tr>
+          <td>${r.date}</td>
+          <td>${escapeHtml(r.name)}</td>
+          <td>${escapeHtml(r.id)}</td>
+          <td>${escapeHtml(r.sessionName)}</td>
+          <td>${escapeHtml(r.sessionType || '')}</td>
+          <td>${escapeHtml(r.trainer)}</td>
+          <td><span class="attendance-badge" style="background:${r.present ? '#27ae60' : '#e74c3c'}">${r.present ? 'Present' : 'Absent'}</span></td>
+        </tr>`;
+      });
+      html += `</tbody></table>`;
+      container.innerHTML = html;
+    }
+
+    function displayAllRecords() {
+      const container = document.getElementById('allRecordsContainer');
+      if (!masterRecords.length) { container.innerHTML = '<p style="color:#666; font-style:italic;">No master records stored yet.</p>'; return; }
+
+      const byDate = {};
+      masterRecords.forEach(r => {
+        if (!byDate[r.date]) byDate[r.date] = [];
+        byDate[r.date].push(r);
+      });
+      const dates = Object.keys(byDate).sort().reverse();
+      let html = `<div><strong>Total stored records:</strong> ${masterRecords.length} across ${dates.length} classes</div><br/>`;
+      dates.forEach(date => {
+        const recs = byDate[date];
+        const presentCount = recs.filter(x => x.present).length;
+        const sessionName = recs[0]?.sessionName || 'Session';
+        const trainer = recs[0]?.trainer || 'Not specified';
+        const sessionType = recs[0]?.sessionType || '';
+        html += `
+          <div style="border:1px solid #eee; padding:12px; margin-bottom:10px; border-radius:8px; background:white;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <h3 style="margin:0;">${new Date(date).toLocaleDateString()}</h3>
+                <div style="color:#666;">${sessionName}${sessionType ? ' | ' + sessionType : ''} | Trainer: ${trainer} | Present: ${presentCount}/${recs.length}</div>
+              </div>
+            </div>
+            <div style="margin-top:8px; overflow:auto;">
+              <table class="report-table">
+                <thead><tr><th>#</th><th>Name</th><th>ID</th><th>Status</th></tr></thead>
+                <tbody>
+                  ${recs.map((r,i) => `<tr><td>${i+1}</td><td>${escapeHtml(r.name)}</td><td>${escapeHtml(r.id)}</td><td><span class="attendance-badge" style="background:${r.present ? '#27ae60' : '#e74c3c'}">${r.present ? 'Present' : 'Absent'}</span></td></tr>`).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `;
+      });
+      container.innerHTML = html;
+    }
+
+    function downloadMasterCSV() {
+      if (!masterRecords.length) { showAlert('No master records to download', 'error'); return; }
+      const csv = buildMergedCSV(masterRecords);
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.href = url;
+      link.download = `meditation_attendance_master_${new Date().toISOString().slice(0,10)}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      showAlert('Download started', 'success');
+    }
+
+    function clearMasterRecords() {
+      if (!confirm('Clear all master records? This cannot be undone.')) return;
+      masterRecords = [];
+      saveMasterRecords();
+      displayAllRecords();
+      showAlert('Master records cleared', 'success');
+    }
+
+    /***** IMPORT CSV HANDLING (keeps merging into masterRecords) *****/
+    let importData = [];
+
+    function handleFileSelect(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(ev) {
+        parseImportCSV(ev.target.result);
+      };
+      reader.readAsText(file);
+    }
+
+    function parseCSVLineAdvanced(line) {
+      const result = []; let cur = ''; let inQuotes = false;
+      for (let i=0;i<line.length;i++) {
+        const ch = line[i];
+        if (ch === '"') {
+          if (inQuotes && line[i+1] === '"') { cur += '"'; i++; }
+          else inQuotes = !inQuotes;
+        } else if (ch === ',' && !inQuotes) {
+          result.push(cur);
+          cur = '';
+        } else cur += ch;
+      }
+      result.push(cur);
+      return result.map(s => s.replace(/^"|"$/g,'').trim());
+    }
+
+    function parseImportCSV(csvText) {
+      const lines = csvText.split(/\r?\n/).filter(l => l.trim());
+      if (lines.length < 1) { showAlert('CSV appears empty', 'error'); return; }
+
+      const headerLine = lines[0].trim();
+      const headers = parseCSVLineAdvanced(headerLine).map(h => h.toLowerCase().trim());
+      const headerMap = {};
+      headers.forEach((h, idx) => {
+        const normalized = h.replace(/\s+/g,' ').trim();
+        if (normalized === 'date') headerMap.date = idx;
+        else if (normalized === 'day of week' || normalized === 'day') headerMap.day = idx;
+        else if (normalized === 'abhyasi name' || normalized === 'student name' || normalized === 'name') headerMap.name = idx;
+        else if (normalized === 'abhyasi id' || normalized === 'student id' || normalized === 'id') headerMap.id = idx;
+        else if (normalized === 'session name' || normalized === 'class name' || normalized === 'class') headerMap.sessionName = idx;
+        else if (normalized === 'trainer' || normalized === 'instructor') headerMap.trainer = idx;
+        else if (normalized === 'present' || normalized === 'status') headerMap.present = idx;
+      });
+
+      let dataStartIndex = 1;
+      if (headerMap.date === undefined || headerMap.name === undefined || headerMap.id === undefined) {
+        const firstCols = parseCSVLineAdvanced(lines[0]);
+        if (firstCols.length >= 3) dataStartIndex = 0;
+        else {
+          showAlert('CSV header not recognized. Expected at minimum: Date,Abhyasi Name,Abhyasi ID,...', 'error');
+          return;
+        }
+      }
+
+      importData = [];
+      for (let i = dataStartIndex; i < lines.length; i++) {
+        const cols = parseCSVLineAdvanced(lines[i]);
+        if (!cols.length) continue;
+        const get = idx => (typeof idx === 'number' && cols[idx] !== undefined) ? cols[idx].trim() : '';
+
+        const rec = { date:'', day:'', name:'', id:'', sessionName:'', trainer:'', present:false };
+
+        if (dataStartIndex === 0) {
+          rec.date = get(0);
+          rec.name = get(1) || '';
+          rec.id = get(2) || '';
+          rec.sessionName = get(3) || '';
+          rec.trainer = get(4) || '';
+          rec.present = ['yes','true','1','present'].includes((get(5) || '').toLowerCase());
+        } else {
+          rec.date = headerMap.date !== undefined ? get(headerMap.date) : get(0);
+          rec.day = headerMap.day !== undefined ? get(headerMap.day) : '';
+          rec.name = headerMap.name !== undefined ? get(headerMap.name) : get(1);
+          rec.id = headerMap.id !== undefined ? get(headerMap.id) : get(2);
+          rec.sessionName = headerMap.sessionName !== undefined ? get(headerMap.sessionName) : get(3);
+          rec.trainer = headerMap.trainer !== undefined ? get(headerMap.trainer) : get(4);
+          const presentText = headerMap.present !== undefined ? get(headerMap.present) : (get(5) || '');
+          rec.present = ['yes','true','1','present'].includes(String(presentText).toLowerCase());
+        }
+
+        Object.keys(rec).forEach(k => { if (typeof rec[k] === 'string') rec[k] = rec[k].replace(/^"|"$/g,'').trim(); });
+
+        if (rec.date && rec.name && rec.id) importData.push(rec);
+      }
+
+      if (!importData.length) { showAlert('No valid records found in CSV', 'error'); return; }
+      displayImportPreview();
+    }
+
+    function displayImportPreview() {
+      document.getElementById('importPreview').style.display = 'block';
+      document.getElementById('importSummary').textContent = `Found ${importData.length} records`;
+      const body = document.getElementById('importPreviewBody');
+      body.innerHTML = importData.slice(0,50).map(r => `<tr>
+        <td>${r.date}</td>
+        <td>${r.day || (r.date ? new Date(r.date).toLocaleDateString('en-US', { weekday:'long' }) : '')}</td>
+        <td>${escapeHtml(r.name)}</td>
+        <td>${escapeHtml(r.id)}</td>
+        <td>${escapeHtml(r.sessionName)}</td>
+        <td>${escapeHtml(r.trainer)}</td>
+        <td>${r.present ? 'Present' : 'Absent'}</td>
+      </tr>`).join('');
+    }
+
+    function confirmImport() {
+      if (!importData.length) return;
+      const normalized = importData.map(r => ({
+        date: r.date,
+        name: r.name,
+        id: r.id,
+        sessionName: r.sessionName || '',
+        trainer: r.trainer || '',
+        present: !!r.present
+      }));
+
+      addNewRecordsToMaster(normalized);
+      const byDate = {};
+      normalized.forEach(r => {
+        if (!byDate[r.date]) byDate[r.date] = [];
+        byDate[r.date].push(r);
+      });
+      Object.keys(byDate).forEach(d => attendanceHistory[d] = byDate[d]);
+      saveData();
+      updateStudentsFromImported(normalized);
+      document.getElementById('importPreview').style.display = 'none';
+      document.getElementById('csvFileInput').value = '';
+      importData = [];
+      displayAllRecords();
+      showAlert('Imported records added to master', 'success');
+    }
+
+    function cancelImport() {
+      importData = [];
+      document.getElementById('importPreview').style.display = 'none';
+      document.getElementById('csvFileInput').value = '';
+    }
+
+    function updateStudentsFromImported(records) {
+      const ids = new Set(abhyasis.map(s => s.id));
+      const newStudents = [];
+      records.forEach(r => {
+        if (!ids.has(r.id)) {
+          newStudents.push({ name: r.name, id: r.id, contact: '' });
+          ids.add(r.id);
+        }
+      });
+      if (newStudents.length) {
+        abhyasis.push(...newStudents);
+        saveData();
+        updateStudentsList();
+        updateAttendanceList();
+      }
+    }
+
+    /***** REPORTS & CHARTS (range-based) *****/
+    document.getElementById('reportType').addEventListener('change', function() {
+      document.getElementById('studentSelectGroup').style.display = this.value === 'student' ? 'block' : 'none';
+      if (this.value === 'student') updateStudentSelect();
+    });
+
+    function onRangeModeChange() {
+      const mode = document.querySelector('input[name="rangeMode"]:checked').value;
+      if (mode === 'month') {
+        document.getElementById('monthRangeGroup').style.display = '';
+        document.getElementById('endMonthGroup').style.display = '';
+        document.getElementById('dateRangeGroup').style.display = 'none';
+        document.getElementById('dateRangeGroup2').style.display = 'none';
+      } else {
+        document.getElementById('monthRangeGroup').style.display = 'none';
+        document.getElementById('endMonthGroup').style.display = 'none';
+        document.getElementById('dateRangeGroup').style.display = '';
+        document.getElementById('dateRangeGroup2').style.display = '';
+      }
+    }
+
+    function updateStudentSelect() {
+      const sel = document.getElementById('reportStudent');
+      sel.innerHTML = '<option value="">Select an Abhyasi</option>' + abhyasis.map(s => `<option value="${s.id}">${s.name} (${s.id})</option>`).join('');
+    }
+
+    function generateReport() {
+      const mode = document.querySelector('input[name="rangeMode"]:checked').value;
+      let start, end;
+      if (mode === 'month') {
+        const sm = document.getElementById('startMonth').value;
+        const em = document.getElementById('endMonth').value;
+        if (!sm || !em) { showAlert('Please select both start and end month', 'error'); return; }
+        start = sm + '-01';
+        end = em + '-31';
+        if (start > end) { showAlert('Start month must be <= end month', 'error'); return; }
+      } else {
+        const sd = document.getElementById('startDate').value;
+        const ed = document.getElementById('endDate').value;
+        if (!sd || !ed) { showAlert('Please select both start and end date', 'error'); return; }
+        start = sd;
+        end = ed;
+        if (start > end) { showAlert('Start date must be <= end date', 'error'); return; }
+      }
+
+      const type = document.getElementById('reportType').value;
+      const results = document.getElementById('reportResults');
+      results.style.display = 'block';
+
+      if (type === 'monthly') generateMonthlyReportRange(start, end, results);
+      else if (type === 'detailed') generateDetailedReportRange(start, end, results);
+      else if (type === 'student') {
+        const sid = document.getElementById('reportStudent').value;
+        if (!sid) { showAlert('Select Abhyasi', 'error'); return; }
+        generateStudentReportRange(start, end, sid, results);
+      }
+    }
+
+    function getDatesInRange(start, end) {
+      const s = new Date(start), e = new Date(end);
+      const arr = [];
+      for (let d = new Date(s); d <= e; d.setDate(d.getDate()+1)) {
+        arr.push(new Date(d).toISOString().slice(0,10));
+      }
+      return arr;
+    }
+
+    function generateMonthlyReportRange(start, end, container) {
+      const dates = Object.keys(attendanceHistory).filter(d => d >= start && d <= end).sort();
+      if (!dates.length) { container.innerHTML = '<p style="color:#666;">No records found</p>'; return; }
+
+      const totalClasses = dates.length;
+      const studentSet = new Set();
+      let totalAttendances = 0;
+      const rows = [];
+
+      dates.forEach(d => {
+        const recs = attendanceHistory[d];
+        const present = recs.filter(r => r.present).length;
+        recs.forEach(r => studentSet.add(r.id));
+        totalAttendances += present;
+        rows.push({ date: d, present, total: recs.length, percent: Math.round(present / recs.length * 100) });
+      });
+
+      const avg = Math.round(totalAttendances / totalClasses);
+      let html = `<div><h3>Summary (${start} → ${end})</h3><div>Total classes: ${totalClasses} | Unique Abhyasis: ${studentSet.size} | Avg attendance: ${avg}</div><table class="report-table"><thead><tr><th>Date</th><th>Present</th><th>Total</th><th>Attendance %</th></tr></thead><tbody>`;
+      rows.forEach(r => html += `<tr><td>${new Date(r.date).toLocaleDateString()}</td><td>${r.present}</td><td>${r.total}</td><td>${r.percent}%</td></tr>`);
+      html += '</tbody></table></div>';
+      container.innerHTML = html;
+    }
+
+    function generateDetailedReportRange(start, end, container) {
+      const dates = Object.keys(attendanceHistory).filter(d => d >= start && d <= end).sort();
+      if (!dates.length) { container.innerHTML = '<p style="color:#666;">No records found</p>'; return; }
+      let html = `<div><h3>Detailed Report (${start} → ${end})</h3>`;
+      dates.forEach(date => {
+        const recs = attendanceHistory[date];
+        const present = recs.filter(r => r.present).length;
+        const sess = recs[0]?.sessionName || 'Session';
+        const tr = recs[0]?.trainer || 'Not specified';
+        const stype = recs[0]?.sessionType || '';
+        html += `<div style="margin-bottom:12px;"><h4>${new Date(date).toLocaleDateString()}</h4><div>${sess}${stype ? ' | ' + stype : ''} | ${tr} | Present: ${present}/${recs.length}</div>`;
+        html += `<table class="report-table"><thead><tr><th>#</th><th>Name</th><th>ID</th><th>Status</th></tr></thead><tbody>`;
+        recs.forEach((r,i) => html += `<tr><td>${i+1}</td><td>${escapeHtml(r.name)}</td><td>${escapeHtml(r.id)}</td><td>${r.present ? 'Present' : 'Absent'}</td></tr>`);
+        html += `</tbody></table></div>`;
+      });
+      html += '</div>';
+      container.innerHTML = html;
+    }
+
+    // Individual Abhyasi report for arbitrary range with charts
+    let currentChart = null;
+    function generateStudentReportRange(start, end, studentId, container) {
+      const records = [];
+      Object.keys(attendanceHistory).forEach(date => {
+        if (date >= start && date <= end) {
+          const found = attendanceHistory[date].find(r => r.id === studentId);
+          if (found) records.push(found);
+        }
+      });
+
+      if (!records.length) { container.innerHTML = '<p style="color:#666;">No records found for this Abhyasi in selected range.</p>'; return; }
+
+      const presentCount = records.filter(r => r.present).length;
+      const rate = Math.round(presentCount / records.length * 100);
+      const abhyasi = abhyasis.find(a => a.id === studentId);
+      const name = abhyasi ? abhyasi.name : studentId;
+
+      let html = `<div>
+        <h3>👤 ${escapeHtml(name)} - ${start} → ${end}</h3>
+        <div style="margin-bottom:12px;">Total classes: ${records.length} | Attended: ${presentCount} | Rate: ${rate}%</div>
+        <div class="chart-controls">
+          <label>Chart type:
+            <select id="chartTypeSelect">
+              <option value="bar">Bar</option>
+              <option value="line">Line</option>
+              <option value="pie">Pie</option>
+            </select>
+          </label>
+          <label>Group by:
+            <select id="chartGroupSelect">
+              <option value="byDate">By Date (attendance)</option>
+              <option value="bySession">By Session name</option>
+            </select>
+          </label>
+          <button class="btn" id="renderChartBtn">Render Chart</button>
+        </div>
+        <div style="background:white; padding:12px; border-radius:8px;">
+          <canvas id="studentChart" width="800" height="300"></canvas>
+        </div>
+      </div>`;
+
+      container.innerHTML = html;
+
+      document.getElementById('renderChartBtn').addEventListener('click', () => {
+        const type = document.getElementById('chartTypeSelect').value;
+        const group = document.getElementById('chartGroupSelect').value;
+        renderStudentChart(records, type, group, studentId);
+      });
+
+      renderStudentChart(records, 'bar', 'byDate', studentId);
+    }
+
+    function renderStudentChart(records, type, group, studentId) {
+      const ctx = document.getElementById('studentChart').getContext('2d');
+      if (currentChart) { currentChart.destroy(); currentChart = null; }
+
+      if (group === 'byDate') {
+        const sorted = records.slice().sort((a,b) => a.date.localeCompare(b.date));
+        const labels = sorted.map(r => new Date(r.date).toLocaleDateString());
+        const data = sorted.map(r => r.present ? 1 : 0);
+        const cfg = {
+          type: type === 'pie' ? 'pie' : type,
+          data: {
+            labels,
+            datasets: [{
+              label: 'Presence (1=present,0=absent)',
+              data,
+              backgroundColor: type === 'pie' ? labels.map((_,i) => paletteColor(i)) : undefined,
+              borderColor: type === 'pie' ? undefined : 'rgba(54, 162, 235, 0.8)',
+              fill: false
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: { legend: { display: type === 'pie' } },
+            scales: type === 'pie' ? undefined : { y: { beginAtZero:true, ticks:{ stepSize:1 } } }
+          }
+        };
+        currentChart = new Chart(ctx, cfg);
+      } else {
+        const groups = {};
+        records.forEach(r => {
+          const key = r.sessionName || 'Session';
+          if (!groups[key]) groups[key] = { present:0, total:0 };
+          groups[key].total++;
+          if (r.present) groups[key].present++;
+        });
+        const labels = Object.keys(groups);
+        const presentData = labels.map(l => groups[l].present);
+        const cfg = {
+          type: type === 'pie' ? 'pie' : type,
+          data: {
+            labels,
+            datasets: [{ label: 'Present', data: presentData, backgroundColor: labels.map((_,i)=> paletteColor(i)) }]
+          },
+          options: { responsive:true, plugins: { legend:{ display: true } } }
+        };
+        currentChart = new Chart(ctx, cfg);
+      }
+    }
+
+    function paletteColor(i) {
+      const palette = ['#4dc9f6','#f67019','#f53794','#537bc4','#acc236','#166a8f','#00a950','#58595b','#8549ba'];
+      return palette[i % palette.length];
+    }
+
+    /***** STORAGE: localStorage for abhyasis & attendanceHistory *****/
+    function saveData() {
+      try {
+        const data = { abhyasis, attendanceHistory, lastSaved: new Date().toISOString() };
+        localStorage.setItem(APP_DATA_KEY, JSON.stringify(data));
+      } catch (err) { console.error('saveData error', err); showAlert('Failed to save data locally', 'error'); }
+    }
+
+    function loadSavedData() {
+      try {
+        const raw = localStorage.getItem(APP_DATA_KEY);
+        if (!raw) { abhyasis = []; attendanceHistory = {}; return; }
+        const obj = JSON.parse(raw);
+        abhyasis = obj.abhyasis || [];
+        attendanceHistory = obj.attendanceHistory || {};
+        updateStudentsList();
+        updateAttendanceList();
+      } catch (err) { console.error('loadSavedData', err); abhyasis = []; attendanceHistory = {}; }
+    }
+
+    function removeDuplicateRecords(records) {
+      const seen = new Set();
+      return records.filter(r => {
+        const key = `${r.date}__${r.id}__${(r.sessionName||'')}`;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+    }
+
+    function escapeCSVField(field) {
+      if (field == null) return '""';
+      const str = String(field);
+      if (str.includes('"')) return `"${str.replace(/"/g,'""')}"`;
+      if (str.includes(',') || str.includes('\n')) return `"${str}"`;
+      return `"${str}"`;
+    }
+
+    // CSV now includes Session Type as well: Date,Day of Week,Abhyasi Name,Abhyasi ID,Session Name,Session Type,Trainer,Present,Month,Year
+    function buildMergedCSV(records) {
+      let csv = 'Date,Day of Week,Abhyasi Name,Abhyasi ID,Session Name,Session Type,Trainer,Present,Month,Year\n';
+      records.forEach(record => {
+        const dateObj = new Date(record.date);
+        let day='', month='', year='';
+        if (!isNaN(dateObj.getTime())) {
+          day = dateObj.toLocaleDateString('en-US', { weekday:'long' });
+          month = dateObj.toLocaleDateString('en-US', { month:'long' });
+          year = dateObj.getFullYear();
+        }
+        csv += `${escapeCSVField(record.date)},${escapeCSVField(day)},${escapeCSVField(record.name)},${escapeCSVField(record.id)},${escapeCSVField(record.sessionName)},${escapeCSVField(record.sessionType || '')},${escapeCSVField(record.trainer)},${record.present ? 'Yes' : 'No'},${escapeCSVField(month)},${escapeCSVField(year)}\n`;
+      });
+      return csv;
+    }
+
+    function parseCSVToRecords(csvContent) {
+      if (!csvContent) return [];
+      const lines = csvContent.split(/\r?\n/).filter(l => l.trim());
+      if (lines.length <= 1) return [];
+      const records = [];
+      for (let i=1;i<lines.length;i++) {
+        const cols = parseCSVLineAdvanced(lines[i]);
+        if (!cols.length) continue;
+        records.push({
+          date: cols[0] || '',
+          name: cols[2] || '',
+          id: cols[3] || '',
+          sessionName: cols[4] || '',
+          sessionType: cols[5] || '',
+          trainer: cols[6] || '',
+          present: (cols[7] || '').toString().toLowerCase() === 'yes'
+        });
+      }
+      return records.filter(r => r.date && r.name && r.id);
+    }
+
+    function escapeHtml(s) {
+      if (!s) return '';
+      return s.replace(/[&<>"]/g, ch => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' })[ch]);
+    }
+
+    function showAlert(message, type='info') {
+      const container = document.getElementById('alertContainer');
+      const div = document.createElement('div');
+      div.className = `alert ${type==='success' ? 'alert-success' : type==='error' ? 'alert-error' : 'alert-info'}`;
+      div.textContent = message;
+      container.appendChild(div);
+      setTimeout(() => div.remove(), 4500);
+    }
+
+    function checkAuthentication() {
+      if (!isAuthenticated || !AUTHORIZED_USERS[currentUser]) { logout(); return false; }
+      return true;
+    }
+
+    /***** TAB SWITCHING *****/
+    function switchTab(name) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      const tabs = Array.from(document.querySelectorAll('.tab'));
+      tabs.forEach(t => {
+        if (t.textContent.toLowerCase().includes(name)) t.classList.add('active');
+      });
+      const target = document.getElementById(name + '-tab');
+      if (target) target.classList.add('active');
+
+      if (name === 'records') displayAllRecords();
+      if (name === 'import') { /* nothing */ }
+    }
+
+    /***** Helper: clear attendanceHistory only (not master) *****/
+    function clearAllRecords() {
+      if (!confirm('Delete all attendanceHistory in app? This cannot be undone.')) return;
+      attendanceHistory = {};
+      saveData();
+      displayAllRecords();
+      showAlert('All attendanceHistory cleared', 'success');
+    }
+
+    /***** Mobile nav toggle behavior (open/close, outside-click, link close) *****/
+    (function() {
+      const menuToggle = document.getElementById('menu-toggle');
+      const navMenu = document.getElementById('nav-menu');
+
+      if (!menuToggle || !navMenu) return;
+
+      // toggle menu open/close
+      menuToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        navMenu.classList.toggle('active');
+        const expanded = navMenu.classList.contains('active');
+        menuToggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+      });
+
+      // close when a nav link is clicked (so the menu closes after choosing)
+      document.querySelectorAll('#nav-menu a').forEach(a => {
+        a.addEventListener('click', () => {
+          navMenu.classList.remove('active');
+          menuToggle.setAttribute('aria-expanded', 'false');
+        });
+      });
+
+      // close when clicking outside the menu (on small screens)
+      document.addEventListener('click', (e) => {
+        const isClickInside = navMenu.contains(e.target) || menuToggle.contains(e.target);
+        if (!isClickInside) {
+          navMenu.classList.remove('active');
+          menuToggle.setAttribute('aria-expanded', 'false');
+        }
+      });
+
+      // close on Escape key
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          navMenu.classList.remove('active');
+          menuToggle.setAttribute('aria-expanded', 'false');
+        }
+      });
+    })();
+
+    /***** Load & initial setup done at top *****/
+  </script>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-links">
+        <a href="../HFNContactUs/HFNContactUs.html">
+          <i class="fas fa-envelope"></i> Contact Us
+        </a>
+        <a href="../FAQs/FAQs.html">
+          <i class="fas fa-question-circle"></i> FAQs
+        </a>
+      </div>
+      <div class="footer-message">
+        <p>Experience the peace and transformation that comes with regular Heartfulness meditation practice. Contact us today to begin your journey.</p>
+      </div>
+      <div class="footer-copyright">
+        <p style="text-align: center" >&copy; 2024 Heartfulness Meditation Vizag. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
 </body>
 </html>

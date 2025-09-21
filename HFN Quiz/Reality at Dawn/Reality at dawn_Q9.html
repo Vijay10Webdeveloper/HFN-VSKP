@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heartfulness Knowledge Quiz</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+        
+       body { 
+            margin: 0; 
+            font-family:  -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            background: linear-gradient(135deg, #0a0a2e 0%, #16213e 50%, #0f3460 100%);
+            overflow-x: hidden;
+        }
+        
+        .kbc-bg {
+            background: radial-gradient(circle at center, #1a1a3e 0%, #0a0a2e 100%);
+            position: relative;
+        }
+        
+        .kbc-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><radialGradient id="g" cx="50%" cy="50%" r="50%"><stop offset="0%" style="stop-color:%23ffffff;stop-opacity:0.05"/><stop offset="100%" style="stop-color:%23ffffff;stop-opacity:0"/></radialGradient></defs><circle cx="50" cy="50" r="50" fill="url(%23g)"/></svg>') center/200px 200px;
+            animation: pulse 3s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.7; }
+        }
+        
+        .gold-text {
+            background: linear-gradient(45deg, #ffd700, #ffed4e, #ffd700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+        
+        .option-button {
+            background: linear-gradient(145deg, #2a2a4a 0%, #1a1a3a 100%);
+            border: 2px solid #4a4a6a;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .option-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .option-button:hover::before {
+            left: 100%;
+        }
+        
+        .option-button:hover {
+            border-color: #ffd700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .correct-answer {
+            background: linear-gradient(145deg, #22c55e 0%, #16a34a 100%);
+            border-color: #22c55e;
+            box-shadow: 0 0 30px rgba(34, 197, 94, 0.5);
+            animation: correctPulse 1s ease-in-out infinite;
+        }
+        
+        .wrong-answer {
+            background: linear-gradient(145deg, #ef4444 0%, #dc2626 100%);
+            border-color: #ef4444;
+            box-shadow: 0 0 30px rgba(239, 68, 68, 0.5);
+            animation: wrongShake 0.5s ease-in-out;
+        }
+        
+        @keyframes correctPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        
+        @keyframes wrongShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        .prize-ladder {
+            background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid #374151;
+        }
+        
+        .current-prize {
+            background: linear-gradient(145deg, #ffd700 0%, #f59e0b 100%);
+            color: #0f172a;
+            font-weight: bold;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { box-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
+            to { box-shadow: 0 0 20px rgba(255, 215, 0, 0.8); }
+        }
+        
+        .sparkle {
+            animation: sparkle 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes sparkle {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        
+        const HeartfulnessQuiz = () => {
+            const [currentQuestion, setCurrentQuestion] = useState(0);
+            const [selectedAnswers, setSelectedAnswers] = useState([]);
+            const [showResult, setShowResult] = useState(false);
+            const [gameStarted, setGameStarted] = useState(false);
+            const [gameOver, setGameOver] = useState(false);
+            const [timeLeft, setTimeLeft] = useState(60);
+            const [totalPoints, setTotalPoints] = useState(0);
+            const [questionsAnswered, setQuestionsAnswered] = useState(0);
+            const [correctAnswers, setCorrectAnswers] = useState(0);
+            const [canProceed, setCanProceed] = useState(false);
+
+            const pointsPerQuestion = 100;
+
+            const questions = [
+                {
+                    id: 1,
+                    question: "What will you probably find if you are in quest of someone who has truly realized God?",
+                    options: [
+                        "None such among those who talk about God",
+                        "Many such people among religious speakers",
+                        "Only elderly religious leaders",
+                        "People in monasteries and ashrams"
+                    ],
+                    correct: 0
+                },
+                {
+                    id: 2,
+                    question: "Why is there constant feud among representatives of different religions?",
+                    options: [
+                        "They have different holy books",
+                        "They compete for followers",
+                        "They have different worship methods",
+                        "They talk about God but inwardly might be no better than atheists"
+                    ],
+                    correct: 3
+                },
+                {
+                    id: 3,
+                    question: "When do most people turn to God according to Babuji?",
+                    options: [
+                        "During regular worship times",
+                        "When they want to show devotion",
+                        "Only when they are in distress or misery",
+                        "During religious festivals"
+                    ],
+                    correct: 2
+                },
+                {
+                    id: 4,
+                    question: "What characterizes a true devotee?",
+                    options: [
+                        "One who prays regularly for favors",
+                        "One who loves God merely for love's sake, not for worldly interest",
+                        "One who performs many rituals",
+                        "One who reads many scriptures"
+                    ],
+                    correct: 1
+                },
+                {
+                    id: 5,
+                    question: "How does a true devotee view joy and sorrow?",
+                    options: [
+                        "Joy is good and sorrow is bad",
+                        "Both are meaningless to him; everything is a boon from the Beloved",
+                        "Joy should be celebrated and sorrow avoided",
+                        "Both should be analyzed philosophically"
+                    ],
+                    correct: 1
+                },
+                {
+                    id: 6,
+                    question: "What does 'God helps those who help themselves' mean?",
+                    options: [
+                        "We should depend entirely on our own efforts",
+                        "God only helps people who are wealthy",
+                        "Self-help is more important than prayer",
+                        "We must exert ourselves for our responsibilities while working according to God's will"
+                    ],
+                    correct: 3
+                },
+                {
+                    id: 7,
+                    question: "Where can Reality be realized according to Babuji?",
+                    options: [
+                        "In the innermost core of the heart",
+                        "Through physical organs of sense",
+                        "Through intellectual study",
+                        "In temples and holy places"
+                    ],
+                    correct: 0
+                },
+                {
+                    id: 8,
+                    question: "What is Maya described as?",
+                    options: [
+                        "Pure illusion with no reality",
+                        "A Godly power that brought creation into existence and regulates its working",
+                        "Evil force opposing God",
+                        "Human imagination"
+                    ],
+                    correct: 1
+                },
+                {
+                    id: 9,
+                    question: "How do we remain in relation to Maya?",
+                    options: [
+                        "We successfully avoid its influence",
+                        "We whirl round within its glossy sphere, clinging to objects thinking them to be Reality",
+                        "We control it through meditation",
+                        "We are unaffected by it"
+                    ],
+                    correct: 1
+                },
+                {
+                    id: 10,
+                    question: "What analogy is used to describe our movement within Maya?",
+                    options: [
+                        "Like fish swimming in water",
+                        "Like birds flying in the sky",
+                        "Like the rim of a wheel, going round with ceaseless motion ever farther from the pivot",
+                        "Like leaves blown by the wind"
+                    ],
+                    correct: 2
+                },
+                {
+                    id: 11,
+                    question: "What serves as the base of the entire universe according to the mathematical analogy?",
+                    options: [
+                        "The number one",
+                        "Infinity",
+                        "Complex equations",
+                        "Zero"
+                    ],
+                    correct: 3
+                },
+                {
+                    id: 12,
+                    question: "What must we do to solve our spiritual problem?",
+                    options: [
+                        "Stay in the outer circles of existence",
+                        "Trace our steps back from gross existence to finer forms up to the center",
+                        "Accumulate more material knowledge",
+                        "Focus only on the physical world"
+                    ],
+                    correct: 1
+                },
+                {
+                    id: 13,
+                    question: "What is the relationship between man's composition and the universe?",
+                    options: [
+                        "Man's composition is exactly the same as that of the universe",
+                        "They are completely different",
+                        "Man's composition is simpler than the universe",
+                        "Man's composition is more complex than the universe"
+                    ],
+                    correct: 0
+                },
+                {
+                    id: 14,
+                    question: "What are the three main bodies mentioned in human composition?",
+                    options: [
+                        "Physical, emotional, and mental bodies",
+                        "Gross body (Sthool Sharir), astral body (Sookshma Sharir), and causal body (Karan Sharir)",
+                        "Past, present, and future bodies",
+                        "Conscious, unconscious, and superconscious bodies"
+                    ],
+                    correct: 1
+                },
+                {
+                    id: 15,
+                    question: "What is the relationship between God's center and man's center?",
+                    options: [
+                        "They are completely separate",
+                        "Man's center is inferior to God's center",
+                        "The innermost centre of man's existence and God's manifestation is the same",
+                        "They are similar but not identical"
+                    ],
+                    correct: 2
+                },
+                {
+                    id: 16,
+                    question: "What was the first covering in man's composition after creation?",
+                    options: [
+                        "The consciousness of individuality",
+                        "Physical body",
+                        "Emotional feelings",
+                        "Mental thoughts"
+                    ],
+                    correct: 0
+                },
+                {
+                    id: 17,
+                    question: "How many main heads is the spiritual process classified under?",
+                    options: [
+                        "Two: meditation and prayer",
+                        "Four: body, mind, spirit, soul",
+                        "Three: karma (action), Upasana (devotion), and Gyana (knowledge)",
+                        "Five: faith, hope, charity, wisdom, compassion"
+                    ],
+                    correct: 2
+                },
+                {
+                    id: 18,
+                    question: "What is Viveka (discrimination)?",
+                    options: [
+                        "Choosing between good and bad actions",
+                        "Recognizing that worldly things are changeable forms of Maya and seeking the eternal",
+                        "Distinguishing between different religions",
+                        "Selecting the right spiritual teacher"
+                    ],
+                    correct: 1
+                },
+                 {
+                    id: 19,
+                    question: "What is the second of the four Sadhanas?",
+                    options: [
+                        "Viveka (discrimination)",
+                        "Devotion (bhakti)",
+                        "Meditation (dhyana)",
+                        "Vairagya (renunciation)"
+                    ],
+                    correct: 3
+                },
+                {
+                    id: 20,
+                    question: "What makes Vairagya genuine and lasting?",
+                    options: [
+                        "Sudden emotional experiences",
+                        "Thorough cleaning and due moderation",
+                        "External circumstances",
+                        "Reading spiritual texts"
+                    ],
+                    correct: 1
+                },
+                {
+                    id: 21,
+                    question: "What is the story of Kabirdas at the cremation ground meant to illustrate?",
+                    options: [
+                        "The power of holy men",
+                        "That temporary Vairagya from sudden causes is short-lived, while true detachment remains constant",
+                        "The importance of visiting cremation grounds",
+                        "How to recognize holy people"
+                    ],
+                    correct: 1
+                },
+                {
+                    id: 22,
+                    question: "According to Babuji, what are Viveka and Vairagya actually?",
+                    options: [
+                        "Results of spiritual practice, not the means themselves",
+                        "The primary spiritual practices",
+                        "Ancient traditions to be followed",
+                        "Mental exercises for beginners"
+                    ],
+                    correct: 0
+                },
+                {
+                    id: 23,
+                    question: "What does the Sahaj Marg system start with instead of Viveka and Vairagya?",
+                    options: [
+                        "Physical exercises",
+                        "Reading scriptures",
+                        "Devotional singing",
+                        "The third Sadhana, specifically Sham (peaceful condition of mind)"
+                    ],
+                    correct: 3
+                },
+                {
+                    id: 24,
+                    question: "What is the positive approach to Vairagya suggested?",
+                    options: [
+                        "Accepting one thing only as real and sticking to it wholeheartedly",
+                        "Rejecting everything as illusion",
+                        "Avoiding all worldly activities",
+                        "Criticizing material possessions"
+                    ],
+                    correct: 0
+                },
+                {
+                    id: 25,
+                    question: "How many tendencies of mind do thinkers classify?",
+                    options: [
+                        "Three",
+                        "Four",
+                        "Five",
+                        "Seven"
+                    ],
+                    correct: 2
+                },
+                {
+                    id: 26,
+                    question: "What is Nirodha?",
+                    options: [
+                        "The disturbed condition of mind",
+                        "Sluggishness and indolence",
+                        "The tendency bringing mind to a perfectly self-contained state free from disturbances",
+                        "Concentration on one object"
+                    ],
+                    correct: 2
+                },
+                {
+                    id: 27,
+                    question: "Where does the Sahaj Marg system start in Ashtanga Yoga?",
+                    options: [
+                        "From Yama (ethical restraints)",
+                        "From Asana (physical postures)",
+                        "From Pranayama (breath control)",
+                        "From Dhyana, the seventh step, fixing mind on a point for meditation"
+                    ],
+                    correct: 3
+                },
+                {
+                    id: 28,
+                    question: "What is Uparati?",
+                    options: [
+                        "Complete attachment to worldly objects",
+                        "Self-withdrawal where both attraction and repulsion are absent",
+                        "Intense emotional devotion",
+                        "Intellectual understanding of scriptures"
+                    ],
+                    correct: 1
+                },
+                {
+                    id: 29,
+                    question: "How does Uparati differ from Vairagya?",
+                    options: [
+                        "Vairagya produces aversion for worldly objects while Uparati is free from both attraction and repulsion",
+                        "They are exactly the same",
+                        "Uparati is easier to achieve",
+                        "Vairagya is more advanced than Uparati"
+                    ],
+                    correct: 0
+                },
+                {
+                    id: 30,
+                    question: "What is Titiksha?",
+                    options: [
+                        "The state of emotional excitement",
+                        "The state of fortitude where one is satisfied with what God allots",
+                        "The practice of severe austerities",
+                        "The study of sacred texts"
+                    ],
+                    correct: 1
+                },
+                {
+                    id: 31,
+                    question: "What is the last of the six Sampattis?",
+                    options: [
+                        "Shradha (faith)",
+                        "Titiksha (fortitude)",
+                        "Samadhan (self-settledness to Master's will)",
+                        "Uparati (self-withdrawal)"
+                    ],
+                    correct: 1
+                },
+                {
+                    id: 32,
+                    question: "What is the fourth and final Sadhana called?",
+                    options: [
+                        "Viveka",
+                        "Vairagya",
+                        "Mumukshu",
+                        "Samadhi"
+                    ],
+                    correct: 2
+                },
+                {
+                    id: 33,
+                    question: "How many forms of Samadhi are described?",
+                    options: [
+                        "Two",
+                        "Four",
+                        "Five",
+                        "Three"
+                    ],
+                    correct: 3
+                },
+                {
+                    id: 34,
+                    question: "What is Sahaj Samadhi?",
+                    options: [
+                        "The finest concentration where one is busy with work but settled on the Real in the heart's core",
+                        "Complete unconsciousness during meditation",
+                        "A temporary trance state",
+                        "Deep sleep during meditation"
+                    ],
+                    correct: 0
+                },
+                {
+                    id: 35,
+                    question: "What is the lowest spiritual region called?",
+                    options: [
+                        "Brahmanda Mandal",
+                        "Sahasra Dal Kamal",
+                        "Pinda Desh",
+                        "Naval region"
+                    ],
+                    correct: 2
+                },
+                {
+                    id: 36,
+                    question: "What is a Rishi's designation in the spiritual hierarchy?",
+                    options: [
+                        "Dhruva",
+                        "Vasu",
+                        "Parishad",
+                        "Maha Parishad"
+                    ],
+                    correct: 1
+                },
+                {
+                    id: 37,
+                    question: "Who has mastery over Brahmanda Mandal?",
+                    options: [
+                        "A Vasu",
+                        "A Dhruva",
+                        "A Dhruvadhipati",
+                        "A Parishad"
+                    ],
+                    correct: 1
+                },
+                {
+                    id: 38,
+                    question: "What is the sphere of work for a Dhruvadhipati?",
+                    options: [
+                        "A small locality",
+                        "A larger region than Dhruva",
+                        "The whole world",
+                        "Multiple worlds"
+                    ],
+                    correct: 2
+                },
+                {
+                    id: 39,
+                    question: "When is the position of Parishad bestowed?",
+                    options: [
+                        "To all advanced practitioners",
+                        "Under rare circumstances when Nature stands in dire need",
+                        "After a fixed period of practice",
+                        "To those who ask for it"
+                    ],
+                    correct: 1
+                },
+                {
+                    id: 40,
+                    question: "What is the highest godly post mentioned?",
+                    options: [
+                        "Parishad",
+                        "Dhruvadhipati",
+                        "Maha Parishad",
+                        "Vasu"
+                    ],
+                    correct: 2
+                }
+            ];
+
+            useEffect(() => {
+                let timer;
+                if (gameStarted && !gameOver && timeLeft > 0 && !showResult) {
+                    timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
+                } else if (timeLeft === 0 && !showResult) {
+                    handleTimeUp();
+                }
+                return () => clearTimeout(timer);
+            }, [timeLeft, gameStarted, gameOver, showResult]);
+
+            const handleTimeUp = () => {
+                // Move to next question without awarding points
+                setShowResult(true);
+                setSelectedAnswers([]);
+                setQuestionsAnswered(questionsAnswered + 1);
+                setCanProceed(true);
+            };
+
+            const handleAnswerClick = (answerIndex) => {
+                if (showResult) return;
+                
+                const currentQ = questions[currentQuestion];
+                
+                if (currentQ.multiSelect) {
+                    // Handle multiple selection
+                    const newSelectedAnswers = selectedAnswers.includes(answerIndex)
+                        ? selectedAnswers.filter(index => index !== answerIndex)
+                        : [...selectedAnswers, answerIndex];
+                    
+                    setSelectedAnswers(newSelectedAnswers);
+                } else {
+                    // Handle single selection
+                    setSelectedAnswers([answerIndex]);
+                    setShowResult(true);
+                    setQuestionsAnswered(questionsAnswered + 1);
+                    setCanProceed(true);
+                    
+                    const isCorrect = answerIndex === currentQ.correct;
+                    
+                    if (isCorrect) {
+                        setTotalPoints(totalPoints + pointsPerQuestion);
+                        setCorrectAnswers(correctAnswers + 1);
+                    }
+                }
+            };
+
+            const handleSubmitMultiSelect = () => {
+                const currentQ = questions[currentQuestion];
+                setShowResult(true);
+                setQuestionsAnswered(questionsAnswered + 1);
+                setCanProceed(true);
+                
+                // Check if all correct answers are selected and no wrong answers
+                const correctAnswersArray = Array.isArray(currentQ.correct) ? currentQ.correct : [currentQ.correct];
+                const isCorrect = selectedAnswers.length === correctAnswersArray.length && 
+                                 selectedAnswers.every(answer => correctAnswersArray.includes(answer));
+                
+                if (isCorrect) {
+                    setTotalPoints(totalPoints + pointsPerQuestion);
+                    setCorrectAnswers(correctAnswers + 1);
+                }
+            };
+
+            const handleNextQuestion = () => {
+                if (currentQuestion < questions.length - 1) {
+                    setCurrentQuestion(currentQuestion + 1);
+                    setSelectedAnswers([]);
+                    setShowResult(false);
+                    setTimeLeft(60);
+                    setCanProceed(false);
+                } else {
+                    setGameOver(true);
+                }
+            };
+
+            const startGame = () => {
+                setGameStarted(true);
+                setTimeLeft(60);
+            };
+
+            const restartGame = () => {
+                setCurrentQuestion(0);
+                setSelectedAnswers([]);
+                setShowResult(false);
+                setGameStarted(false);
+                setGameOver(false);
+                setTimeLeft(60);
+                setTotalPoints(0);
+                setQuestionsAnswered(0);
+                setCorrectAnswers(0);
+                setCanProceed(false);
+            };
+
+            // Start Screen
+            if (!gameStarted) {
+                return (
+                    <div className="min-h-screen kbc-bg flex items-center justify-center p-4">
+                        <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl shadow-2xl p-8 max-w-2xl w-full text-center border-2 border-yellow-500">
+                            <div className="mb-8">
+                                <h1 className="text-5xl font-bold gold-text mb-4 sparkle">
+                                    Heartfulness Quiz on Reality at Dawn
+                                </h1>
+                                <h2 className="text-3xl font-bold text-white mb-2">
+                                    Knowledge Challenge
+                                </h2>
+                                <p className="text-gray-300 text-lg">
+                                    Test your knowledge and earn points!
+                                </p>
+                            </div>
+                            
+                            <div className="bg-gray-800 rounded-2xl p-6 mb-8 border border-gray-600">
+                                <h3 className="text-xl font-bold text-yellow-400 mb-4">Game Rules:</h3>
+                                <div className="text-left text-gray-300 space-y-2">
+                                    <p>• Answer questions to complete the quiz</p>
+                                    <p>• Each question has 60 seconds time limit</p>
+                                    <p>• Earn 100 points for each correct answer</p>
+                                    <p>• Use the "Next" button to proceed to the next question</p>
+                                    <p>• For multiple choice questions, select all correct answers</p>
+                                    <p>• Click submit button for multiple choice questions</p>
+                                    <p>• Game continues even if you answer incorrectly</p>
+                                </div>
+                            </div>
+                            
+                            <button
+                                onClick={startGame}
+                                className="bg-gradient-to-r from-yellow-500 to-orange-500 text-black font-bold py-4 px-8 rounded-2xl hover:from-yellow-400 hover:to-orange-400 transform hover:scale-105 transition-all duration-300 shadow-lg text-xl"
+                            >
+                                START QUIZ
+                            </button>
+                        </div>
+                    </div>
+                );
+            }
+
+            // Game Over Screen
+            if (gameOver) {
+                const percentage = Math.round((correctAnswers / questions.length) * 100);
+                
+                return (
+                    <div className="min-h-screen kbc-bg flex items-center justify-center p-4">
+                        <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl shadow-2xl p-8 max-w-2xl w-full text-center border-2 border-yellow-500">
+                            <div className="mb-8">
+                                <h1 className="text-4xl font-bold gold-text mb-4 sparkle">
+                                    Quiz Complete!
+                                </h1>
+                                <h2 className="text-2xl font-bold text-white mb-4">
+                                    Final Results
+                                </h2>
+                                
+                                <div className="bg-gray-800 rounded-2xl p-6 mb-6 border border-gray-600">
+                                    <h3 className="text-xl font-bold text-yellow-400 mb-2">Your Total Score:</h3>
+                                    <div className="text-6xl font-bold gold-text mb-4 sparkle">
+                                        {totalPoints} Points
+                                    </div>
+                                    <p className="text-gray-300">
+                                        {percentage >= 80 
+                                            ? "🎉 Excellent! You have great knowledge of Heartfulness!" 
+                                            : percentage >= 60 
+                                            ? "👍 Good job! You have solid understanding of Heartfulness." 
+                                            : percentage >= 40
+                                            ? "📚 Not bad! Consider reviewing more about Heartfulness meditation."
+                                            : "🔄 Keep learning! There's always room for improvement."}
+                                    </p>
+                                </div>
+                                
+                                <div className="grid grid-cols-2 gap-4 mb-6">
+                                    <div className="bg-gray-800 rounded-2xl p-4 border border-gray-600">
+                                        <p className="text-green-400 font-bold mb-2">Correct Answers:</p>
+                                        <p className="text-white text-2xl">{correctAnswers} / {questions.length}</p>
+                                    </div>
+                                    <div className="bg-gray-800 rounded-2xl p-4 border border-gray-600">
+                                        <p className="text-blue-400 font-bold mb-2">Accuracy:</p>
+                                        <p className="text-white text-2xl">{percentage}%</p>
+                                    </div>
+                                </div>
+                                
+                                <div className="bg-gray-800 rounded-2xl p-4 mb-6 border border-gray-600">
+                                    <div className="flex justify-between items-center mb-2">
+                                        <span className="text-white font-bold">Score Progress</span>
+                                        <span className="text-yellow-400 font-bold">{totalPoints} / {questions.length * 100}</span>
+                                    </div>
+                                    <div className="w-full bg-gray-700 rounded-full h-4">
+                                        <div
+                                            className="bg-gradient-to-r from-green-500 to-blue-500 h-4 rounded-full transition-all duration-500"
+                                            style={{ width: `${(totalPoints / (questions.length * 100)) * 100}%` }}
+                                        ></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button
+                                onClick={restartGame}
+                                className="bg-gradient-to-r from-green-500 to-blue-500 text-white font-bold py-4 px-8 rounded-2xl hover:from-green-400 hover:to-blue-400 transform hover:scale-105 transition-all duration-300 shadow-lg text-xl"
+                            >
+                                PLAY AGAIN
+                            </button>
+                        </div>
+                    </div>
+                );
+            }
+
+            const currentQ = questions[currentQuestion];
+
+            return (
+                <div className="min-h-screen kbc-bg p-4">
+                    {/* Header */}
+                    <div className="max-w-7xl mx-auto mb-6">
+                        <div className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl shadow-lg p-4 flex items-center justify-between border-2 border-yellow-600">
+                            <div className="flex items-center space-x-6">
+                                <div className="text-2xl font-bold gold-text">
+                                    Question {currentQuestion + 1} / {questions.length}
+                                </div>
+                                <div className="text-xl font-bold text-white">
+                                    Score: <span className="gold-text">{totalPoints} Points</span>
+                                </div>
+                            </div>
+                            
+                            <div className="flex items-center space-x-4">
+                                <div className={`text-2xl font-bold ${timeLeft <= 10 ? 'text-red-500' : 'text-green-500'}`}>
+                                    ⏰ {timeLeft}s
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-4 gap-6">
+                        {/* Score Tracker */}
+                        <div className="lg:col-span-1">
+                            <div className="prize-ladder rounded-2xl p-4 h-fit">
+                                <h3 className="text-xl font-bold gold-text mb-4 text-center">Score Tracker</h3>
+                                <div className="space-y-4">
+                                    <div className="bg-gray-700 rounded-lg p-4 text-center">
+                                        <div className="text-3xl font-bold gold-text mb-2">{totalPoints}</div>
+                                        <div className="text-gray-300">Total Points</div>
+                                    </div>
+                                    <div className="bg-gray-700 rounded-lg p-4 text-center">
+                                        <div className="text-2xl font-bold text-green-400 mb-2">{correctAnswers}</div>
+                                        <div className="text-gray-300">Correct</div>
+                                    </div>
+                                    <div className="bg-gray-700 rounded-lg p-4 text-center">
+                                        <div className="text-2xl font-bold text-red-400 mb-2">{questionsAnswered - correctAnswers}</div>
+                                        <div className="text-gray-300">Wrong</div>
+                                    </div>
+                                    <div className="bg-gray-700 rounded-lg p-4 text-center">
+                                        <div className="text-lg font-bold text-blue-400 mb-2">
+                                            {questionsAnswered > 0 ? Math.round((correctAnswers / questionsAnswered) * 100) : 0}%
+                                        </div>
+                                        <div className="text-gray-300">Accuracy</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Main Game Area */}
+                        <div className="lg:col-span-3">
+                            {/* Question */}
+                            <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl shadow-lg p-8 mb-6 border-2 border-yellow-600">
+                                <h2 className="text-2xl md:text-3xl font-bold text-white leading-relaxed text-center">
+                                    {currentQ.question}
+                                </h2>
+                                {currentQ.multiSelect && (
+                                    <p className="text-yellow-400 text-center mt-4 text-lg font-semibold">
+                                        ⚠️ Multiple Choice Question - Select ALL correct answers
+                                    </p>
+                                )}
+                            </div>
+
+                            {/* Options */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                                {currentQ.options.map((option, index) => {
+                                    const isSelected = selectedAnswers.includes(index);
+                                    const correctAnswersArray = Array.isArray(currentQ.correct) ? currentQ.correct : [currentQ.correct];
+                                    const isCorrect = correctAnswersArray.includes(index);
+                                    
+                                    let buttonClass = "option-button text-white font-bold py-6 px-6 rounded-2xl shadow-lg transition-all duration-300 text-left";
+                                    
+                                    if (currentQ.multiSelect && isSelected && !showResult) {
+                                        buttonClass += ' border-yellow-400 bg-yellow-900';
+                                    }
+                                    
+                                    if (showResult) {
+                                        if (isCorrect) {
+                                            buttonClass += ' correct-answer';
+                                        } else if (isSelected && !isCorrect) {
+                                            buttonClass += ' wrong-answer';
+                                        }
+                                    }
+
+                                    return (
+                                        <button
+                                            key={index}
+                                            onClick={() => handleAnswerClick(index)}
+                                            disabled={showResult}
+                                            className={buttonClass}
+                                        >
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-lg">
+                                                    <span className="font-bold text-yellow-400 mr-3">
+                                                        {String.fromCharCode(65 + index)}.
+                                                    </span>
+                                                    {option}
+                                                </span>
+                                                <div className="flex items-center space-x-2">
+                                                    {currentQ.multiSelect && isSelected && !showResult && (
+                                                        <svg className="w-6 h-6 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                                        </svg>
+                                                    )}
+                                                    {showResult && (
+                                                        <div className="ml-2">
+                                                            {isCorrect ? (
+                                                                <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                                                </svg>
+                                                            ) : isSelected && !isCorrect ? (
+                                                                <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                                                                </svg>
+                                                            ) : null}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+
+                            {/* Submit Button for Multi-Select Questions */}
+                            {currentQ.multiSelect && !showResult && (
+                                <div className="text-center mb-6">
+                                    <button
+                                        onClick={handleSubmitMultiSelect}
+                                        disabled={selectedAnswers.length === 0}
+                                        className="bg-gradient-to-r from-green-500 to-blue-500 text-white font-bold py-4 px-8 rounded-2xl hover:from-green-400 hover:to-blue-400 transform hover:scale-105 transition-all duration-300 shadow-lg text-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                                    >
+                                        Submit Answers ({selectedAnswers.length} selected)
+                                    </button>
+                                </div>
+                            )}
+
+                            {/* Next Button */}
+                            {canProceed && (
+                                <div className="text-center mb-6">
+                                    <button
+                                        onClick={handleNextQuestion}
+                                        className="bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold py-4 px-8 rounded-2xl hover:from-blue-400 hover:to-purple-400 transform hover:scale-105 transition-all duration-300 shadow-lg text-xl"
+                                    >
+                                        {currentQuestion < questions.length - 1 ? 'Next Question' : 'Finish Quiz'}
+                                        <svg className="w-6 h-6 ml-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            )}
+
+                            {/* Progress Bar */}
+                            <div className="mt-8">
+                                <div className="bg-gray-800 rounded-2xl shadow-lg p-4 border border-gray-600">
+                                    <div className="flex justify-between items-center mb-2">
+                                        <span className="text-white font-bold">Progress</span>
+                                        <span className="text-yellow-400 font-bold">{currentQuestion + 1} / {questions.length}</span>
+                                    </div>
+                                    <div className="w-full bg-gray-700 rounded-full h-3">
+                                        <div
+                                            className="bg-gradient-to-r from-yellow-500 to-orange-500 h-3 rounded-full transition-all duration-500"
+                                            style={{ width: `${((currentQuestion + 1) / questions.length) * 100}%` }}
+                                        ></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<HeartfulnessQuiz />, document.getElementById('root'));
+    </script>
+</body>
+</html>
