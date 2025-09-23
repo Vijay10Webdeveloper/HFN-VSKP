@@ -219,7 +219,8 @@
   </style>
 </head>
 <body>
-  <!-- Header - Fixed Structure -->
+  <div>
+  <!-- Header - Fixed Structure-->
   <header class="header-section">
     <div class="header-container">
       <img src="../Images/advancing-in-love-black.png" alt="Heartfulness" class="logo">
@@ -229,15 +230,16 @@
           <li><a href="../NewSeeker/Newseekers.html">NEW SEEKERS</a></li>
           <li><a href="../Abhyasi/Abhyasi.html">ABHYASIS</a></li>
           <li><a href="./Trainers.html">TRAINERS</a></li>
-        </ul>
+        </ul> 
         <!-- Accessible hamburger — no external icon dependency -->
         <button class="menu-toggle" id="menu-toggle" aria-expanded="false" aria-controls="nav-menu" aria-label="Toggle navigation">☰</button>
       </nav>
     </div>
-  </header>
+  </header> 
 
   <!-- Login -->
   <div id="loginScreen" class="login-container">
+    
     <div class="login-header">
       <h1>🔐 Access Required</h1>
       <p>Meditation Session Attendance System</p>
@@ -258,7 +260,28 @@
     </div>
 
     <div id="loginError" class="login-error"></div>
+
+    <footer class="footer">
+    <div class="container">
+      <div class="footer-links">
+        <a href="../HFNContactUs/HFNContactUs.html">
+          <i class="fas fa-envelope"></i> Contact Us
+        </a>
+        <a href="../FAQs/FAQs.html">
+          <i class="fas fa-question-circle"></i> FAQs
+        </a>
+      </div>
+      <div class="footer-message">
+        <p>Experience the peace and transformation that comes with regular Heartfulness meditation practice. Contact us today to begin your journey.</p>
+      </div>
+      <div class="footer-copyright">
+        <p style="text-align: center" >&copy; 2024 Heartfulness Meditation Vizag. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
   </div>
+</div>  
+
 
   <!-- Main App -->
   <div id="mainApp" class="main-app">
@@ -447,11 +470,9 @@
   <script>
     /***** AUTH & APP STATE *****/
     const AUTHORIZED_USERS = {
-      'admin@sundayclass.com': { password: 'ADmin123', name: 'System Administrator', role: 'Admin' },
+      'admin@sundayclass.com': { password: 'aDMin890', name: 'System Administrator', role: 'Admin' },
       'mvijay108@gmail.com': { password: 'mycall10', name: 'Trainer', role: 'Trainer' },
-      'principal@school.edu': { password: 'principal456', name: 'Principal', role: 'Principal' },
-      'coordinator@church.org': { password: 'coord789', name: 'Coordinator', role: 'Coordinator' }
-    };
+      };
 
     const PASSWORD_SETTINGS = { minLength: 6, maxAttempts: 3, lockoutTime: 15 };
     let failedAttempts = {};
@@ -505,7 +526,7 @@
 
     function handleLoginKeyPress(e) { if (e.key === 'Enter') authenticateUser(); }
 
-    function authenticateUser() {
+    async function authenticateUser() {
       const email = document.getElementById('emailInput').value.trim().toLowerCase();
       const password = document.getElementById('passwordInput').value;
       const loginError = document.getElementById('loginError');
@@ -525,11 +546,14 @@
         else return showLoginError(`🔒 Account locked for ${PASSWORD_SETTINGS.lockoutTime} minutes.`);
       }
 
-      clearFailedAttempts(email);
-      currentUser = email; isAuthenticated = true;
-      localStorage.setItem('authenticatedUser', email);
-      localStorage.setItem('authTime', new Date().toISOString());
-      showMainApp();
+      // after successful login
+       clearFailedAttempts(email);
+       currentUser = email; isAuthenticated = true;
+       localStorage.setItem('authenticatedUser', email);
+       localStorage.setItem('authTime', new Date().toISOString());
+       await fetchFromServer();  // <-- new: sync remote -> local on login//
+       showMainApp();
+
     }
 
     function checkStoredAuthentication() {
@@ -1265,11 +1289,24 @@
 
     /***** STORAGE: localStorage for abhyasis & attendanceHistory *****/
     function saveData() {
-      try {
-        const data = { abhyasis, attendanceHistory, lastSaved: new Date().toISOString() };
-        localStorage.setItem(APP_DATA_KEY, JSON.stringify(data));
-      } catch (err) { console.error('saveData error', err); showAlert('Failed to save data locally', 'error'); }
+  try {
+    const data = { abhyasis, attendanceHistory, lastSaved: new Date().toISOString() };
+    localStorage.setItem(APP_DATA_KEY, JSON.stringify(data));
+
+    // 🔄 push changes to server too
+    if (currentUser) {
+      syncToServer().then(res => {
+        if (!res || !res.success) console.warn('Server sync failed', res);
+        else console.info('Server sync OK');
+      });
     }
+  } catch (err) {
+    console.error('saveData error', err);
+    showAlert('Failed to save data locally', 'error');
+  }
+}
+
+
 
     function loadSavedData() {
       try {
@@ -1282,7 +1319,89 @@
         updateAttendanceList();
       } catch (err) { console.error('loadSavedData', err); abhyasis = []; attendanceHistory = {}; }
     }
+    ///////////////////////////////////////////////////////////////////////////////////
+// ---- CONFIG: update these ----
+const SYNC_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbyRz4xENqyUz57seYFXr4BHaGj99K0ldBkeuI757_PhR_DguyOI6Iq7B6LCrXOpY7mz1w/exec';
+const SYNC_API_KEY = 'TRAINERSECTION2025';
+// -------------------------------
 
+// Call this after successful login to fetch server copy and merge
+async function fetchFromServer() {
+  if (!currentUser) return;
+  try {
+    const url = `${SYNC_WEBAPP_URL}?action=load&user=${encodeURIComponent(currentUser)}&apiKey=${encodeURIComponent(SYNC_API_KEY)}`;
+    const resp = await fetch(url, { method: 'GET', cache: 'no-store' });
+    const json = await resp.json();
+    if (!json.success) {
+      console.warn('Sync load failed', json);
+      return json;
+    }
+    if (!json.found) {
+      console.info('No remote data found for', currentUser);
+      return { success: true, found:false };
+    }
+
+    // Merge server data into local structures (server wins for conflicts)
+    const remote = json.data || {};
+    // remote may contain abhyasis, attendanceHistory, masterRecords
+    if (remote.abhyasis && Array.isArray(remote.abhyasis)) {
+      // merge unique by id
+      const localIds = new Set(abhyasis.map(a => a.id));
+      remote.abhyasis.forEach(r => { if (!localIds.has(r.id)) abhyasis.push(r); });
+    }
+    if (remote.attendanceHistory && typeof remote.attendanceHistory === 'object') {
+      // shallow merge: server entries overwrite local per date
+      Object.keys(remote.attendanceHistory).forEach(d => attendanceHistory[d] = remote.attendanceHistory[d]);
+    }
+    if (remote.masterRecords && Array.isArray(remote.masterRecords)) {
+      // merge and dedupe
+      masterRecords = masterRecords.concat(remote.masterRecords);
+      masterRecords = removeDuplicateRecords(masterRecords);
+      saveMasterRecords();
+    }
+
+    // persist merged local copy
+    saveData();
+    displayAllRecords();
+    updateStudentsList();
+    updateAttendanceList();
+    return { success: true, merged: true };
+  } catch (err) {
+    console.error('fetchFromServer error', err);
+    return { success:false, error: String(err) };
+  }
+}
+
+// Push current local app-data to server
+async function syncToServer() {
+  if (!currentUser) return;
+  try {
+    const payload = {
+      action: 'save',
+      user: currentUser,
+      apiKey: SYNC_API_KEY,
+      data: {
+        abhyasis: abhyasis,
+        attendanceHistory: attendanceHistory,
+        masterRecords: masterRecords
+      }
+    };
+
+    const resp = await fetch(SYNC_WEBAPP_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      cache: 'no-store'
+    });
+    const json = await resp.json();
+    if (!json.success) console.warn('syncToServer returned', json);
+    return json;
+  } catch (err) {
+    console.error('syncToServer error', err);
+    return { success:false, error: String(err) };
+  }
+}
+/////////////////////////////////////////////////////////////////////////////////////////
     function removeDuplicateRecords(records) {
       const seen = new Set();
       return records.filter(r => {
@@ -1425,23 +1544,5 @@
     /***** Load & initial setup done at top *****/
   </script>
 
-  <footer class="footer">
-    <div class="container">
-      <div class="footer-links">
-        <a href="../HFNContactUs/HFNContactUs.html">
-          <i class="fas fa-envelope"></i> Contact Us
-        </a>
-        <a href="../FAQs/FAQs.html">
-          <i class="fas fa-question-circle"></i> FAQs
-        </a>
-      </div>
-      <div class="footer-message">
-        <p>Experience the peace and transformation that comes with regular Heartfulness meditation practice. Contact us today to begin your journey.</p>
-      </div>
-      <div class="footer-copyright">
-        <p style="text-align: center" >&copy; 2024 Heartfulness Meditation Vizag. All rights reserved.</p>
-      </div>
-    </div>
-  </footer>
-</body>
+  </body>
 </html>
