@@ -1,19 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Meditation Session Attendance Management</title>
 
-  <!-- Chart.js CDN for charts in Individual student reports -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-  <!-- ADD THIS: SheetJS CDN for Excel file handling -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  
+  <!-- ADD SUPABASE: -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <style>
-    /* ... your styles ... */
-  </style>
+  
   <style>
     /* --- styles (kept similar to your previous look & feel) --- */
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -1514,86 +1513,166 @@ function parseImportExcel(arrayBuffer) {
     }
     ///////////////////////////////////////////////////////////////////////////////////
 // ---- CONFIG: update these ----
-const SYNC_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbyRz4xENqyUz57seYFXr4BHaGj99K0ldBkeuI757_PhR_DguyOI6Iq7B6LCrXOpY7mz1w/exec';
-const SYNC_API_KEY = 'TRAINERSECTION2025';
-// -------------------------------
+///////////////////////////////////////////////////////////////////////////////////
+// ---- SUPABASE Configuration ----
+const SUPABASE_URL = 'https://ldzarjlzzecqneofhirg.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxkemFyamx6emVjcW5lb2ZoaXJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk0NzEzNTQsImV4cCI6MjA3NTA0NzM1NH0.PmgjRhA8XIOlGmjDV-As5EHNjl4ctebD5FfgYOo1d2g';  // Paste your anon public key here
 
-// Call this after successful login to fetch server copy and merge
-async function fetchFromServer() {
-  if (!currentUser) return;
-  try {
-    const url = `${SYNC_WEBAPP_URL}?action=load&user=${encodeURIComponent(currentUser)}&apiKey=${encodeURIComponent(SYNC_API_KEY)}`;
-    const resp = await fetch(url, { method: 'GET', cache: 'no-store' });
-    const json = await resp.json();
-    if (!json.success) {
-      console.warn('Sync load failed', json);
-      return json;
-    }
-    if (!json.found) {
-      console.info('No remote data found for', currentUser);
-      return { success: true, found:false };
-    }
-
-    // Merge server data into local structures (server wins for conflicts)
-    const remote = json.data || {};
-    // remote may contain abhyasis, attendanceHistory, masterRecords
-    if (remote.abhyasis && Array.isArray(remote.abhyasis)) {
-      // merge unique by id
-      const localIds = new Set(abhyasis.map(a => a.id));
-      remote.abhyasis.forEach(r => { if (!localIds.has(r.id)) abhyasis.push(r); });
-    }
-    if (remote.attendanceHistory && typeof remote.attendanceHistory === 'object') {
-      // shallow merge: server entries overwrite local per date
-      Object.keys(remote.attendanceHistory).forEach(d => attendanceHistory[d] = remote.attendanceHistory[d]);
-    }
-    if (remote.masterRecords && Array.isArray(remote.masterRecords)) {
-      // merge and dedupe
-      masterRecords = masterRecords.concat(remote.masterRecords);
-      masterRecords = removeDuplicateRecords(masterRecords);
-      saveMasterRecords();
-    }
-
-    // persist merged local copy
-    saveData();
-    displayAllRecords();
-    updateStudentsList();
-    updateAttendanceList();
-    return { success: true, merged: true };
-  } catch (err) {
-    console.error('fetchFromServer error', err);
-    return { success:false, error: String(err) };
-  }
+// Initialize Supabase
+let supabase = null;
+try {
+  supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  console.log('Supabase initialized successfully');
+} catch (err) {
+  console.error('Supabase initialization error:', err);
 }
 
-// Push current local app-data to server
+// Sync to Supabase
 async function syncToServer() {
-  if (!currentUser) return;
+  if (!currentUser) {
+    console.warn('syncToServer: no currentUser');
+    return { success: false, error: 'No user' };
+  }
+  
+  if (!supabase) {
+    console.warn('Supabase not initialized');
+    return { success: false, error: 'Database not available' };
+  }
+  
   try {
     const payload = {
-      action: 'save',
-      user: currentUser,
-      apiKey: SYNC_API_KEY,
+      user_email: currentUser,
       data: {
         abhyasis: abhyasis,
         attendanceHistory: attendanceHistory,
         masterRecords: masterRecords
-      }
+      },
+      updated_at: new Date().toISOString()
     };
-
-    const resp = await fetch(SYNC_WEBAPP_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-      cache: 'no-store'
-    });
-    const json = await resp.json();
-    if (!json.success) console.warn('syncToServer returned', json);
-    return json;
+    
+    console.log('Syncing to Supabase for user:', currentUser);
+    
+    // Check if record exists
+    const { data: existing, error: fetchError } = await supabase
+      .from('meditation_data')
+      .select('id')
+      .eq('user_email', currentUser)
+      .single();
+    
+    if (fetchError && fetchError.code !== 'PGRST116') {
+      throw fetchError;
+    }
+    
+    let result;
+    if (existing) {
+      // Update existing record
+      result = await supabase
+        .from('meditation_data')
+        .update(payload)
+        .eq('user_email', currentUser);
+    } else {
+      // Insert new record
+      result = await supabase
+        .from('meditation_data')
+        .insert([payload]);
+    }
+    
+    if (result.error) throw result.error;
+    
+    console.log('Sync successful');
+    return { success: true };
+    
   } catch (err) {
-    console.error('syncToServer error', err);
-    return { success:false, error: String(err) };
+    console.error('syncToServer error:', err);
+    showAlert('Sync failed: ' + err.message, 'error');
+    return { success: false, error: String(err) };
   }
 }
+
+// Fetch from Supabase
+async function fetchFromServer() {
+  if (!currentUser) {
+    console.warn('fetchFromServer: no currentUser');
+    return { success: false, error: 'No user' };
+  }
+  
+  if (!supabase) {
+    console.warn('Supabase not initialized');
+    return { success: false, error: 'Database not available' };
+  }
+  
+  try {
+    console.log('Fetching from Supabase for user:', currentUser);
+    
+    const { data, error } = await supabase
+      .from('meditation_data')
+      .select('data')
+      .eq('user_email', currentUser)
+      .single();
+    
+    if (error) {
+      if (error.code === 'PGRST116') {
+        // No data found
+        console.info('No remote data found for', currentUser);
+        return { success: true, found: false };
+      }
+      throw error;
+    }
+    
+    if (!data || !data.data) {
+      console.info('No remote data found for', currentUser);
+      return { success: true, found: false };
+    }
+    
+    const remote = data.data;
+    console.log('Remote data retrieved');
+    
+    // Merge abhyasis
+    if (remote.abhyasis && Array.isArray(remote.abhyasis)) {
+      const localIds = new Set(abhyasis.map(a => a.id));
+      let addedCount = 0;
+      remote.abhyasis.forEach(r => {
+        if (!localIds.has(r.id)) {
+          abhyasis.push(r);
+          addedCount++;
+        }
+      });
+      console.log('Added', addedCount, 'new abhyasis');
+    }
+    
+    // Merge attendanceHistory
+    if (remote.attendanceHistory && typeof remote.attendanceHistory === 'object') {
+      Object.keys(remote.attendanceHistory).forEach(d => {
+        attendanceHistory[d] = remote.attendanceHistory[d];
+      });
+      console.log('Merged attendance history');
+    }
+    
+    // Merge masterRecords
+    if (remote.masterRecords && Array.isArray(remote.masterRecords)) {
+      const beforeCount = masterRecords.length;
+      masterRecords = masterRecords.concat(remote.masterRecords);
+      masterRecords = removeDuplicateRecords(masterRecords);
+      saveMasterRecords();
+      console.log('Merged master records:', masterRecords.length - beforeCount, 'new');
+    }
+    
+    // Save merged data locally
+    saveData();
+    displayAllRecords();
+    updateStudentsList();
+    updateAttendanceList();
+    
+    showAlert('Data synced from cloud', 'success');
+    return { success: true, merged: true };
+    
+  } catch (err) {
+    console.error('fetchFromServer error:', err);
+    showAlert('Fetch failed: ' + err.message, 'error');
+    return { success: false, error: String(err) };
+  }
+}
+/////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
     function removeDuplicateRecords(records) {
       const seen = new Set();
