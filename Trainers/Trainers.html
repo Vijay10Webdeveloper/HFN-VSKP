@@ -313,9 +313,9 @@
             <h2>👥 Manage Abhyasis</h2>
             <div style="display:flex; gap:8px; align-items:center; margin-bottom:12px; flex-wrap:wrap;">
               <input id="studentName" type="text" placeholder="Enter Abhyasi name" style="padding:10px; border-radius:6px; border:1px solid #ddd; flex:1;" />
-              <input id="studentId" type="text" placeholder="Enter Abhyasi ID" style="padding:10px; border-radius:6px; border:1px solid #ddd; width:160px;" />
-              <input id="studentContact" type="text" placeholder="Enter Contact number" style="padding:10px; border-radius:6px; border:1px solid #ddd; width:180px;" />
-              <!-- FIXED: call addAbhyasi (was addStudent causing error) -->
+              <input id="studentId" type="text" placeholder="Enter Abhyasi ID" style="padding:10px; border-radius:6px; border:1px solid #ddd; width:100px;" />
+              <input id="studentContact" type="text" placeholder="Enter Contact number" style="padding:10px; border-radius:6px; border:1px solid #ddd; width:100px;" />
+            <!-- FIXED: call addAbhyasi (was addStudent causing error) -->
               <button class="btn btn-small" onclick="addAbhyasi()">Add Abhyasi</button>
             </div>
             <div id="studentsList"></div>
@@ -415,61 +415,59 @@
         </div>
 
         <!-- Reports -->
-        <div id="reports-tab" class="tab-content">
-          <div class="section">
-            <h2>📊 Generate Reports</h2>
+  
+<div id="reports-tab" class="tab-content">
+  <div class="section">
+    <h2>📊 Generate Reports</h2>
 
-            <!-- Range selector: choose Month range or Date/Week range -->
-            <div style="margin-bottom:12px; display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
-              <label style="font-weight:bold;">Range mode:</label>
-              <label><input type="radio" name="rangeMode" value="month" checked onchange="onRangeModeChange()"> Month range</label>
-              <label><input type="radio" name="rangeMode" value="date" onchange="onRangeModeChange()"> Date / Week range</label>
-            </div>
+    <!-- Range selector: Month or Date range -->
+    <div style="margin-bottom:12px; display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+      <label style="font-weight:bold;">Range mode:</label>
+      <label><input type="radio" name="rangeMode" value="month" checked onchange="onRangeModeChange()"> Month range</label>
+      <label><input type="radio" name="rangeMode" value="date" onchange="onRangeModeChange()"> Date / Week range</label>
+    </div>
 
-            <div class="form-grid" style="align-items:end;">
-              <div id="monthRangeGroup">
-                <label for="startMonth">Start Month</label>
-                <input id="startMonth" type="month" style="padding:10px; border:1px solid #ddd; border-radius:6px; width:100%;" />
-              </div>
-              <div id="endMonthGroup">
-                <label for="endMonth">End Month</label>
-                <input id="endMonth" type="month" style="padding:10px; border:1px solid #ddd; border-radius:6px; width:100%;" />
-              </div>
+    <div class="form-grid" style="align-items:end;">
+      <div id="monthRangeGroup">
+        <label for="startMonth">Start Month</label>
+        <input id="startMonth" type="month" style="padding:10px; border:1px solid #ddd; border-radius:6px; width:100%;" />
+      </div>
+      <div id="endMonthGroup">
+        <label for="endMonth">End Month</label>
+        <input id="endMonth" type="month" style="padding:10px; border:1px solid #ddd; border-radius:6px; width:100%;" />
+      </div>
 
-              <div id="dateRangeGroup" style="display:none;">
-                <label for="startDate">Start Date</label>
-                <input id="startDate" type="date" style="padding:10px; border:1px solid #ddd; border-radius:6px; width:100%;" />
-              </div>
-              <div id="dateRangeGroup2" style="display:none;">
-                <label for="endDate">End Date</label>
-                <input id="endDate" type="date" style="padding:10px; border:1px solid #ddd; border-radius:6px; width:100%;" />
-              </div>
+      <div id="dateRangeGroup" style="display:none;">
+        <label for="startDate">Start Date</label>
+        <input id="startDate" type="date" style="padding:10px; border:1px solid #ddd; border-radius:6px; width:100%;" />
+      </div>
+      <div id="dateRangeGroup2" style="display:none;">
+        <label for="endDate">End Date</label>
+        <input id="endDate" type="date" style="padding:10px; border:1px solid #ddd; border-radius:6px; width:100%;" />
+      </div>
 
-              <div>
-                <label for="reportType">Report Type</label>
-                <select id="reportType" style="padding:10px; border:1px solid #ddd; border-radius:6px; width:100%;">
-                  <option value="monthly">Monthly Summary</option>
-                  <option value="detailed">Detailed Records</option>
-                  <option value="student">Individual Abhyasi</option>
-                </select>
-              </div>
-              <div id="studentSelectGroup" style="display:none;">
-                <label for="reportStudent">Select Abhyasi</label>
-                <select id="reportStudent" style="padding:10px; border:1px solid #ddd; border-radius:6px; width:100%;"></select>
-              </div>
-            </div>
-
-            <div style="margin-top:12px;">
-              <button class="btn" onclick="generateReport()">📊 Generate Report</button>
-            </div>
-
-            <div id="reportResults" style="display:none; margin-top:12px;"></div>
-          </div>
-        </div>
-
+      <div>
+        <label for="reportType">Report Type</label>
+        <select id="reportType" style="padding:10px; border:1px solid #ddd; border-radius:6px; width:100%;">
+          <option value="monthly">Monthly Summary</option>
+          <option value="detailed">Detailed Records</option>
+          <option value="student">Individual Abhyasi</option>
+        </select>
+      </div>
+      <div id="studentSelectGroup" style="display:none;">
+        <label for="reportStudent">Select Abhyasi</label>
+        <select id="reportStudent" style="padding:10px; border:1px solid #ddd; border-radius:6px; width:100%;"></select>
       </div>
     </div>
+
+    <div style="margin-top:12px;">
+      <button class="btn" onclick="generateReport()">📊 Generate Report</button>
+    </div>
+
+    <div id="reportResults" style="display:none; margin-top:12px;"></div>
   </div>
+</div>
+
 
   <script>
     /***** AUTH & APP STATE *****/
@@ -1544,6 +1542,296 @@ async function syncToServer() {
         }
       });
     })();
+
+    ////////////////////////////////////////////////////////////////////
+
+    ////////////////////////////////////////////////////////////////////
+
+    /* =========================
+   REPORTS — based on masterRecords (View All Records)
+   ========================= */
+
+// Show/hide student select on report type
+document.getElementById('reportType').addEventListener('change', function () {
+  const isStudent = this.value === 'student';
+  document.getElementById('studentSelectGroup').style.display = isStudent ? 'block' : 'none';
+  if (isStudent) updateStudentSelectFromMaster();
+});
+
+// Range mode toggle
+function onRangeModeChange() {
+  const mode = document.querySelector('input[name="rangeMode"]:checked').value;
+  const showMonth = (mode === 'month');
+  document.getElementById('monthRangeGroup').style.display = showMonth ? '' : 'none';
+  document.getElementById('endMonthGroup').style.display = showMonth ? '' : 'none';
+  document.getElementById('dateRangeGroup').style.display = showMonth ? 'none' : '';
+  document.getElementById('dateRangeGroup2').style.display = showMonth ? 'none' : '';
+}
+
+// Build student dropdown from masterRecords
+function updateStudentSelectFromMaster() {
+  const sel = document.getElementById('reportStudent');
+  if (!sel) return;
+  const seen = new Map(); // id -> name
+  (masterRecords || []).forEach(r => {
+    if (r && r.id) {
+      if (!seen.has(r.id)) seen.set(r.id, r.name || r.id);
+    }
+  });
+  const options = ['<option value="">Select an Abhyasi</option>'];
+  for (const [id, name] of seen.entries()) {
+    options.push(`<option value="${escapeHtml(id)}">${escapeHtml(name)} (${escapeHtml(id)})</option>`);
+  }
+  sel.innerHTML = options.join('');
+}
+
+// Main generate
+function generateReport() {
+  if (!Array.isArray(masterRecords) || masterRecords.length === 0) {
+    showAlert('No records in "View All Records" to report on.', 'error');
+    return;
+  }
+
+  const mode = document.querySelector('input[name="rangeMode"]:checked').value;
+  let start, end;
+  if (mode === 'month') {
+    const sm = document.getElementById('startMonth').value;
+    const em = document.getElementById('endMonth').value;
+    if (!sm || !em) { showAlert('Please select both start and end month', 'error'); return; }
+    start = sm + '-01';
+    // pick a generous end so string compare works for YYYY-MM-DD
+    end = em + '-31';
+    if (start > end) { showAlert('Start month must be <= end month', 'error'); return; }
+  } else {
+    const sd = document.getElementById('startDate').value;
+    const ed = document.getElementById('endDate').value;
+    if (!sd || !ed) { showAlert('Please select both start and end date', 'error'); return; }
+    start = sd; end = ed;
+    if (start > end) { showAlert('Start date must be <= end date', 'error'); return; }
+  }
+
+  const type = document.getElementById('reportType').value;
+  const results = document.getElementById('reportResults');
+  results.style.display = 'block';
+
+  if (type === 'monthly') {
+    generateMonthlyReportFromMaster(start, end, results);
+  } else if (type === 'detailed') {
+    generateDetailedReportFromMaster(start, end, results);
+  } else if (type === 'student') {
+    const sid = document.getElementById('reportStudent').value;
+    if (!sid) { showAlert('Select Abhyasi', 'error'); return; }
+    generateStudentReportFromMaster(start, end, sid, results);
+  }
+}
+
+// Helper: filter masterRecords by date range, returns shallow copy
+function getMasterInRange(start, end) {
+  return (masterRecords || []).filter(r => r && r.date >= start && r.date <= end);
+}
+
+/* ---------- Monthly Summary (from master) ---------- */
+function generateMonthlyReportFromMaster(start, end, container) {
+  const rowsByDate = {};
+  const inRange = getMasterInRange(start, end);
+  if (!inRange.length) { container.innerHTML = '<p style="color:#666;">No records found</p>'; return; }
+
+  const students = new Set();
+  inRange.forEach(r => {
+    const d = r.date;
+    if (!rowsByDate[d]) rowsByDate[d] = { total: 0, present: 0 };
+    rowsByDate[d].total += 1;
+    if (r.present) rowsByDate[d].present += 1;
+    if (r.id) students.add(r.id);
+  });
+
+  const dates = Object.keys(rowsByDate).sort();
+  const totalClasses = dates.length;
+  const totalAttendances = dates.reduce((acc, d) => acc + rowsByDate[d].present, 0);
+  const avg = Math.round(totalAttendances / Math.max(1, totalClasses));
+
+  let html = `<div>
+    <h3>Summary (${start} → ${end})</h3>
+    <div>Total classes: ${totalClasses} | Unique Abhyasis: ${students.size} | Avg attendance: ${avg}</div>
+    <table class="report-table">
+      <thead><tr><th>Date</th><th>Present</th><th>Total</th><th>Attendance %</th></tr></thead>
+      <tbody>`;
+
+  dates.forEach(d => {
+    const { total, present } = rowsByDate[d];
+    const pct = total ? Math.round((present / total) * 100) : 0;
+    html += `<tr>
+      <td>${new Date(d).toLocaleDateString()}</td>
+      <td>${present}</td>
+      <td>${total}</td>
+      <td>${pct}%</td>
+    </tr>`;
+  });
+
+  html += `</tbody></table></div>`;
+  container.innerHTML = html;
+}
+
+/* ---------- Detailed Records (from master) ---------- */
+function generateDetailedReportFromMaster(start, end, container) {
+  const inRange = getMasterInRange(start, end).sort((a,b) => a.date.localeCompare(b.date));
+  if (!inRange.length) { container.innerHTML = '<p style="color:#666;">No records found</p>'; return; }
+
+  // group by date
+  const byDate = {};
+  inRange.forEach(r => {
+    if (!byDate[r.date]) byDate[r.date] = [];
+    byDate[r.date].push(r);
+  });
+
+  const dates = Object.keys(byDate).sort();
+  let html = `<div><h3>Detailed Report (${start} → ${end})</h3>`;
+  dates.forEach(date => {
+    const recs = byDate[date];
+    const present = recs.filter(r => r.present).length;
+    const sess = recs[0]?.sessionName || 'Session';
+    const tr = recs[0]?.trainer || 'Not specified';
+    const stype = recs[0]?.sessionType || '';
+    html += `<div style="margin-bottom:12px;">
+      <h4>${new Date(date).toLocaleDateString()}</h4>
+      <div>${escapeHtml(sess)}${stype ? ' | ' + escapeHtml(stype) : ''} | ${escapeHtml(tr)} | Present: ${present}/${recs.length}</div>
+      <table class="report-table">
+        <thead><tr><th>#</th><th>Name</th><th>ID</th><th>Status</th></tr></thead><tbody>`;
+
+    recs.forEach((r,i) => {
+      html += `<tr>
+        <td>${i+1}</td>
+        <td>${escapeHtml(r.name)}</td>
+        <td>${escapeHtml(r.id)}</td>
+        <td>${r.present ? 'Present' : 'Absent'}</td>
+      </tr>`;
+    });
+
+    html += `</tbody></table></div>`;
+  });
+  html += `</div>`;
+  container.innerHTML = html;
+}
+
+/* ---------- Individual Abhyasi (from master) with Chart ---------- */
+let reportsCurrentChart = null;
+
+function generateStudentReportFromMaster(start, end, studentId, container) {
+  const recs = getMasterInRange(start, end).filter(r => r.id === studentId);
+  if (!recs.length) { container.innerHTML = '<p style="color:#666;">No records found for this Abhyasi in selected range.</p>'; return; }
+
+  const presentCount = recs.filter(r => r.present).length;
+  const rate = Math.round((presentCount / recs.length) * 100);
+  // best-effort name
+  const name = (recs.find(r => r.name)?.name) || studentId;
+
+  let html = `<div>
+    <h3>👤 ${escapeHtml(name)} — ${start} → ${end}</h3>
+    <div style="margin-bottom:12px;">Total classes: ${recs.length} | Attended: ${presentCount} | Rate: ${rate}%</div>
+    <div class="chart-controls">
+      <label>Chart type:
+        <select id="chartTypeSelect">
+          <option value="bar">Bar</option>
+          <option value="line">Line</option>
+          <option value="pie">Pie</option>
+        </select>
+      </label>
+      <label>Group by:
+        <select id="chartGroupSelect">
+          <option value="byDate">By Date (attendance)</option>
+          <option value="bySession">By Session name</option>
+        </select>
+      </label>
+      <button class="btn" id="renderChartBtn">Render Chart</button>
+    </div>
+    <div style="background:white; padding:12px; border-radius:8px;">
+      <canvas id="studentChart" width="800" height="300"></canvas>
+    </div>
+  </div>`;
+
+  container.innerHTML = html;
+
+  document.getElementById('renderChartBtn').addEventListener('click', () => {
+    const type = document.getElementById('chartTypeSelect').value;
+    const group = document.getElementById('chartGroupSelect').value;
+    renderStudentChartFromMaster(recs, type, group);
+  });
+
+  renderStudentChartFromMaster(recs, 'bar', 'byDate');
+}
+
+function renderStudentChartFromMaster(records, type, group) {
+  const ctx = document.getElementById('studentChart').getContext('2d');
+  if (reportsCurrentChart) { reportsCurrentChart.destroy(); reportsCurrentChart = null; }
+
+  if (group === 'byDate') {
+    const sorted = records.slice().sort((a,b) => a.date.localeCompare(b.date));
+    const labels = sorted.map(r => new Date(r.date).toLocaleDateString());
+    const data = sorted.map(r => r.present ? 1 : 0);
+    const cfg = {
+      type: type === 'pie' ? 'pie' : type,
+      data: {
+        labels,
+        datasets: [{
+          label: 'Presence (1=present,0=absent)',
+          data,
+          // keep default colors; Chart.js will assign
+          fill: false
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: type === 'pie' } },
+        scales: type === 'pie' ? undefined : { y: { beginAtZero:true, ticks:{ stepSize:1, precision:0 } } }
+      }
+    };
+    reportsCurrentChart = new Chart(ctx, cfg);
+  } else {
+    // group by session name
+    const groups = {};
+    records.forEach(r => {
+      const key = r.sessionName || 'Session';
+      if (!groups[key]) groups[key] = { present:0, total:0 };
+      groups[key].total++;
+      if (r.present) groups[key].present++;
+    });
+    const labels = Object.keys(groups);
+    const presentData = labels.map(l => groups[l].present);
+    const cfg = {
+      type: type === 'pie' ? 'pie' : type,
+      data: {
+        labels,
+        datasets: [{ label: 'Present', data: presentData }]
+      },
+      options: { responsive:true, plugins: { legend:{ display: true } } }
+    };
+    reportsCurrentChart = new Chart(ctx, cfg);
+  }
+}
+
+/* ---------- Small utilities used above ---------- */
+function escapeHtml(s) {
+  if (!s) return '';
+  return s.replace(/[&<>"]/g, ch => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' })[ch]);
+}
+
+// OPTIONAL: initialize defaults and ensure dropdown is ready when page loads
+(function initReportsDefaults(){
+  const now = new Date();
+  const thisMonth = now.toISOString().slice(0,7);
+  const sm = document.getElementById('startMonth');
+  const em = document.getElementById('endMonth');
+  const sd = document.getElementById('startDate');
+  const ed = document.getElementById('endDate');
+  if (sm && !sm.value) sm.value = thisMonth;
+  if (em && !em.value) em.value = thisMonth;
+  if (sd && !sd.value) sd.valueAsDate = new Date();
+  if (ed && !ed.value) ed.valueAsDate = new Date();
+  updateStudentSelectFromMaster();
+})();
+
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
 
     /***** Load & initial setup done at top *****/
   </script>
