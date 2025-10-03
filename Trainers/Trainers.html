@@ -369,19 +369,32 @@
         </div>
 
         <!-- Records -->
-        <div id="records-tab" class="tab-content">
-          <div class="section">
-            <h2>📂 All Attendance Records (Master)</h2>
+        <!-- Records -->
+<div id="records-tab" class="tab-content">
+  <div class="section">
+    <h2>📂 All Attendance Records (Master)</h2>
 
-            <div style="margin-bottom:12px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-              <button class="btn btn-success" onclick="showRecords()">📋 Show All Records</button>
-              <button class="btn" onclick="downloadMasterCSV()">⬇️ Download Master CSV</button>
-              <button class="btn btn-danger" onclick="clearMasterRecords()">🗑️ Clear Master Records</button>
-            </div>
+    <div style="margin-bottom:12px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+      <button class="btn btn-success" onclick="showRecords()">📋 Show All Records</button>
+      <button class="btn" onclick="downloadMasterCSV()">⬇️ Download Master CSV</button>
+      <button class="btn btn-danger" onclick="clearMasterRecords()">🗑️ Clear Master Records</button>
 
-            <div id="allRecordsContainer" class="data-preview" style="background:white; padding:8px;">
-              <p style="color:#666; font-style:italic;">No records shown. Click "Show All Records" to display stored master records.</p>
-            </div>
+      <!-- NEW: bulk actions -->
+      <label style="margin-left:auto; display:flex; align-items:center; gap:6px;">
+        <input type="checkbox" id="mr-select-all" onchange="toggleSelectAll(this.checked)" />
+        <span>Select All</span>
+      </label>
+      <button class="btn btn-danger" id="mr-delete-selected-btn" onclick="deleteSelectedMaster()" disabled>
+        🗑️ Delete Selected
+      </button>
+    </div>
+
+    <!-- ADD THIS CONTAINER: -->
+    <div id="allRecordsContainer" class="data-preview"></div>
+
+  </div>
+</div>
+
           </div>
         </div>
 
@@ -518,6 +531,23 @@
         });
       }
     });
+// Always return YYYY-MM-DD no matter the browser/timezone
+function getNormalizedDateFromInput(inputId) {
+  const input = document.getElementById(inputId);
+  // Prefer valueAsDate when available
+  if (input && input.valueAsDate instanceof Date && !isNaN(input.valueAsDate)) {
+    const d = new Date(Date.UTC(
+      input.valueAsDate.getFullYear(),
+      input.valueAsDate.getMonth(),
+      input.valueAsDate.getDate()
+    ));
+    return d.toISOString().slice(0, 10);
+  }
+  // Fallback to raw value (assumed YYYY-MM-DD)
+  const raw = input?.value?.trim();
+  if (raw && /^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw;
+  return ''; // not set
+}
 
     function togglePasswordVisibility() {
       const pw = document.getElementById('passwordInput');
@@ -751,52 +781,53 @@
       saveMasterRecords();
     }
 
-    function saveAttendance() {
-      if (!checkAuthentication()) return;
-      const date = document.getElementById('classDate').value;
-      if (!date) { showAlert('Please select a date', 'error'); return; }
-      if (!abhyasis.length) { showAlert('No abhyasis to save attendance for', 'error'); return; }
-      const sessionName = document.getElementById('sessionName').value || 'Sunday';
-      const trainer = document.getElementById('trainer').value || 'Not specified';
-      const sessionType = document.getElementById('sessionType').value || '';
+function saveAttendance() {
+  if (!checkAuthentication()) return;
 
-      const attendanceData = [];
-      let presentCount = 0;
-      abhyasis.forEach((s,i) => {
-        const checked = document.getElementById(`attendance-${i}`) ? document.getElementById(`attendance-${i}`).checked : false;
-        attendanceData.push({
-          date,
-          name: s.name,
-          id: s.id,
-          sessionName,
-          trainer,
-          sessionType,
-          present: !!checked,
-          savedBy: currentUser
-        });
-        if (checked) presentCount++;
-      });
+  // ✅ normalize date to YYYY-MM-DD
+  const date = getNormalizedDateFromInput('classDate');
+  if (!date) { showAlert('Please select a valid date', 'error'); return; }
 
-      // Save in attendanceHistory (per-date)
-      attendanceHistory[date] = attendanceData;
-      saveData();
+  if (!abhyasis.length) { showAlert('No abhyasis to save attendance for', 'error'); return; }
+  const sessionName = document.getElementById('sessionName').value || 'Sunday';
+  const trainer = document.getElementById('trainer').value || 'Not specified';
+  const sessionType = document.getElementById('sessionType').value || '';
 
-      // Add to masterRecords
-      addNewRecordsToMaster(attendanceData);
+  const attendanceData = [];
+  abhyasis.forEach((s,i) => {
+    const checked = document.getElementById(`attendance-${i}`)?.checked ?? false;
+    attendanceData.push({
+      date,
+      name: s.name,
+      id: s.id,
+      sessionName,
+      trainer,
+      sessionType,
+      present: !!checked,
+      savedBy: currentUser
+    });
+  });
 
-      // NEW: display friendly "attendance saved" message
-      showAlert('Attendance is saved.', 'success');
+  // Keep attendanceHistory for backward-compat use
+  attendanceHistory[date] = attendanceData;
 
-      // reset toggles
-      abhyasis.forEach((s,i) => {
-        const cb = document.getElementById(`attendance-${i}`);
-        if (cb) cb.checked = false;
-        const item = document.getElementById(`attendance-row-${i}`);
-        if (item) item.style.background = '';
-      });
+  // 🔐 Persist app data (and trigger your server sync)
+  saveData();
 
-      displayAllRecords();
-    }
+  // 🧱 Master (source of truth for "View All Records")
+  addNewRecordsToMaster(attendanceData);   // merges + dedupes
+  saveMasterRecords();                     // make sure it's flushed
+
+  showAlert('Attendance is saved.', 'success');
+
+  // Reset checkboxes
+  abhyasis.forEach((_,i) => { const cb = document.getElementById(`attendance-${i}`); if (cb) cb.checked = false; });
+
+  // 🔄 Reload masterRecords from storage and display latest
+  loadMasterRecords();
+  displayAllRecords();
+}
+
 
     /***** DISPLAY / DOWNLOAD MASTER *****/
     function showRecords() {
@@ -819,44 +850,132 @@
       container.innerHTML = html;
     }
 
-    function displayAllRecords() {
-      const container = document.getElementById('allRecordsContainer');
-      if (!masterRecords.length) { container.innerHTML = '<p style="color:#666; font-style:italic;">No master records stored yet.</p>'; return; }
+    // === Selection state for Master Records ===
+let masterSelectedKeys = new Set();
 
-      const byDate = {};
-      masterRecords.forEach(r => {
-        if (!byDate[r.date]) byDate[r.date] = [];
-        byDate[r.date].push(r);
-      });
-      const dates = Object.keys(byDate).sort().reverse();
-      let html = `<div><strong>Total stored records:</strong> ${masterRecords.length} across ${dates.length} classes</div><br/>`;
-      dates.forEach(date => {
-        const recs = byDate[date];
-        const presentCount = recs.filter(x => x.present).length;
-        const sessionName = recs[0]?.sessionName || 'Session';
-        const trainer = recs[0]?.trainer || 'Not specified';
-        const sessionType = recs[0]?.sessionType || '';
-        html += `
-          <div style="border:1px solid #eee; padding:12px; margin-bottom:10px; border-radius:8px; background:white;">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <div>
-                <h3 style="margin:0;">${new Date(date).toLocaleDateString()}</h3>
-                <div style="color:#666;">${sessionName}${sessionType ? ' | ' + sessionType : ''} | Trainer: ${trainer} | Present: ${presentCount}/${recs.length}</div>
-              </div>
-            </div>
-            <div style="margin-top:8px; overflow:auto;">
-              <table class="report-table">
-                <thead><tr><th>#</th><th>Name</th><th>ID</th><th>Status</th></tr></thead>
-                <tbody>
-                  ${recs.map((r,i) => `<tr><td>${i+1}</td><td>${escapeHtml(r.name)}</td><td>${escapeHtml(r.id)}</td><td><span class="attendance-badge" style="background:${r.present ? '#27ae60' : '#e74c3c'}">${r.present ? 'Present' : 'Absent'}</span></td></tr>`).join('')}
-                </tbody>
-              </table>
-            </div>
+function getRecordKey(r) {
+  // Use same uniqueness as your dedupe to ensure 1:1 mapping
+  // (date + id + sessionName). Adjust if you want stricter uniqueness.
+  return `${r.date}__${r.id}__${r.sessionName || ''}`;
+}
+
+function refreshDeleteButtonState() {
+  const btn = document.getElementById('mr-delete-selected-btn');
+  if (btn) btn.disabled = masterSelectedKeys.size === 0;
+}
+
+function toggleSelectAll(checked) {
+  const boxes = document.querySelectorAll('#allRecordsContainer input.mr-select');
+  masterSelectedKeys.clear();
+  boxes.forEach(cb => {
+    cb.checked = checked;
+    if (checked) masterSelectedKeys.add(cb.value);
+  });
+  refreshDeleteButtonState();
+}
+
+function onToggleRowSelect(cb) {
+  if (cb.checked) masterSelectedKeys.add(cb.value);
+  else masterSelectedKeys.delete(cb.value);
+  // keep the global select-all in sync
+  const selectAll = document.getElementById('mr-select-all');
+  if (selectAll) {
+    const boxes = document.querySelectorAll('#allRecordsContainer input.mr-select');
+    const allChecked = boxes.length > 0 && Array.from(boxes).every(x => x.checked);
+    selectAll.checked = allChecked;
+    if (!cb.checked) selectAll.indeterminate = false;
+    else if (!allChecked && masterSelectedKeys.size > 0) selectAll.indeterminate = true;
+    else selectAll.indeterminate = false;
+  }
+  refreshDeleteButtonState();
+}
+
+function deleteSelectedMaster() {
+  if (masterSelectedKeys.size === 0) return;
+  const count = masterSelectedKeys.size;
+  if (!confirm(`Delete ${count} selected record(s) from master? This cannot be undone.`)) return;
+
+  const before = masterRecords.length;
+  masterRecords = masterRecords.filter(r => !masterSelectedKeys.has(getRecordKey(r)));
+  saveMasterRecords();
+
+  // clear selection & UI
+  masterSelectedKeys.clear();
+  const selectAll = document.getElementById('mr-select-all');
+  if (selectAll) { selectAll.checked = false; selectAll.indeterminate = false; }
+  displayAllRecords();
+  refreshDeleteButtonState();
+
+  showAlert(`Deleted ${before - masterRecords.length} record(s).`, 'success');
+
+  // Optional: push to server if you use sync
+  if (typeof syncToServer === 'function') {
+    syncToServer().catch(() => {/* ignore */});
+  }
+}
+
+// === REPLACE your existing displayAllRecords() with the version below ===
+function displayAllRecords() {
+  // Always reload fresh from localStorage to ensure latest data
+  loadMasterRecords();
+
+  const container = document.getElementById('allRecordsContainer');
+  if (!masterRecords.length) {
+    container.innerHTML = '<p style="color:#666; font-style:italic;">No master records stored yet.</p>';
+    return;
+  }
+
+  const byDate = {};
+  masterRecords.forEach(r => {
+    if (!byDate[r.date]) byDate[r.date] = [];
+    byDate[r.date].push(r);
+  });
+  const dates = Object.keys(byDate).sort().reverse();
+
+  let html = `<div><strong>Total stored records:</strong> ${masterRecords.length} across ${dates.length} classes</div><br/>`;
+  dates.forEach(date => {
+    const recs = byDate[date];
+    const presentCount = recs.filter(x => x.present).length;
+    const sessionName = recs[0]?.sessionName || 'Session';
+    const trainer = recs[0]?.trainer || 'Not specified';
+    const sessionType = recs[0]?.sessionType || '';
+
+    html += `
+      <div style="border:1px solid #eee; padding:12px; margin-bottom:10px; border-radius:8px; background:white;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <h3 style="margin:0;">${new Date(date).toLocaleDateString()}</h3>
+            <div style="color:#666;">${escapeHtml(sessionName)}${sessionType ? ' | ' + escapeHtml(sessionType) : ''} | Trainer: ${escapeHtml(trainer)} | Present: ${presentCount}/${recs.length}</div>
           </div>
-        `;
-      });
-      container.innerHTML = html;
-    }
+        </div>
+        <div style="margin-top:8px; overflow:auto;">
+          <table class="report-table">
+            <thead><tr><th style="width:40px;">Select</th><th>#</th><th>Name</th><th>ID</th><th>Status</th></tr></thead>
+            <tbody>
+              ${recs.map((r,i) => {
+                const key = getRecordKey(r);
+                return `
+                <tr>
+                  <td><input type="checkbox" class="mr-select" value="${key}" onchange="onToggleRowSelect(this)" /></td>
+                  <td>${i+1}</td>
+                  <td>${escapeHtml(r.name)}</td>
+                  <td>${escapeHtml(r.id)}</td>
+                  <td><span class="attendance-badge" style="background:${r.present ? '#27ae60' : '#e74c3c'}">${r.present ? 'Present' : 'Absent'}</span></td>
+                </tr>`;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>`;
+  });
+
+  container.innerHTML = html;
+  
+  // Clear selection state after re-render
+  masterSelectedKeys.clear();
+  refreshDeleteButtonState();
+}
+
 
     function downloadMasterCSV() {
   if (!masterRecords.length) {
