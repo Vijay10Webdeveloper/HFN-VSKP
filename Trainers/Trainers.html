@@ -8,6 +8,12 @@
   <!-- Chart.js CDN for charts in Individual student reports -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+  <!-- ADD THIS: SheetJS CDN for Excel file handling -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+  <style>
+    /* ... your styles ... */
+  </style>
   <style>
     /* --- styles (kept similar to your previous look & feel) --- */
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -375,10 +381,10 @@
     <h2>📂 All Attendance Records (Master)</h2>
 
     <div style="margin-bottom:12px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-      <button class="btn btn-success" onclick="showRecords()">📋 Show All Records</button>
-      <button class="btn" onclick="downloadMasterCSV()">⬇️ Download Master CSV</button>
-      <button class="btn btn-danger" onclick="clearMasterRecords()">🗑️ Clear Master Records</button>
-
+  <button class="btn btn-success" onclick="showRecords()">📋 Show All Records</button>
+  <button class="btn" onclick="downloadMasterCSV()">⬇️ Download CSV</button>
+  <button class="btn" onclick="downloadMasterExcel()">⬇️ Download Excel</button>
+  <button class="btn btn-danger" onclick="clearMasterRecords()">🗑️ Clear Master Records</button>
       <!-- NEW: bulk actions -->
       <label style="margin-left:auto; display:flex; align-items:center; gap:6px;">
         <input type="checkbox" id="mr-select-all" onchange="toggleSelectAll(this.checked)" />
@@ -399,33 +405,35 @@
         </div>
 
         <!-- Import -->
-        <div id="import-tab" class="tab-content">
-          <div class="section">
-            <h2>📥 Import Attendance Data</h2>
-            <p style="color:#666;">Preferred header (exported by this app):</p>
-            <pre style="background:#fff;padding:8px;border-radius:6px;color:#333;">Date,Day of Week,Abhyasi Name,Abhyasi ID,Session Name,Trainer,Present,Month,Year</pre>
-            <p style="color:#666;">This importer tolerates simpler files (e.g. Date,Abhyasi Name,Abhyasi ID,Session Name,Trainer,Present).</p>
+        <!-- Import -->
+<div id="import-tab" class="tab-content">
+  <div class="section">
+    <h2>📥 Import Attendance Data</h2>
+    <p style="color:#666;">Supported formats: CSV and Excel (XLSX, XLS)</p>
+    <p style="color:#666;">Preferred header (exported by this app):</p>
+    <pre style="background:#fff;padding:8px;border-radius:6px;color:#333;">Date,Day of Week,Abhyasi Name,Abhyasi ID,Session Name,Trainer,Present,Month,Year</pre>
+    <p style="color:#666;">This importer tolerates simpler files (e.g. Date,Abhyasi Name,Abhyasi ID,Session Name,Trainer,Present).</p>
 
-            <div style="margin-bottom:12px;">
-              <label class="file-input-wrapper">
-                📂 Choose CSV File
-                <input id="csvFileInput" type="file" accept=".csv" style="display:none" onchange="handleFileSelect(event)" />
-              </label>
-            </div>
+    <div style="margin-bottom:12px;">
+      <label class="file-input-wrapper">
+        📂 Choose CSV or Excel File
+        <input id="csvFileInput" type="file" accept=".csv,.xlsx,.xls" style="display:none" onchange="handleFileSelect(event)" />
+      </label>
+    </div>
 
-            <div id="importPreview" style="display:none;">
-              <h3>Import Preview</h3>
-              <p id="importSummary"></p>
-              <div style="max-height:320px; overflow:auto; border:1px solid #eee; padding:8px; background:white;">
-                <table class="report-table" id="importPreviewTable"><thead><tr><th>Date</th><th>Day</th><th>Name</th><th>ID</th><th>Session</th><th>Trainer</th><th>Present</th></tr></thead><tbody id="importPreviewBody"></tbody></table>
-              </div>
-              <div style="margin-top:12px;">
-                <button class="btn btn-success" onclick="confirmImport()">✅ Import Data</button>
-                <button class="btn" onclick="cancelImport()">❌ Cancel</button>
-              </div>
-            </div>
-          </div>
-        </div>
+    <div id="importPreview" style="display:none;">
+      <h3>Import Preview</h3>
+      <p id="importSummary"></p>
+      <div style="max-height:320px; overflow:auto; border:1px solid #eee; padding:8px; background:white;">
+        <table class="report-table" id="importPreviewTable"><thead><tr><th>Date</th><th>Day</th><th>Name</th><th>ID</th><th>Session</th><th>Trainer</th><th>Present</th></tr></thead><tbody id="importPreviewBody"></tbody></table>
+      </div>
+      <div style="margin-top:12px;">
+        <button class="btn btn-success" onclick="confirmImport()">✅ Import Data</button>
+        <button class="btn" onclick="cancelImport()">❌ Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
 
         <!-- Reports -->
   
@@ -977,51 +985,56 @@ function displayAllRecords() {
 }
 
 
-    function downloadMasterCSV() {
+   function downloadMasterExcel() {
   if (!masterRecords.length) {
     showAlert('No master records to download', 'error');
     return;
   }
 
-  const csv = buildMergedCSV(masterRecords);
-  const filename = `meditation_attendance_master_${new Date().toISOString().slice(0,10)}.csv`;
-
   try {
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    // Prepare data for Excel
+    const data = [
+      ['Date', 'Day of Week', 'Abhyasi Name', 'Abhyasi ID', 'Session Name', 'Session Type', 'Trainer', 'Present', 'Month', 'Year']
+    ];
+    
+    masterRecords.forEach(record => {
+      const dateObj = new Date(record.date);
+      let day = '', month = '', year = '';
+      if (!isNaN(dateObj.getTime())) {
+        day = dateObj.toLocaleDateString('en-US', { weekday: 'long' });
+        month = dateObj.toLocaleDateString('en-US', { month: 'long' });
+        year = dateObj.getFullYear();
+      }
+      
+      data.push([
+        record.date,
+        day,
+        record.name,
+        record.id,
+        record.sessionName || '',
+        record.sessionType || '',
+        record.trainer || '',
+        record.present ? 'Yes' : 'No',
+        month,
+        year
+      ]);
+    });
 
-    // --- Detect if mobile Safari / iOS ---
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    // Create workbook and worksheet
+    const ws = XLSX.utils.aoa_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Attendance');
 
-    if (isIOS) {
-      // On iOS, force open in a new tab (download attr often ignored)
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const dataUrl = e.target.result;
-        const link = document.createElement('a');
-        link.href = dataUrl;
-        link.target = '_blank';
-        link.download = filename;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      };
-      reader.readAsDataURL(blob);
-    } else {
-      // Standard browsers & Android Chrome
-      const link = document.createElement('a');
-      const url = URL.createObjectURL(blob);
-      link.href = url;
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-    }
+    // Generate filename
+    const filename = `meditation_attendance_master_${new Date().toISOString().slice(0,10)}.xlsx`;
 
-    showAlert('Download started', 'success');
+    // Download
+    XLSX.writeFile(wb, filename);
+    showAlert('Excel file downloaded successfully', 'success');
+    
   } catch (err) {
-    console.error('Download error', err);
-    showAlert('Download failed. Your browser may not support direct CSV download.', 'error');
+    console.error('Excel export error:', err);
+    showAlert('Failed to export Excel file: ' + err.message, 'error');
   }
 }
 
@@ -1038,14 +1051,30 @@ function displayAllRecords() {
     let importData = [];
 
     function handleFileSelect(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function(ev) {
-        parseImportCSV(ev.target.result);
-      };
-      reader.readAsText(file);
-    }
+  const file = e.target.files[0];
+  if (!file) return;
+  
+  const fileName = file.name.toLowerCase();
+  
+  if (fileName.endsWith('.csv')) {
+    // Handle CSV file
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+      parseImportCSV(ev.target.result);
+    };
+    reader.readAsText(file);
+  } else if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
+    // Handle Excel file
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+      parseImportExcel(ev.target.result);
+    };
+    reader.readAsArrayBuffer(file);
+  } else {
+    showAlert('Unsupported file format. Please select a CSV or Excel file.', 'error');
+    e.target.value = '';
+  }
+}
 
     function parseCSVLineAdvanced(line) {
       const result = []; let cur = ''; let inQuotes = false;
@@ -1125,7 +1154,50 @@ function displayAllRecords() {
       if (!importData.length) { showAlert('No valid records found in CSV', 'error'); return; }
       displayImportPreview();
     }
+//////////////////////////////////////////////////
 
+
+function parseImportExcel(arrayBuffer) {
+  try {
+    // Read the workbook
+    const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+    
+    // Get the first sheet
+    const firstSheetName = workbook.SheetNames[0];
+    const worksheet = workbook.Sheets[firstSheetName];
+    
+    // Convert to JSON (array of arrays)
+    const data = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: '' });
+    
+    if (!data || data.length < 2) {
+      showAlert('Excel file appears empty or has insufficient data', 'error');
+      return;
+    }
+    
+    // Convert to CSV-like format for processing
+    const csvText = data.map(row => 
+      row.map(cell => {
+        // Handle dates that Excel stores as numbers
+        if (typeof cell === 'number' && cell > 40000 && cell < 50000) {
+          // Likely an Excel date serial number
+          const excelDate = new Date((cell - 25569) * 86400 * 1000);
+          return excelDate.toISOString().slice(0, 10);
+        }
+        return String(cell || '').trim();
+      }).join(',')
+    ).join('\n');
+    
+    // Use existing CSV parser
+    parseImportCSV(csvText);
+    
+  } catch (err) {
+    console.error('Excel parsing error:', err);
+    showAlert('Failed to parse Excel file: ' + err.message, 'error');
+  }
+}
+
+
+//////////////////////////////////////////////////////////////////
     function displayImportPreview() {
       document.getElementById('importPreview').style.display = 'block';
       document.getElementById('importSummary').textContent = `Found ${importData.length} records`;
