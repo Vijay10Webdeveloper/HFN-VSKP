@@ -322,8 +322,9 @@
               <input id="studentContact" type="text" placeholder="Enter Contact number" style="padding:10px; border-radius:6px; border:1px solid #ddd; width:100px;" />
             <!-- FIXED: call addAbhyasi (was addStudent causing error) -->
               <button class="btn btn-small" onclick="addAbhyasi()">Add Abhyasi</button>
-            </div>
-            <div id="studentsList"></div>
+                 <button class="btn btn-success" onclick="saveAbhyasisToCloud()" style="margin-left:auto;">💾 Save to Cloud</button>
+                 </div>
+                 <div id="studentsList" style="max-height:400px; overflow-y:auto; border:1px solid #ddd; border-radius:8px; padding:8px; background:white;"></div>
           </div>
 
           <div class="section">
@@ -359,19 +360,19 @@
             </div>
           </div>
           <div class="container">
-          <div class="section attendance-section">
-            <div style="background:linear-gradient(135deg,#8e44ad 0%,#9b59b6 100%); color:white; padding:12px; border-radius:8px;">
-              <h3 style="margin:0;">✅ Today's Attendance</h3>
-            </div>
-            <div style="padding:12px;">
-              <strong id="currentDate"></strong>
-            </div>
-            <div class="student-list" id="attendanceList"></div>
-            <div style="text-align:center; padding:16px;">
-              <button class="btn btn-success" onclick="saveAttendance()">💾 Save Today's Attendance</button>
-            </div>
-          </div>
-          </div>
+             <div class="section attendance-section">
+               <div style="background:linear-gradient(135deg,#8e44ad 0%,#9b59b6 100%); color:white; padding:12px; border-radius:8px;">
+                    <h3 style="margin:0;">✅ Today's Attendance</h3>
+               </div>
+                  <div style="padding:12px;">
+                  <strong id="currentDate"></strong>
+                  </div>
+               <div class="student-list" id="attendanceList" style="max-height:400px; overflow-y:auto; border:1px solid #ddd; border-radius:8px; padding:8px; background:white; margin-bottom:12px;"></div>
+               <div style="text-align:center; padding:16px;">
+               <button class="btn btn-success" onclick="saveAttendance()">💾 Save Today's Attendance</button>
+               </div>
+             </div>
+           </div>
         </div>
 
         <!-- Records -->
@@ -711,8 +712,8 @@ function getNormalizedDateFromInput(inputId) {
       document.getElementById('studentContact').value = '';
       updateStudentsList();
       updateAttendanceList();
-      saveData();
-      showAlert(`Abhyasi "${name}" added`, 'success');
+      saveDataLocal();
+      showAlert(`Abhyasi "${name}" added (unsaved to cloud)`, 'success');
     }
 
     function editAbhyasi(index) {
@@ -741,18 +742,18 @@ function getNormalizedDateFromInput(inputId) {
       const duplicate = abhyasis.find((a,i) => a.id === id && i !== index);
       if (duplicate) { showAlert('Another Abhyasi with this ID exists', 'error'); return; }
       abhyasis[index] = { name, id, contact };
-      saveData();
+      saveDataLocal();
       updateStudentsList();
       updateAttendanceList();
-      showAlert('Abhyasi updated successfully', 'success');
+      showAlert('Abhyasi updated (unsaved to cloud)', 'success');
     }
 
     function removeAbhyasi(index) {
       const a = abhyasis[index];
       if (!confirm(`Remove ${a.name}?`)) return;
       abhyasis.splice(index,1);
-      updateStudentsList(); updateAttendanceList(); saveData();
-      showAlert(`Abhyasi "${a.name}" removed`, 'success');
+      updateStudentsList(); updateAttendanceList(); saveDataLocal();
+      showAlert(`Abhyasi "${a.name}" removed (unsaved to cloud)`, 'success');
     }
 
     function updateStudentsList() {
@@ -807,8 +808,8 @@ function removeAttendanceRow(index) {
   abhyasis.splice(index, 1);
   updateAttendanceList();
   updateStudentsList();
-  saveData();
-  showAlert(`${a.name} removed from attendance`, 'success');
+  saveDataLocal();
+  showAlert(`${a.name} removed from attendance (unsaved to cloud)`, 'success');
 }
 
 ////////////////////////////////05-10-2025///////////////////////////////////////////////
@@ -1797,6 +1798,21 @@ function showTopAbhyasis() {
   results.innerHTML = html;
   results.style.display = 'block';
 }
+//////////////////////////////////////////////////////////////////////////////
+
+// Save locally only (no cloud sync)
+function saveDataLocal() {
+  try {
+    const data = { abhyasis, attendanceHistory, lastSaved: new Date().toISOString() };
+    localStorage.setItem(APP_DATA_KEY, JSON.stringify(data));
+  } catch (err) {
+    console.error('saveDataLocal error', err);
+    showAlert('Failed to save data locally', 'error');
+  }
+}
+
+//////////////////////////////////////////////////////////////////////////////////
+
 
 /***** STORAGE: localStorage for abhyasis & attendanceHistory *****/
     function saveData() {
@@ -1817,7 +1833,26 @@ function showTopAbhyasis() {
   }
 }
 
+/////////////////////////////////////////////////////////////////////////////
 
+// Manual save to cloud for Manage Abhyasis
+async function saveAbhyasisToCloud() {
+  if (!currentUser) {
+    showAlert('Not authenticated', 'error');
+    return;
+  }
+  
+  showAlert('Saving to cloud...', 'info');
+  const result = await syncToServer();
+  
+  if (result && result.success) {
+    showAlert('✅ Successfully saved to cloud!', 'success');
+  } else {
+    showAlert('❌ Failed to save to cloud: ' + (result?.error || 'Unknown error'), 'error');
+  }
+}
+
+/////////////////////////////////////////////////////////////////////////////////
 
     function loadSavedData() {
       try {
@@ -1977,12 +2012,13 @@ async function fetchFromServer() {
     }
     
     // Save merged data locally
-    saveData();
+    // Save merged data locally
+     saveDataLocal(); // Use local save to avoid immediate re-sync
     displayAllRecords();
     updateStudentsList();
     updateAttendanceList();
     
-    showAlert('Data synced from cloud', 'success');
+    showAlert('Data synced from cloud (only new items added)', 'success');
     return { success: true, merged: true };
     
   } catch (err) {
