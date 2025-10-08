@@ -457,11 +457,12 @@
     <h2>📊 Generate Reports</h2>
 
     <!-- Range selector: Month or Date range -->
-    <div class="chart-controls" style="margin-top:16px;">
+   <div class="chart-controls" style="margin-top:16px;">
   <button class="btn btn-success" onclick="showTrendReport(1)">📈 1-Month Trend</button>
   <button class="btn btn-success" onclick="showTrendReport(3)">📉 3-Month Trend</button>
   <button class="btn btn-success" onclick="showTrendReport(6)">📊 6-Month Trend</button>
   <button class="btn btn-warning" onclick="showTopAbhyasis()">🏆 Top Abhyasis by Attendance</button>
+  <button class="btn btn-danger" onclick="showLowAttendanceAbhyasis()">⚠️ Low Attendance (≤50%)</button>
 </div>
 <!-- ADD THIS SECTION -->
 <div style="margin-bottom:16px;">
@@ -1799,6 +1800,105 @@ function showTopAbhyasis() {
   results.style.display = 'block';
 }
 //////////////////////////////////////////////////////////////////////////////
+
+function showLowAttendanceAbhyasis() {
+  if (!masterRecords || masterRecords.length === 0) {
+    showAlert('No master records available', 'error');
+    return;
+  }
+
+  // Calculate attendance for each abhyasi
+  const attendanceData = {};
+  
+  masterRecords.forEach(r => {
+    if (!r.id) return;
+    
+    if (!attendanceData[r.id]) {
+      attendanceData[r.id] = {
+        name: r.name,
+        id: r.id,
+        totalClasses: 0,
+        attended: 0,
+        contact: '' // We'll fill this from the abhyasis array
+      };
+    }
+    
+    attendanceData[r.id].totalClasses++;
+    if (r.present) {
+      attendanceData[r.id].attended++;
+    }
+  });
+
+  // Add contact information from abhyasis array
+  abhyasis.forEach(a => {
+    if (attendanceData[a.id]) {
+      attendanceData[a.id].contact = a.contact || 'N/A';
+    }
+  });
+
+  // Filter for <= 50% attendance and calculate percentage
+  const lowAttendance = Object.entries(attendanceData)
+    .map(([id, data]) => ({
+      ...data,
+      percentage: Math.round((data.attended / data.totalClasses) * 100)
+    }))
+    .filter(a => a.percentage <= 50)
+    .sort((a, b) => a.percentage - b.percentage); // Sort by lowest attendance first
+
+  let html = '<div style="background:white; padding:16px; border-radius:8px; margin-top:16px;">';
+  html += '<h3 style="color:#e74c3c;">⚠️ Abhyasis with Low Attendance (≤50%)</h3>';
+  
+  if (lowAttendance.length === 0) {
+    html += '<p style="color:#27ae60; font-weight:bold;">✅ Great news! All abhyasis have attendance above 50%.</p>';
+  } else {
+    html += `<p style="margin-bottom:12px; color:#666;">Found ${lowAttendance.length} abhyasi(s) with attendance at or below 50%</p>`;
+    html += `<table class="report-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Name</th>
+          <th>ID</th>
+          <th>Contact</th>
+          <th>Total Classes</th>
+          <th>Attended</th>
+          <th>Attendance %</th>
+        </tr>
+      </thead>
+      <tbody>`;
+    
+    lowAttendance.forEach((a, i) => {
+      const statusColor = a.percentage <= 25 ? '#c0392b' : a.percentage <= 40 ? '#e67e22' : '#f39c12';
+      html += `<tr>
+        <td><strong>${i + 1}</strong></td>
+        <td>${escapeHtml(a.name)}</td>
+        <td>${escapeHtml(a.id)}</td>
+        <td>${escapeHtml(a.contact)}</td>
+        <td>${a.totalClasses}</td>
+        <td>${a.attended}</td>
+        <td>
+          <span class="attendance-badge" style="background:${statusColor};">
+            ${a.percentage}%
+          </span>
+        </td>
+      </tr>`;
+    });
+    
+    html += '</tbody></table>';
+    
+    // Add a summary section
+    html += `<div style="margin-top:16px; padding:12px; background:#fff3cd; border-left:4px solid #ffc107; border-radius:4px;">
+      <strong>📞 Follow-up Recommended:</strong> Consider reaching out to these abhyasis to understand any challenges they may be facing.
+    </div>`;
+  }
+  
+  html += '</div>';
+
+  const results = document.getElementById('reportResults');
+  results.innerHTML = html;
+  results.style.display = 'block';
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
 
 // Save locally only (no cloud sync)
 function saveDataLocal() {
