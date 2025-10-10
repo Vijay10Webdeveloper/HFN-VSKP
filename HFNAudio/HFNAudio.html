@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Heartfulness Vizag</title>
+    <title>Heartfulness Vizag - Audio Books</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -21,6 +21,7 @@
             --border-radius: 12px;
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
+        
         * {
             box-sizing: border-box;
         }
@@ -32,7 +33,7 @@
             padding: 0;
         }
 
-         /* Header Styles */
+        /* Header Styles */
         .header {
             background: var(--white);
             box-shadow: var(--shadow);
@@ -64,6 +65,8 @@
             display: flex;
             list-style: none;
             gap: 2rem;
+            margin: 0;
+            padding: 0;
         }
 
         .nav-menu a {
@@ -73,7 +76,6 @@
             padding: 0.5rem 1rem;
             border-radius: var(--border-radius);
             transition: var(--transition);
-            position: relative;
         }
 
         .nav-menu a:hover,
@@ -92,55 +94,7 @@
             cursor: pointer;
         }
 
-        /* Navigation Styles */
-        #nav-links {
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-        }
-
-        #nav-links ul {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            gap: 30px;
-        }
-
-        #nav-links a {
-            text-decoration: none;
-            color: #333;
-            font-weight: 600;
-            padding: 10px 15px;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        #nav-links a:hover,
-        #nav-links a.active {
-            background: linear-gradient(135deg, #e3b175 0%, #d4a574 100%);
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(227, 177, 117, 0.3);
-        }
-
-        #menu-icon {
-            display: none;
-            font-size: 24px;
-            cursor: pointer;
-            color: #333;
-            padding: 10px;
-            border-radius: 5px;
-            transition: all 0.3s ease;
-        }
-
-        #menu-icon:hover {
-            background-color: #e3b175;
-            color: white;
-        }
-
-         /* Hero Section */
+        /* Hero Section */
         .hero-section {
             position: relative;
             margin: 2rem 0;
@@ -177,13 +131,13 @@
             text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
         }
 
-        /* Knowledge Base Section */
-        #hdr1 {
+        /* Section Headers */
+        .section-header {
             text-align: center;
             margin: 50px 0 30px 0;
         }
 
-        #hdr1 h3 {
+        .section-header h3 {
             font-size: 2.5rem;
             color: #333;
             margin-bottom: 20px;
@@ -191,7 +145,7 @@
             display: inline-block;
         }
 
-        #hdr1 h3::after {
+        .section-header h3::after {
             content: '';
             position: absolute;
             bottom: -10px;
@@ -203,7 +157,7 @@
             border-radius: 2px;
         }
 
-        #hdr1 h6 {
+        .section-header h6 {
             background: linear-gradient(135deg, #e3b175 0%, #d4a574 100%);
             color: white;
             padding: 15px;
@@ -211,32 +165,54 @@
             font-weight: 600;
             box-shadow: 0 4px 15px rgba(227, 177, 117, 0.3);
             margin: 20px auto;
-            max-width: 400px;
+            max-width: 500px;
         }
 
-        /* Video Gallery */
-        .video-gallery {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 30px;
-            padding: 30px 0;
-            margin-bottom: 50px;
+        /* Horizontal Media Gallery */
+        .media-gallery {
+            display: flex;
+            overflow-x: auto;
+            gap: 1.5rem;
+            padding: 1.5rem 0;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent-color) var(--light-bg);
         }
 
-        .video-item {
-            background: white;
-            border-radius: 15px;
+        .media-gallery::-webkit-scrollbar {
+            height: 10px;
+        }
+
+        .media-gallery::-webkit-scrollbar-track {
+            background: var(--light-bg);
+            border-radius: 5px;
+        }
+
+        .media-gallery::-webkit-scrollbar-thumb {
+            background: var(--accent-color);
+            border-radius: 5px;
+        }
+
+        /* Media Items */
+        .media-item {
+            flex: 0 0 320px;
+            min-width: 320px;
+            background: var(--white);
+            border-radius: var(--border-radius);
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
             position: relative;
+            cursor: pointer;
         }
 
-        .video-item:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        .media-item:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-hover);
         }
 
+        /* YouTube Video Items */
         .video-item img {
             width: 100%;
             height: 200px;
@@ -276,19 +252,299 @@
             transform: scale(1.2);
         }
 
-        .video-title {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
+        .media-title {
             background: linear-gradient(transparent, rgba(0,0,0,0.8));
             color: white;
             padding: 20px 15px 15px;
             font-weight: 600;
             text-align: center;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
         }
 
-      /* Footer */
+        /* Audio Playlist Card */
+        .audio-playlist-card {
+            display: flex;
+            flex-direction: column;
+            min-height: 280px;
+        }
+
+        .audio-header {
+            background: linear-gradient(135deg, #ff9a56 0%, #ff6a88 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .audio-header h4 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .audio-content {
+            padding: 20px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .audio-icon {
+            font-size: 3rem;
+            color: #ff6a88;
+            margin-bottom: 10px;
+        }
+
+        .audio-description {
+            font-size: 0.9rem;
+            color: var(--light-text);
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .audio-count {
+            background: #fff5f0;
+            color: #ff6a88;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        /* Type Badge */
+        .type-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.95);
+            color: var(--text-color);
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            z-index: 10;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .type-badge.youtube {
+            background: #ff0000;
+            color: white;
+        }
+
+        .type-badge.audio {
+            background: #ff6a88;
+            color: white;
+        }
+
+        /* Audio Player Modal */
+        .audio-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .player-container {
+            background: white;
+            border-radius: 20px;
+            max-width: 900px;
+            width: 95%;
+            max-height: 90vh;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .player-header {
+            background: linear-gradient(135deg, #ff9a56 0%, #ff6a88 100%);
+            color: white;
+            padding: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .player-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .close-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 24px;
+            transition: var(--transition);
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+
+        .player-body {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .player-main {
+            flex: 1;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: #f8f9fa;
+        }
+
+        .now-playing {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .now-playing h3 {
+            font-size: 1.3rem;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .now-playing p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .audio-frame-container {
+            width: 100%;
+            max-width: 500px;
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .audio-frame {
+            width: 100%;
+            height: 100px;
+            border: none;
+            border-radius: 10px;
+        }
+
+        .player-controls {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+
+        .control-btn {
+            background: linear-gradient(135deg, #ff9a56 0%, #ff6a88 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 106, 136, 0.4);
+        }
+
+        .control-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .playlist-sidebar {
+            width: 350px;
+            background: white;
+            border-left: 1px solid #e0e0e0;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .playlist-sidebar h3 {
+            margin: 0 0 20px 0;
+            font-size: 1.1rem;
+            color: #333;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ff6a88;
+        }
+
+        .playlist-item {
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: #f8f9fa;
+        }
+
+        .playlist-item:hover {
+            background: #fff5f0;
+            transform: translateX(5px);
+        }
+
+        .playlist-item.active {
+            background: linear-gradient(135deg, #ff9a56 0%, #ff6a88 100%);
+            color: white;
+        }
+
+        .track-number {
+            background: #ff6a88;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .playlist-item.active .track-number {
+            background: white;
+            color: #ff6a88;
+        }
+
+        .track-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        /* Footer */
         .footer {
             background: var(--primary-color);
             color: white;
@@ -318,11 +574,7 @@
             transform: translateY(-2px);
         }
 
-         .footer a:hover {
-            background: var(--secondary-color);
-        }
-
-         /* Responsive Design */
+        /* Responsive Design */
         @media (max-width: 768px) {
             .nav-menu {
                 position: fixed;
@@ -347,94 +599,42 @@
                 display: block;
             }
 
-  
-
-            .section-title {
-                font-size: 2rem;
+            .player-body {
+                flex-direction: column;
             }
 
-            .video-gallery {
-                grid-template-columns: 1fr;
+            .playlist-sidebar {
+                width: 100%;
+                max-height: 300px;
+                border-left: none;
+                border-top: 1px solid #e0e0e0;
             }
 
+            .media-item {
+                flex: 0 0 280px;
+                min-width: 280px;
+            }
         }
 
-        /* Loading Animation */
         .loading {
             opacity: 0;
             animation: fadeIn 0.6s ease forwards;
         }
 
-        @keyframes fadeIn {
-            to {
-                opacity: 1;
-            }
-        }
-
-        /* Smooth Scroll */
         html {
             scroll-behavior: smooth;
-        }
-
-              /* Horizontal Carousel for Daily Practices */
-        .video-gallery {
-            display: flex;
-            overflow-x: auto;
-            gap: 1.5rem;
-            padding: 1rem 0;
-            scroll-behavior: smooth;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: thin;
-            scrollbar-color: var(--accent-color) var(--light-bg);
-        }
-
-        .video-gallery::-webkit-scrollbar {
-            height: 8px;
-        }
-
-        .video-gallery::-webkit-scrollbar-track {
-            background: var(--light-bg);
-            border-radius: 4px;
-        }
-
-        .video-gallery::-webkit-scrollbar-thumb {
-            background: var(--accent-color);
-            border-radius: 4px;
-        }
-
-        .video-gallery::-webkit-scrollbar-thumb:hover {
-            background: var(--secondary-color);
-        }
-
-        .video-gallery .video-item {
-            flex: 0 0 320px;
-            min-width: 320px;
-        }
-
-         .video-item {
-            background: var(--white);
-            border-radius: var(--border-radius);
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            transition: var(--transition);
-            position: relative;
-        }
-
-        .video-item:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-hover);
         }
     </style>
 </head>
 <body>
    
-          <!-- Header -->
+    <!-- Header -->
     <header class="header">
         <div class="header-container">
             <img src="../Images/advancing-in-love-black.png" alt="Heartfulness" class="logo">     
             <nav>
                 <ul class="nav-menu" id="nav-menu">
-                    <li><a href="../Home/Home.html" class="active">HOME</a></li>
+                    <li><a href="../Home/Home.html">HOME</a></li>
                     <li><a href="../NewSeeker/Newseekers.html">NEW SEEKERS</a></li>
                     <li><a href="../Abhyasi/Abhyasi.html">ABHYASIS</a></li>
                     <li><a href="../Trainers/Trainers.html">TRAINERS</a></li>
@@ -445,12 +645,11 @@
             </nav>
         </div>
     </header>
-    
 
     <!-- Hero Section -->
     <div class="container">
         <section class="hero-section loading">
-            <img src="./Audio.jpeg" class="hero-image" alt="Masters of Sahaj Marg">
+            <img src="./Audio.jpeg" class="hero-image" alt="Audio Books">
             <div class="hero-overlay">
                 <div class="hero-content">
                     <h1>Audio Books</h1>
@@ -462,66 +661,132 @@
 
     <!-- Knowledge Base Section -->
     <div class="container">
-        <section id="hdr1" class="loading">
+        <section class="section-header loading">
             <h3>Knowledge Base</h3>
-            <h6>Click the videos below to explore spiritual wisdom</h6>
+            <h6>Explore spiritual wisdom through videos and audio books</h6>
         </section>
 
-        <div class="video-gallery">
-            <div class="video-item">
+        <!-- Combined Media Gallery -->
+        <div class="media-gallery">
+            
+            <!-- YouTube Video 1 -->
+            <div class="media-item video-item">
+                <span class="type-badge youtube"><i class="fab fa-youtube"></i> Video</span>
                 <a href="https://www.youtube.com/playlist?list=PLMCCRE_A8EoQ9eBR4OClxIjypYV02ZbWG" target="_blank" rel="noopener noreferrer">
                     <img src="./The Heartfulness Way.png" alt="The Heartfulness Way" loading="lazy">
                     <div class="video-overlay">
                         <i class="fas fa-play-circle play-button"></i>
                     </div>
-                    <div class="video-title">The Heartfulness Way</div>
+                    <div class="media-title">The Heartfulness Way</div>
                 </a>
             </div>
 
-            <div class="video-item">
+            <!-- YouTube Video 2 -->
+            <div class="media-item video-item">
+                <span class="type-badge youtube"><i class="fab fa-youtube"></i> Video</span>
                 <a href="https://www.youtube.com/playlist?list=PLVtsn31CI8rnGuN_Qz_6fh7iildozFxda" target="_blank" rel="noopener noreferrer">
                     <img src="./One Beautiful Thought.png" alt="One Beautiful Thought" loading="lazy">
                     <div class="video-overlay">
                         <i class="fas fa-play-circle play-button"></i>
                     </div>
-                    <div class="video-title">One Beautiful Thought</div>
+                    <div class="media-title">One Beautiful Thought</div>
                 </a>
             </div>
 
-            <div class="video-item">
+            <!-- YouTube Video 3 -->
+            <div class="media-item video-item">
+                <span class="type-badge youtube"><i class="fab fa-youtube"></i> Video</span>
                 <a href="https://www.youtube.com/playlist?list=PLMCCRE_A8EoRA1lFJYnu-UI3zFy4attG8" target="_blank" rel="noopener noreferrer">
                     <img src="./Designing Destiny.png" alt="Designing Destiny" loading="lazy">
                     <div class="video-overlay">
                         <i class="fas fa-play-circle play-button"></i>
                     </div>
-                    <div class="video-title">Designing Destiny</div>
+                    <div class="media-title">Designing Destiny</div>
                 </a>
             </div>
+            <div class="media-item audio-playlist-card" onclick="openPlaylist()">
+                <span class="type-badge audio"><i class="fas fa-headphones"></i> Playlist</span>
+                <img src="./Reality at dawn(Telugu).png" alt="Satyodayam" style="width: 100%; height: 200px; object-fit: cover;">
+                <div class="video-overlay">
+                    <i class="fas fa-play-circle play-button"></i>
+                </div>
+                <div class="media-title">
+                    Satyodayam Audio Series
+                    <div style="font-size: 0.85rem; opacity: 0.9; margin-top: 5px;">
+                        <i class="fas fa-music"></i> 12 Chapters
+                    </div>
+                </div>
+            </div>
 
-            <div class="video-item">
+            <!-- YouTube Video 4 -->
+            <div class="media-item video-item">
+                <span class="type-badge youtube"><i class="fab fa-youtube"></i> Video</span>
                 <a href="https://www.youtube.com/playlist?list=PLMCCRE_A8EoSAYGm5aXTGl03CsC95znxo" target="_blank" rel="noopener noreferrer">
                     <img src="./Reality at Dawn.png" alt="Reality at Dawn" loading="lazy">
                     <div class="video-overlay">
                         <i class="fas fa-play-circle play-button"></i>
                     </div>
-                    <div class="video-title">Reality at Dawn</div>
+                    <div class="media-title">Reality at Dawn(English)</div>
                 </a>
             </div>
 
-            <div class="video-item">
+            <!-- YouTube Video 5 -->
+            <div class="media-item video-item">
+                <span class="type-badge youtube"><i class="fab fa-youtube"></i> Video</span>
                 <a href="https://www.youtube.com/playlist?list=PLx4-wDpuK7R-XiT3tvu5Y2rrM10RbXLJo" target="_blank" rel="noopener noreferrer">
                     <img src="./Vinobha Bhave.png" alt="Vinobha Bhave" loading="lazy">
                     <div class="video-overlay">
                         <i class="fas fa-play-circle play-button"></i>
                     </div>
-                    <div class="video-title">Vinobha Bhave</div>
+                    <div class="media-title">Vinobha Bhave</div>
                 </a>
+            </div>
+
+             <!-- Audio Playlist Card -->
+            
+
+        </div>
+    </div>
+
+    <!-- Audio Player Modal -->
+    <div id="audioModal" class="audio-modal">
+        <div class="player-container">
+            <div class="player-header">
+                <h2><i class="fas fa-headphones"></i> Satyodayam Audio Series</h2>
+                <button class="close-btn" onclick="closePlaylist()">×</button>
+            </div>
+            
+            <div class="player-body">
+                <div class="player-main">
+                    <div class="now-playing">
+                        <h3 id="currentTrackTitle">Select a chapter to begin</h3>
+                        <p id="currentTrackInfo">By Br Showri Reddy Garu</p>
+                    </div>
+                    
+                    <div class="audio-frame-container">
+                        <iframe id="audioFrame" class="audio-frame" src="" allow="autoplay"></iframe>
+                    </div>
+                    
+                    <div class="player-controls">
+                        <button class="control-btn" onclick="previousTrack()">
+                            <i class="fas fa-step-backward"></i> Previous
+                        </button>
+                        <button class="control-btn" onclick="nextTrack()">
+                            Next <i class="fas fa-step-forward"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="playlist-sidebar">
+                    <h3><i class="fas fa-list"></i> Playlist</h3>
+                    <div id="playlistContainer"></div>
+                </div>
             </div>
         </div>
     </div>
 
-   <!-- Footer -->
-     <footer class="footer">
+    <!-- Footer -->
+    <footer class="footer">
         <div class="container">
             <div class="footer-links">
                 <a href="../HFNContactUs/HFNContactUs.html">
@@ -532,31 +797,203 @@
                 </a>
             </div>
             <div style="margin-top: 1rem; color: rgba(255,255,255,0.8);">
-                <p style="text-align: center" >&copy; 2024 Heartfulness Vizag. All rights reserved.</p>
+                <p>&copy; 2024 Heartfulness Vizag. All rights reserved.</p>
             </div>
         </div>
     </footer>
 
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Audio Playlist Data - ADD YOUR GOOGLE DRIVE FILE IDs HERE
+        const audioPlaylist = [
+            {
+                title: "Chapter 1 - Introduction",
+                fileId: "1iqD98EPzPIwwV5xB37Yb12G0-e0HRLWY",
+                author: "Babuji Maharaj"
+            },
+            {
+                title: "Chapter 2 - Tholi Palukulu",
+                fileId: "1iEB541NVSKkRol3O0fJWdRt1F5jyEr9x", // Replace with actual file ID
+                author: "Babuji Maharaj"
+            },
+            {
+                title: "Chapter 3 - Mathamu",
+                fileId: "1PJkMrry9ZUv0qC9skwGTWrmmV0wZ2pT7", // Replace with actual file ID
+                author: "Babuji Maharaj"
+            },
+            {
+                title: "Chapter 4 - Jeevitha Lakshyam",
+                fileId: "13UUYjXpq0WhylO58HX-jNsjDJtEqDa2g", // Replace with actual file ID
+                author: "Babuji Maharaj"
+            },
+            {
+                title: "Chapter 5 - Sadhanopayamulu",
+                fileId: "1IP8rNZxrqJvPhvFIW4FqYFdC4F0gYHf6", // Replace with actual file ID
+                author: "Babuji Maharaj"
+            },
+            {
+                title: "Chapter 6 - Guruvu",
+                fileId: "1Tx-oFSk86uomCx7QJGzXHpfEfJ798a0F", // Replace with actual file ID
+                author: "Babuji Maharaj"
+            },
+            {
+                title: "Chapter 7 - Aadhyatmika Sikshana",
+                fileId: "1CnloAS6eLH6bPlCbIF7wmNl72Ur1LWig", // Replace with actual file ID
+                author: "Babuji Maharaj"
+            },
+            {
+                title: "Chapter 8 - Shraddha",
+                fileId: "11bpKIYidHiGltnRVXp93xE11-5qDATY5", // Replace with actual file ID
+                author: "Babuji Maharaj"
+            },
+            {
+                title: "Chapter 9 - Niranthara Smarana",
+                fileId: "15fppcgstzzXPrm-oNdHyVYrW2x9JZhyM", // Replace with actual file ID
+                author: "Babuji Maharaj"
+            },
+            {
+                title: "Chapter 10 - Atma Samarpana",
+                fileId: "1cZncjd6p3vI8QtRQKbTowlitx6MVrqlZ", // Replace with actual file ID
+                author: "Babuji Maharaj"
+            },
+            {
+                title: "Chapter 11 - Saakshatkaram",
+                fileId: "1QBfZy_FMb15y_YZtpUQh5RNzT2UGEUYz", // Replace with actual file ID
+                author: "Babuji Maharaj"
+            },
+            {
+                title: "Chapter 11 - Naa Bhavishyadristi",
+                fileId: "1-4LNCgyINYzhKWy48D9Dn5lZic3jio3b", // Replace with actual file ID
+                author: "Babuji Maharaj"
+            },
+            {
+                title: "Chapter 11 - Samstha Chihnamu",
+                fileId: "19unLaGgHeG3iXpG7XrTiGJ7vnEdZbSJP", // Replace with actual file ID
+                author: "Babuji Maharaj"
+            }
+        ];
+
+        let currentTrackIndex = 0;
+
         // Mobile menu toggle
         const menuToggle = document.getElementById('menu-toggle');
         const navMenu = document.getElementById('nav-menu');
-        const menuIcon = menuToggle.querySelector('i');
 
         menuToggle.addEventListener('click', () => {
             navMenu.classList.toggle('active');
-            menuIcon.classList.toggle('fa-bars');
-            menuIcon.classList.toggle('fa-times');
+            const icon = menuToggle.querySelector('i');
+            icon.classList.toggle('fa-bars');
+            icon.classList.toggle('fa-times');
         });
-        // Performance optimizations
+
+        // Open playlist and start playing
+        function openPlaylist() {
+            const modal = document.getElementById('audioModal');
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            
+            // Generate playlist
+            generatePlaylist();
+            
+            // Auto-play first track
+            playTrack(0);
+        }
+
+        // Close playlist
+        function closePlaylist() {
+            const modal = document.getElementById('audioModal');
+            const frame = document.getElementById('audioFrame');
+            
+            frame.src = '';
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Generate playlist items
+        function generatePlaylist() {
+            const container = document.getElementById('playlistContainer');
+            container.innerHTML = '';
+            
+            audioPlaylist.forEach((track, index) => {
+                const item = document.createElement('div');
+                item.className = 'playlist-item';
+                item.onclick = () => playTrack(index);
+                
+                item.innerHTML = `
+                    <div class="track-number">${index + 1}</div>
+                    <div class="track-title">${track.title}</div>
+                `;
+                
+                container.appendChild(item);
+            });
+        }
+
+        // Play specific track
+        function playTrack(index) {
+            if (index < 0 || index >= audioPlaylist.length) return;
+            
+            const track = audioPlaylist[index];
+            
+            // Check if file ID is set
+            if (track.fileId.includes('YOUR_FILE_ID')) {
+                alert(`Please add the Google Drive file ID for ${track.title}`);
+                return;
+            }
+            
+            currentTrackIndex = index;
+            
+            // Update player
+            document.getElementById('currentTrackTitle').textContent = track.title;
+            document.getElementById('currentTrackInfo').textContent = track.author;
+            document.getElementById('audioFrame').src = `https://drive.google.com/file/d/${track.fileId}/preview`;
+            
+            // Update playlist UI
+            const items = document.querySelectorAll('.playlist-item');
+            items.forEach((item, idx) => {
+                item.classList.toggle('active', idx === index);
+            });
+        }
+
+        // Previous track
+        function previousTrack() {
+            if (currentTrackIndex > 0) {
+                playTrack(currentTrackIndex - 1);
+            } else {
+                // Loop to last track
+                playTrack(audioPlaylist.length - 1);
+            }
+        }
+
+        // Next track
+        function nextTrack() {
+            if (currentTrackIndex < audioPlaylist.length - 1) {
+                playTrack(currentTrackIndex + 1);
+            } else {
+                // Loop to first track
+                playTrack(0);
+            }
+        }
+
+        // Close modal on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closePlaylist();
+            }
+        });
+
+        // Close modal on background click
+        document.getElementById('audioModal').addEventListener('click', (e) => {
+            if (e.target.id === 'audioModal') {
+                closePlaylist();
+            }
+        });
+
+        // Lazy loading animation
         document.addEventListener('DOMContentLoaded', function() {
-            // Lazy loading animation
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
-                        entry.target.style.animationPlayState = 'running';
+                        entry.target.style.opacity = '1';
                     }
                 });
             });
@@ -564,109 +1001,9 @@
             document.querySelectorAll('.loading').forEach(el => {
                 observer.observe(el);
             });
-
-            // Mobile menu toggle
-            const menuIcon = document.getElementById('menu-icon');
-            const navLinks = document.getElementById('nav-links');
-            
-            menuIcon.addEventListener('click', function() {
-                navLinks.classList.toggle('vertical-links');
-                
-                if (navLinks.classList.contains('vertical-links')) {
-                    menuIcon.classList.remove('fa-bars');
-                    menuIcon.classList.add('fa-times');
-                } else {
-                    menuIcon.classList.remove('fa-times');
-                    menuIcon.classList.add('fa-bars');
-                }
-            });
-
-            // Close mobile menu when clicking outside
-            document.addEventListener('click', function(event) {
-                if (!navLinks.contains(event.target) && !menuIcon.contains(event.target)) {
-                    navLinks.classList.remove('vertical-links');
-                    menuIcon.classList.remove('fa-times');
-                    menuIcon.classList.add('fa-bars');
-                }
-            });
-
-            // Smooth scroll for anchor links
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    const target = document.querySelector(this.getAttribute('href'));
-                    if (target) {
-                        target.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'start'
-                        });
-                    }
-                });
-            });
-
-            // Add loading states for external links
-            document.querySelectorAll('a[href^="https://www.youtube.com"]').forEach(link => {
-                link.addEventListener('click', function() {
-                    const overlay = this.querySelector('.video-overlay');
-                    if (overlay) {
-                        overlay.innerHTML = '<i class="fas fa-spinner fa-spin play-button"></i>';
-                    }
-                });
-            });
-
-            // Preload critical images
-            const criticalImages = [
-                'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjYwIiB2aWV3Qm94PSIwIDAgMjAwIDYwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8dGV4dCB4PSIxMCIgeT0iMzUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IiMzMzMiPkhlYXJ0ZnVsbmVzczwvdGV4dD4KPC9zdmc+'
-            ];
-
-            criticalImages.forEach(src => {
-                const img = new Image();
-                img.src = src;
-            });
-
-            // Remove .html from URL if present
-            if (window.location.pathname.endsWith('.html')) {
-                const cleanUrl = window.location.pathname.replace('.html', '');
-                window.history.replaceState(null, null, cleanUrl);
-            }
-
-            // Add focus management for accessibility
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape' && navLinks.classList.contains('vertical-links')) {
-                    navLinks.classList.remove('vertical-links');
-                    menuIcon.classList.remove('fa-times');
-                    menuIcon.classList.add('fa-bars');
-                    menuIcon.focus();
-                }
-            });
         });
 
-        // Optimize scroll performance
-        let ticking = false;
-        
-        function updateScrollEffects() {
-            const scrolled = window.pageYOffset;
-            const header = document.querySelector('.header');
-            
-            if (scrolled > 100) {
-                header.style.backgroundColor = 'rgba(248, 249, 250, 0.95)';
-                header.style.backdropFilter = 'blur(10px)';
-            } else {
-                header.style.backgroundColor = '';
-                header.style.backdropFilter = '';
-            }
-            
-            ticking = false;
-        }
-
-        window.addEventListener('scroll', function() {
-            if (!ticking) {
-                requestAnimationFrame(updateScrollEffects);
-                ticking = true;
-            }
-        }, { passive: true });
-
-        // Error handling for failed image loads
+        // Error handling for images
         document.querySelectorAll('img').forEach(img => {
             img.addEventListener('error', function() {
                 this.style.background = 'linear-gradient(135deg, #e3b175 0%, #d4a574 100%)';
@@ -674,9 +1011,7 @@
                 this.style.alignItems = 'center';
                 this.style.justifyContent = 'center';
                 this.style.color = 'white';
-                this.style.fontSize = '14px';
-                this.style.fontWeight = 'bold';
-                this.innerHTML = 'Image Loading...';
+                this.innerHTML = 'Loading...';
             });
         });
     </script>
