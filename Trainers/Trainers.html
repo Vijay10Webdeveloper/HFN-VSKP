@@ -463,6 +463,8 @@
   <button class="btn btn-success" onclick="showTrendReport(6)">📊 6-Month Trend</button>
   <button class="btn btn-warning" onclick="showTopAbhyasis()">🏆 Top Abhyasis by Attendance</button>
   <button class="btn btn-danger" onclick="showLowAttendanceAbhyasis()">⚠️ Low Attendance (≤50%)</button>
+  <!-- SESSION FILTERS -->
+  <button class="btn" onclick="showSessionAttendanceFilters()">📊 Session Attendance Filters</button>
 </div>
 <!-- ADD THIS SECTION -->
 <div style="margin-bottom:16px;">
@@ -1899,6 +1901,244 @@ function showLowAttendanceAbhyasis() {
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
+
+// Add these functions to your JavaScript (after the showLowAttendanceAbhyasis() function)
+// Add these functions to your JavaScript (after the showLowAttendanceAbhyasis() function)
+
+function showSessionAttendanceFilters() {
+  if (!masterRecords || masterRecords.length === 0) {
+    showAlert('No master records available', 'error');
+    return;
+  }
+
+  const results = document.getElementById('reportResults');
+  results.style.display = 'block';
+  
+  let html = '<div style="background:white; padding:16px; border-radius:8px; margin-top:16px;">';
+  html += '<h3>📊 Filter Abhyasis by Session Attendance</h3>';
+  html += '<div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; margin-bottom:20px;">';
+  html += '<button class="btn btn-success" onclick="showAbhyasisBySessionOnly(\'Wednesday\', \'Group meditation session\')">🧘 Wednesday Group Only</button>';
+  html += '<button class="btn btn-success" onclick="showAbhyasisBySessionOnly(\'Sunday\', \'Group meditation session\')">🧘 Sunday Group Only</button>';
+  html += '<button class="btn btn-success" onclick="showAbhyasisBySessionOnly(null, \'Face to face individual sittings\')">👤 Face-to-Face Only</button>';
+  html += '<button class="btn btn-warning" onclick="showAbhyasisAttendingAll()">⭐ All Three Sessions</button>';
+  html += '<button class="btn" onclick="showAbhyasisGroupNotFaceToFace()">🧘 Group Sessions (No Face-to-Face)</button>';
+  html += '<button class="btn" onclick="showAbhyasisFaceToFaceNotGroup()">👤 Face-to-Face (No Group)</button>';
+  html += '</div>';
+  html += '<div id="sessionFilterResults"></div>';
+  html += '</div>';
+  
+  results.innerHTML = html;
+}
+
+function showAbhyasisBySessionOnly(dayName, sessionType) {
+  const attendanceMap = {};
+
+  // Build comprehensive map of each abhyasi's attendance
+  masterRecords.forEach(r => {
+    if (!r.id || !r.present) return;
+    
+    if (!attendanceMap[r.id]) {
+      attendanceMap[r.id] = {
+        name: r.name,
+        id: r.id,
+        contact: abhyasis.find(a => a.id === r.id)?.contact || 'N/A',
+        attendedSessions: new Set(),
+        count: 0
+      };
+    }
+    
+    // Track unique session combinations
+    const sessionKey = `${r.sessionName}__${r.sessionType}`;
+    attendanceMap[r.id].attendedSessions.add(sessionKey);
+    attendanceMap[r.id].count++;
+  });
+
+  // Filter: abhyasis who ONLY attended this specific session
+  const filtered = Object.values(attendanceMap).filter(a => {
+    const sessions = Array.from(a.attendedSessions);
+    
+    // Check if they attended the target session
+    const attendedTarget = sessions.some(s => {
+      if (dayName && sessionType) {
+        return s.includes(dayName) && s.includes(sessionType);
+      } else if (sessionType) {
+        return s.includes(sessionType);
+      }
+      return false;
+    });
+
+    // Check if they ONLY attended the target session (no other sessions)
+    const onlyTarget = sessions.length === 1 && attendedTarget;
+    
+    return onlyTarget;
+  }).sort((a, b) => b.count - a.count);
+
+  displaySessionFilterResults(filtered, dayName, sessionType);
+}
+
+function showAbhyasisAttendingAll() {
+  const attendanceMap = {};
+
+  // Build detailed map
+  masterRecords.forEach(r => {
+    if (!r.id || !r.present) return;
+    
+    if (!attendanceMap[r.id]) {
+      attendanceMap[r.id] = {
+        name: r.name,
+        id: r.id,
+        contact: abhyasis.find(a => a.id === r.id)?.contact || 'N/A',
+        sessionTypes: new Set(),
+        dayNames: new Set(),
+        attendedSessions: new Set(),
+        totalCount: 0
+      };
+    }
+    
+    attendanceMap[r.id].totalCount++;
+    if (r.sessionType) attendanceMap[r.id].sessionTypes.add(r.sessionType);
+    if (r.sessionName) attendanceMap[r.id].dayNames.add(r.sessionName);
+    
+    const sessionKey = `${r.sessionName}__${r.sessionType}`;
+    attendanceMap[r.id].attendedSessions.add(sessionKey);
+  });
+
+  // Filter for those attending ALL three types
+  const filtered = Object.values(attendanceMap).filter(a => {
+    const hasWednesdayGroup = a.dayNames.has('Wednesday') && a.sessionTypes.has('Group meditation session');
+    const hasSundayGroup = a.dayNames.has('Sunday') && a.sessionTypes.has('Group meditation session');
+    const hasFaceToFace = a.sessionTypes.has('Face to face individual sittings');
+    
+    return hasWednesdayGroup && hasSundayGroup && hasFaceToFace;
+  }).sort((a, b) => b.totalCount - a.totalCount);
+
+  displaySessionFilterResults(filtered, null, null, true);
+}
+
+function showAbhyasisGroupNotFaceToFace() {
+  const attendanceMap = {};
+
+  // Build comprehensive map
+  masterRecords.forEach(r => {
+    if (!r.id || !r.present) return;
+    
+    if (!attendanceMap[r.id]) {
+      attendanceMap[r.id] = {
+        name: r.name,
+        id: r.id,
+        contact: abhyasis.find(a => a.id === r.id)?.contact || 'N/A',
+        hasGroupSession: false,
+        hasFaceToFace: false,
+        groupCount: 0,
+        faceCount: 0
+      };
+    }
+    
+    if (r.sessionType === 'Group meditation session') {
+      attendanceMap[r.id].hasGroupSession = true;
+      attendanceMap[r.id].groupCount++;
+    } else if (r.sessionType === 'Face to face individual sittings') {
+      attendanceMap[r.id].hasFaceToFace = true;
+      attendanceMap[r.id].faceCount++;
+    }
+  });
+
+  // Filter: attended group sessions but NOT face-to-face
+  const filtered = Object.values(attendanceMap).filter(a => {
+    return a.hasGroupSession && !a.hasFaceToFace;
+  }).sort((a, b) => b.groupCount - a.groupCount);
+
+  displaySessionFilterResults(filtered, 'group', 'notFaceToFace', false, 'Group Sessions (No Face-to-Face)');
+}
+
+function showAbhyasisFaceToFaceNotGroup() {
+  const attendanceMap = {};
+
+  // Build comprehensive map
+  masterRecords.forEach(r => {
+    if (!r.id || !r.present) return;
+    
+    if (!attendanceMap[r.id]) {
+      attendanceMap[r.id] = {
+        name: r.name,
+        id: r.id,
+        contact: abhyasis.find(a => a.id === r.id)?.contact || 'N/A',
+        hasGroupSession: false,
+        hasFaceToFace: false,
+        groupCount: 0,
+        faceCount: 0
+      };
+    }
+    
+    if (r.sessionType === 'Group meditation session') {
+      attendanceMap[r.id].hasGroupSession = true;
+      attendanceMap[r.id].groupCount++;
+    } else if (r.sessionType === 'Face to face individual sittings') {
+      attendanceMap[r.id].hasFaceToFace = true;
+      attendanceMap[r.id].faceCount++;
+    }
+  });
+
+  // Filter: attended face-to-face but NOT group sessions
+  const filtered = Object.values(attendanceMap).filter(a => {
+    return a.hasFaceToFace && !a.hasGroupSession;
+  }).sort((a, b) => b.faceCount - a.faceCount);
+
+  displaySessionFilterResults(filtered, 'faceToFace', 'notGroup', false, 'Face-to-Face (No Group Sessions)');
+}
+
+function displaySessionFilterResults(abhyasisList, dayName, sessionType, isAllThree = false, customTitle = '') {
+  const container = document.getElementById('sessionFilterResults');
+  
+  let title = customTitle;
+  if (!title) {
+    if (isAllThree) {
+      title = '⭐ Abhyasis Attending All Three Session Types';
+    } else if (dayName && sessionType === 'Group meditation session') {
+      title = `🧘 Abhyasis Attending ONLY ${dayName} Group Meditation Sessions`;
+    } else if (sessionType === 'Face to face individual sittings') {
+      title = '👤 Abhyasis Attending ONLY Face-to-Face Sittings';
+    }
+  }
+
+  let html = `<div style="background:#f8f9fa; padding:16px; border-radius:8px;">
+    <h4 style="margin-top:0;">${title}</h4>`;
+
+  if (abhyasisList.length === 0) {
+    html += '<p style="color:#666; font-style:italic;">No abhyasis found matching this criteria.</p>';
+  } else {
+    html += `<p style="color:#666; margin-bottom:12px;"><strong>Total found:</strong> ${abhyasisList.length}</p>`;
+    html += `<table class="report-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Name</th>
+          <th>ID</th>
+          <th>Contact</th>
+          <th>Sessions Attended</th>
+        </tr>
+      </thead>
+      <tbody>`;
+
+    abhyasisList.forEach((a, i) => {
+      const sessionCount = a.count || a.totalCount || a.groupCount || a.faceCount || 0;
+      html += `<tr>
+        <td><strong>${i + 1}</strong></td>
+        <td>${escapeHtml(a.name)}</td>
+        <td>${escapeHtml(a.id)}</td>
+        <td>${escapeHtml(a.contact)}</td>
+        <td><span class="attendance-badge" style="background:#3498db;">${sessionCount}</span></td>
+      </tr>`;
+    });
+
+    html += `</tbody></table>`;
+  }
+
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
 
 // Save locally only (no cloud sync)
 function saveDataLocal() {
