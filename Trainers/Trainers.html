@@ -1903,7 +1903,6 @@ function showLowAttendanceAbhyasis() {
 /////////////////////////////////////////////////////////////////////////////////////////////
 
 // Add these functions to your JavaScript (after the showLowAttendanceAbhyasis() function)
-// Add these functions to your JavaScript (after the showLowAttendanceAbhyasis() function)
 
 function showSessionAttendanceFilters() {
   if (!masterRecords || masterRecords.length === 0) {
@@ -1919,7 +1918,7 @@ function showSessionAttendanceFilters() {
   html += '<div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; margin-bottom:20px;">';
   html += '<button class="btn btn-success" onclick="showAbhyasisBySessionOnly(\'Wednesday\', \'Group meditation session\')">🧘 Wednesday Group Only</button>';
   html += '<button class="btn btn-success" onclick="showAbhyasisBySessionOnly(\'Sunday\', \'Group meditation session\')">🧘 Sunday Group Only</button>';
-  html += '<button class="btn btn-success" onclick="showAbhyasisBySessionOnly(null, \'Face to face individual sittings\')">👤 Face-to-Face Only</button>';
+  html += '<button class="btn btn-success" onclick="showAbhyasisBySessionOnly(null, \'Face to face individual sittings\')">👤 Face-to-Face</button>';
   html += '<button class="btn btn-warning" onclick="showAbhyasisAttendingAll()">⭐ All Three Sessions</button>';
   html += '<button class="btn" onclick="showAbhyasisGroupNotFaceToFace()">🧘 Group Sessions (No Face-to-Face)</button>';
   html += '<button class="btn" onclick="showAbhyasisFaceToFaceNotGroup()">👤 Face-to-Face (No Group)</button>';
@@ -1943,7 +1942,9 @@ function showAbhyasisBySessionOnly(dayName, sessionType) {
         id: r.id,
         contact: abhyasis.find(a => a.id === r.id)?.contact || 'N/A',
         attendedSessions: new Set(),
-        count: 0
+        count: 0,
+        hasGroupSession: false,
+        hasFaceToFace: false
       };
     }
     
@@ -1951,29 +1952,45 @@ function showAbhyasisBySessionOnly(dayName, sessionType) {
     const sessionKey = `${r.sessionName}__${r.sessionType}`;
     attendanceMap[r.id].attendedSessions.add(sessionKey);
     attendanceMap[r.id].count++;
+    
+    // Track session types for face-to-face filter
+    if (r.sessionType === 'Group meditation session') {
+      attendanceMap[r.id].hasGroupSession = true;
+    } else if (r.sessionType === 'Face to face individual sittings') {
+      attendanceMap[r.id].hasFaceToFace = true;
+    }
   });
 
-  // Filter: abhyasis who ONLY attended this specific session
-  const filtered = Object.values(attendanceMap).filter(a => {
-    const sessions = Array.from(a.attendedSessions);
+  // Filter: abhyasis who attended face-to-face (regardless of other sessions)
+  if (sessionType === 'Face to face individual sittings' && !dayName) {
+    const filtered = Object.values(attendanceMap).filter(a => {
+      return a.hasFaceToFace;
+    }).sort((a, b) => b.count - a.count);
     
-    // Check if they attended the target session
-    const attendedTarget = sessions.some(s => {
-      if (dayName && sessionType) {
-        return s.includes(dayName) && s.includes(sessionType);
-      } else if (sessionType) {
-        return s.includes(sessionType);
-      }
-      return false;
-    });
+    displaySessionFilterResults(filtered, dayName, sessionType, false, 'Abhyasis Attending Face-to-Face Sessions');
+  } else {
+    // Original behavior: ONLY attended this specific session
+    const filtered = Object.values(attendanceMap).filter(a => {
+      const sessions = Array.from(a.attendedSessions);
+      
+      // Check if they attended the target session
+      const attendedTarget = sessions.some(s => {
+        if (dayName && sessionType) {
+          return s.includes(dayName) && s.includes(sessionType);
+        } else if (sessionType) {
+          return s.includes(sessionType);
+        }
+        return false;
+      });
 
-    // Check if they ONLY attended the target session (no other sessions)
-    const onlyTarget = sessions.length === 1 && attendedTarget;
-    
-    return onlyTarget;
-  }).sort((a, b) => b.count - a.count);
+      // Check if they ONLY attended the target session (no other sessions)
+      const onlyTarget = sessions.length === 1 && attendedTarget;
+      
+      return onlyTarget;
+    }).sort((a, b) => b.count - a.count);
 
-  displaySessionFilterResults(filtered, dayName, sessionType);
+    displaySessionFilterResults(filtered, dayName, sessionType);
+  }
 }
 
 function showAbhyasisAttendingAll() {
@@ -2137,7 +2154,6 @@ function displaySessionFilterResults(abhyasisList, dayName, sessionType, isAllTh
   html += '</div>';
   container.innerHTML = html;
 }
-
 /////////////////////////////////////////////////////////////////////////////////////////
 
 // Save locally only (no cloud sync)
