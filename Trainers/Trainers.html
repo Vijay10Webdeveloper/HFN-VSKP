@@ -458,13 +458,8 @@
 
     <!-- Range selector: Month or Date range -->
    <div class="chart-controls" style="margin-top:16px;">
-  <button class="btn btn-success" onclick="showTrendReport(1)">📈 1-Month Trend</button>
-  <button class="btn btn-success" onclick="showTrendReport(3)">📉 3-Month Trend</button>
-  <button class="btn btn-success" onclick="showTrendReport(6)">📊 6-Month Trend</button>
-  <button class="btn btn-warning" onclick="showTopAbhyasis()">🏆 Top Abhyasis by Attendance</button>
-  <button class="btn btn-danger" onclick="showLowAttendanceAbhyasis()">⚠️ Low Attendance (≤50%)</button>
   <!-- SESSION FILTERS -->
-  <button class="btn" onclick="showSessionAttendanceFilters()">📊 Session Attendance Filters</button>
+  <button class="btn" onclick="showComprehensiveAnalysis()">📊 Comprehensive Analysis</button>
 </div>
 <!-- ADD THIS SECTION -->
 <div style="margin-bottom:16px;">
@@ -1541,8 +1536,850 @@ function parseImportExcel(arrayBuffer) {
     }
 
 
+/////////////////////////////////////////////////////////////////////////////////////////////
+/////////////17-Oct-2025///////////////////////////////////////////////////////////////
+// ============ SESSION-BASED FILTERS (FIXED) ============
 
-////////////////////Show trend Report///////////////////////////////////
+function showAbhyasisBySessionOnly(dayName, sessionType) {
+  if (!masterRecords.length) {
+    showAlert('No records available', 'error');
+    return;
+  }
+
+  const attendanceMap = {};
+
+  masterRecords.forEach(r => {
+    if (!r.id || !r.present) return;
+    
+    if (!attendanceMap[r.id]) {
+      attendanceMap[r.id] = {
+        name: r.name,
+        id: r.id,
+        contact: abhyasis.find(a => a.id === r.id)?.contact || 'N/A',
+        sessions: new Set(),
+        count: 0
+      };
+    }
+    
+    // Track each unique session type
+    if (sessionType) {
+      if (r.sessionType === sessionType) {
+        attendanceMap[r.id].sessions.add(sessionType);
+        attendanceMap[r.id].count++;
+      }
+    }
+  });
+
+  let filtered = [];
+  
+  if (sessionType === 'Face to face individual sittings' && !dayName) {
+    // Face-to-face only (regardless of other sessions)
+    filtered = Object.values(attendanceMap)
+      .filter(a => a.sessions.has('Face to face individual sittings'))
+      .map(a => ({ ...a, sessions: undefined }))
+      .sort((a, b) => b.count - a.count);
+    
+    displaySessionResults(filtered, 'Face-to-Face Sessions Only', 
+      ['Rank', 'Name', 'ID', 'Contact', 'Sessions Attended']);
+  } else if (dayName && sessionType === 'Group meditation session') {
+    // Group sessions for specific day
+    const groupAttendance = {};
+    
+    masterRecords.forEach(r => {
+      if (!r.id || !r.present) return;
+      if (r.sessionName === dayName && r.sessionType === 'Group meditation session') {
+        if (!groupAttendance[r.id]) {
+          groupAttendance[r.id] = {
+            name: r.name,
+            id: r.id,
+            contact: abhyasis.find(a => a.id === r.id)?.contact || 'N/A',
+            count: 0
+          };
+        }
+        groupAttendance[r.id].count++;
+      }
+    });
+    
+    filtered = Object.values(groupAttendance).sort((a, b) => b.count - a.count);
+    displaySessionResults(filtered, `${dayName} Group Sessions`, 
+      ['Rank', 'Name', 'ID', 'Contact', 'Sessions Attended']);
+  }
+}
+
+function showAbhyasisAttendingAll() {
+  if (!masterRecords.length) {
+    showAlert('No records available', 'error');
+    return;
+  }
+
+  const attendanceMap = {};
+
+  masterRecords.forEach(r => {
+    if (!r.id || !r.present) return;
+    
+    if (!attendanceMap[r.id]) {
+      attendanceMap[r.id] = {
+        name: r.name,
+        id: r.id,
+        contact: abhyasis.find(a => a.id === r.id)?.contact || 'N/A',
+        hasWednesdayGroup: false,
+        hasSundayGroup: false,
+        hasFaceToFace: false,
+        totalCount: 0
+      };
+    }
+    
+    attendanceMap[r.id].totalCount++;
+    
+    if (r.sessionName === 'Wednesday' && r.sessionType === 'Group meditation session') {
+      attendanceMap[r.id].hasWednesdayGroup = true;
+    }
+    if (r.sessionName === 'Sunday' && r.sessionType === 'Group meditation session') {
+      attendanceMap[r.id].hasSundayGroup = true;
+    }
+    if (r.sessionType === 'Face to face individual sittings') {
+      attendanceMap[r.id].hasFaceToFace = true;
+    }
+  });
+
+  const filtered = Object.values(attendanceMap)
+    .filter(a => a.hasWednesdayGroup && a.hasSundayGroup && a.hasFaceToFace)
+    .map(a => ({ 
+      id: a.id, 
+      name: a.name, 
+      contact: a.contact, 
+      sessionsAttended: a.totalCount 
+    }))
+    .sort((a, b) => b.sessionsAttended - a.sessionsAttended);
+
+  displaySessionResults(filtered, 'All Three Session Types (Sunday + Wednesday + Face-to-Face)', 
+    ['Rank', 'Name', 'ID', 'Contact', 'Total Sessions']);
+}
+
+function showAbhyasisGroupNotFaceToFace() {
+  if (!masterRecords.length) {
+    showAlert('No records available', 'error');
+    return;
+  }
+
+  const attendanceMap = {};
+
+  masterRecords.forEach(r => {
+    if (!r.id || !r.present) return;
+    
+    if (!attendanceMap[r.id]) {
+      attendanceMap[r.id] = {
+        name: r.name,
+        id: r.id,
+        contact: abhyasis.find(a => a.id === r.id)?.contact || 'N/A',
+        hasGroup: false,
+        hasFace: false,
+        groupCount: 0
+      };
+    }
+    
+    if (r.sessionType === 'Group meditation session') {
+      attendanceMap[r.id].hasGroup = true;
+      attendanceMap[r.id].groupCount++;
+    }
+    if (r.sessionType === 'Face to face individual sittings') {
+      attendanceMap[r.id].hasFace = true;
+    }
+  });
+
+  const filtered = Object.values(attendanceMap)
+    .filter(a => a.hasGroup && !a.hasFace)
+    .map(a => ({ id: a.id, name: a.name, contact: a.contact, groupSessions: a.groupCount }))
+    .sort((a, b) => b.groupSessions - a.groupSessions);
+
+  displaySessionResults(filtered, 'Group Sessions Only (No Face-to-Face)', 
+    ['Rank', 'Name', 'ID', 'Contact', 'Group Sessions']);
+}
+
+function showAbhyasisFaceToFaceNotGroup() {
+  if (!masterRecords.length) {
+    showAlert('No records available', 'error');
+    return;
+  }
+
+  const attendanceMap = {};
+
+  masterRecords.forEach(r => {
+    if (!r.id || !r.present) return;
+    
+    if (!attendanceMap[r.id]) {
+      attendanceMap[r.id] = {
+        name: r.name,
+        id: r.id,
+        contact: abhyasis.find(a => a.id === r.id)?.contact || 'N/A',
+        hasGroup: false,
+        hasFace: false,
+        faceCount: 0
+      };
+    }
+    
+    if (r.sessionType === 'Group meditation session') {
+      attendanceMap[r.id].hasGroup = true;
+    }
+    if (r.sessionType === 'Face to face individual sittings') {
+      attendanceMap[r.id].hasFace = true;
+      attendanceMap[r.id].faceCount++;
+    }
+  });
+
+  const filtered = Object.values(attendanceMap)
+    .filter(a => a.hasFace && !a.hasGroup)
+    .map(a => ({ id: a.id, name: a.name, contact: a.contact, faceSessions: a.faceCount }))
+    .sort((a, b) => b.faceSessions - a.faceSessions);
+
+  displaySessionResults(filtered, 'Face-to-Face Only (No Group Sessions)', 
+    ['Rank', 'Name', 'ID', 'Contact', 'Face-to-Face Sessions']);
+}
+
+function displaySessionResults(data, title, headers) {
+  let html = '<div style="background:white; padding:16px; border-radius:8px; margin-top:16px;">';
+  html += `<h3>${title}</h3>`;
+  
+  if (data.length === 0) {
+    html += '<p style="color:#666;">No abhyasis found matching this criteria.</p>';
+  } else {
+    html += `<p style="margin-bottom:12px; color:#666;"><strong>Found: ${data.length} abhyasi(s)</strong></p>`;
+    html += `<table class="report-table">
+      <thead><tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr></thead>
+      <tbody>`;
+    
+    data.forEach((row, i) => {
+      html += '<tr>';
+      html += `<td><strong>${i + 1}</strong></td>`;
+      
+      Object.keys(row).forEach(key => {
+        if (key === 'id') return;
+        const value = row[key];
+        
+        if (typeof value === 'number') {
+          html += `<td><span class="attendance-badge" style="background:#3498db;">${value}</span></td>`;
+        } else {
+          html += `<td>${escapeHtml(String(value))}</td>`;
+        }
+      });
+      
+      html += '</tr>';
+    });
+    
+    html += '</tbody></table>';
+  }
+  
+  html += '</div>';
+  
+  const results = document.getElementById('reportResults');
+  results.innerHTML = html;
+  results.style.display = 'block';
+}
+
+// ============ ATTENDANCE PATTERNS & CONSISTENCY ============
+
+function showMostConsistentAbhyasis() {
+  if (!masterRecords.length) {
+    showAlert('No records available', 'error');
+    return;
+  }
+
+  const attendanceMap = {};
+  const registrationMap = {};
+
+  masterRecords.forEach(r => {
+    if (!r.id) return;
+    
+    if (!attendanceMap[r.id]) {
+      attendanceMap[r.id] = { name: r.name, count: 0 };
+      registrationMap[r.id] = new Set();
+    }
+    
+    registrationMap[r.id].add(r.date);
+    if (r.present) attendanceMap[r.id].count++;
+  });
+
+  const consistency = Object.entries(attendanceMap)
+    .map(([id, data]) => {
+      const registered = registrationMap[id].size;
+      const percentage = registered > 0 ? Math.round((data.count / registered) * 100) : 0;
+      return { id, name: data.name, attended: data.count, registered, percentage };
+    })
+    .filter(a => a.percentage >= 80)
+    .sort((a, b) => b.percentage - a.percentage);
+
+  displayAnalysisResults(consistency, 'Most Consistent Abhyasis (≥80% attendance rate)', 
+    ['Rank', 'Name', 'ID', 'Attended', 'Registered', 'Consistency %']);
+}
+
+function showImprovingAttendance() {
+  if (!masterRecords.length) {
+    showAlert('No records available', 'error');
+    return;
+  }
+
+  const now = new Date();
+  const oneMonthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  const twoMonthsAgo = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+
+  const firstMonth = {};
+  const lastMonth = {};
+
+  masterRecords.forEach(r => {
+    if (!r.id || !r.present) return;
+    
+    if (r.date < oneMonthAgo) {
+      if (!firstMonth[r.id]) firstMonth[r.id] = 0;
+      if (r.date >= twoMonthsAgo) firstMonth[r.id]++;
+    } else {
+      if (!lastMonth[r.id]) lastMonth[r.id] = 0;
+      lastMonth[r.id]++;
+    }
+  });
+
+  const improving = Object.keys(lastMonth)
+    .map(id => {
+      const first = firstMonth[id] || 0;
+      const last = lastMonth[id] || 0;
+      const change = last - first;
+      const name = masterRecords.find(r => r.id === id)?.name || id;
+      return { id, name, firstMonth: first, lastMonth: last, improvement: change };
+    })
+    .filter(a => a.improvement > 0)
+    .sort((a, b) => b.improvement - a.improvement);
+
+  displayAnalysisResults(improving, 'Improving Attendance (Last 30 vs Previous 30 days)',
+    ['Rank', 'Name', 'ID', 'Previous 30d', 'Last 30d', 'Improvement']);
+}
+
+function showDecliningAttendance() {
+  if (!masterRecords.length) {
+    showAlert('No records available', 'error');
+    return;
+  }
+
+  const now = new Date();
+  const oneMonthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  const twoMonthsAgo = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+
+  const firstMonth = {};
+  const lastMonth = {};
+
+  masterRecords.forEach(r => {
+    if (!r.id || !r.present) return;
+    
+    if (r.date < oneMonthAgo) {
+      if (!firstMonth[r.id]) firstMonth[r.id] = 0;
+      if (r.date >= twoMonthsAgo) firstMonth[r.id]++;
+    } else {
+      if (!lastMonth[r.id]) lastMonth[r.id] = 0;
+      lastMonth[r.id]++;
+    }
+  });
+
+  const declining = Object.keys(firstMonth)
+    .map(id => {
+      const first = firstMonth[id] || 0;
+      const last = lastMonth[id] || 0;
+      const change = last - first;
+      const name = masterRecords.find(r => r.id === id)?.name || id;
+      return { id, name, firstMonth: first, lastMonth: last, decline: change };
+    })
+    .filter(a => a.decline < 0)
+    .sort((a, b) => a.decline - b.decline);
+
+  displayAnalysisResults(declining, 'Declining Attendance (Last 30 vs Previous 30 days)',
+    ['Rank', 'Name', 'ID', 'Previous 30d', 'Last 30d', 'Decline']);
+}
+
+function showReturningAbhyasis() {
+  if (!masterRecords.length) {
+    showAlert('No records available', 'error');
+    return;
+  }
+
+  const now = new Date();
+  const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  const sixtyDaysAgo = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  const ninetyDaysAgo = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+
+  const recentlyReturned = {};
+
+  masterRecords.forEach(r => {
+    if (!r.id) return;
+    
+    const isRecent = r.date >= thirtyDaysAgo;
+    const wasAbsent = r.date < sixtyDaysAgo && r.date >= ninetyDaysAgo;
+    
+    if (isRecent && wasAbsent) {
+      if (!recentlyReturned[r.id]) {
+        recentlyReturned[r.id] = {
+          name: r.name,
+          lastSeen: r.date,
+          recentCount: 0
+        };
+      }
+      if (r.present) recentlyReturned[r.id].recentCount++;
+    }
+  });
+
+  const returning = Object.entries(recentlyReturned)
+    .map(([id, data]) => ({
+      id,
+      name: data.name,
+      daysSinceReturn: Math.floor((new Date() - new Date(data.lastSeen)) / (24 * 60 * 60 * 1000)),
+      recentAttendance: data.recentCount
+    }))
+    .sort((a, b) => a.daysSinceReturn - b.daysSinceReturn);
+
+  displayAnalysisResults(returning, 'Returning Abhyasis (Absent 60-90d, Now Active)',
+    ['Rank', 'Name', 'ID', 'Days Since Return', 'Recent Sessions']);
+}
+
+// ============ TIME-BASED ANALYSIS ============
+
+function showNewAbhyasis() {
+  if (!masterRecords.length) {
+    showAlert('No records available', 'error');
+    return;
+  }
+
+  const now = new Date();
+  const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+
+  const firstAppearance = {};
+
+  masterRecords.forEach(r => {
+    if (!r.id) return;
+    
+    if (!firstAppearance[r.id] || r.date < firstAppearance[r.id].date) {
+      firstAppearance[r.id] = { name: r.name, date: r.date, contact: abhyasis.find(a => a.id === r.id)?.contact || 'N/A' };
+    }
+  });
+
+  const newMembers = Object.entries(firstAppearance)
+    .filter(([id, data]) => data.date >= thirtyDaysAgo)
+    .map(([id, data]) => ({
+      id,
+      name: data.name,
+      contact: data.contact,
+      joinedDate: data.date,
+      daysAsMember: Math.floor((now - new Date(data.date)) / (24 * 60 * 60 * 1000))
+    }))
+    .sort((a, b) => b.joinedDate.localeCompare(a.joinedDate));
+
+  displayAnalysisResults(newMembers, 'New Abhyasis (Last 30 days)',
+    ['Rank', 'Name', 'ID', 'Contact', 'Joined Date', 'Days as Member']);
+}
+
+function showLoyalMembers() {
+  if (!masterRecords.length) {
+    showAlert('No records available', 'error');
+    return;
+  }
+
+  const now = new Date();
+  const threeMonthsAgo = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+
+  const consistentMembers = {};
+
+  masterRecords.forEach(r => {
+    if (!r.id || !r.present) return;
+    
+    if (!consistentMembers[r.id]) {
+      consistentMembers[r.id] = { name: r.name, count: 0, dateRange: { first: r.date, last: r.date } };
+    }
+    
+    consistentMembers[r.id].count++;
+    if (r.date < consistentMembers[r.id].dateRange.first) consistentMembers[r.id].dateRange.first = r.date;
+    if (r.date > consistentMembers[r.id].dateRange.last) consistentMembers[r.id].dateRange.last = r.date;
+  });
+
+  const loyal = Object.entries(consistentMembers)
+    .filter(([id, data]) => data.dateRange.first <= threeMonthsAgo && data.count >= 10)
+    .map(([id, data]) => ({
+      id,
+      name: data.name,
+      sessionsAttended: data.count,
+      memberSince: data.dateRange.first,
+      monthsActive: Math.floor((new Date(data.dateRange.last) - new Date(data.dateRange.first)) / (30 * 24 * 60 * 60 * 1000))
+    }))
+    .sort((a, b) => b.sessionsAttended - a.sessionsAttended);
+
+  displayAnalysisResults(loyal, 'Loyal Members (3+ months, 10+ sessions)',
+    ['Rank', 'Name', 'ID', 'Sessions Attended', 'Member Since', 'Months Active']);
+}
+
+function showMilestoneAchievers() {
+  if (!masterRecords.length) {
+    showAlert('No records available', 'error');
+    return;
+  }
+
+  const attendanceMap = {};
+
+  masterRecords.forEach(r => {
+    if (!r.id || !r.present) return;
+    
+    if (!attendanceMap[r.id]) {
+      attendanceMap[r.id] = { name: r.name, count: 0 };
+    }
+    attendanceMap[r.id].count++;
+  });
+
+  const achievers = Object.entries(attendanceMap)
+    .map(([id, data]) => {
+      const milestones = [];
+      if (data.count >= 10) milestones.push('10');
+      if (data.count >= 25) milestones.push('25');
+      if (data.count >= 50) milestones.push('50');
+      if (data.count >= 100) milestones.push('100');
+      
+      return { id, name: data.name, sessionsAttended: data.count, milestones: milestones.join(', ') + ' sessions' };
+    })
+    .filter(a => a.milestones.length > 0)
+    .sort((a, b) => b.sessionsAttended - a.sessionsAttended);
+
+  displayAnalysisResults(achievers, 'Milestone Achievers',
+    ['Rank', 'Name', 'ID', 'Sessions Attended', 'Milestones']);
+}
+
+// ============ ENGAGEMENT METRICS ============
+
+function showMostActiveThisMonth() {
+  if (!masterRecords.length) {
+    showAlert('No records available', 'error');
+    return;
+  }
+
+  const now = new Date();
+  const currentMonth = now.toISOString().slice(0, 7);
+
+  const monthlyAttendance = {};
+
+  masterRecords.forEach(r => {
+    if (!r.id || !r.present || !r.date.startsWith(currentMonth)) return;
+    
+    if (!monthlyAttendance[r.id]) {
+      monthlyAttendance[r.id] = { name: r.name, count: 0 };
+    }
+    monthlyAttendance[r.id].count++;
+  });
+
+  const topThisMonth = Object.entries(monthlyAttendance)
+    .map(([id, data]) => ({ id, name: data.name, sessionsThisMonth: data.count }))
+    .sort((a, b) => b.sessionsThisMonth - a.sessionsThisMonth)
+    .slice(0, 10);
+
+  displayAnalysisResults(topThisMonth, 'Most Active This Month',
+    ['Rank', 'Name', 'ID', 'Sessions This Month']);
+}
+
+function showHighestOverallAttendance() {
+  if (!masterRecords.length) {
+    showAlert('No records available', 'error');
+    return;
+  }
+
+  const allTimeAttendance = {};
+
+  masterRecords.forEach(r => {
+    if (!r.id || !r.present) return;
+    
+    if (!allTimeAttendance[r.id]) {
+      allTimeAttendance[r.id] = { name: r.name, count: 0 };
+    }
+    allTimeAttendance[r.id].count++;
+  });
+
+  const topAll = Object.entries(allTimeAttendance)
+    .map(([id, data]) => ({ id, name: data.name, allTimeAttendance: data.count }))
+    .sort((a, b) => b.allTimeAttendance - a.allTimeAttendance)
+    .slice(0, 15);
+
+  displayAnalysisResults(topAll, 'Highest Overall Attendance (All-Time)',
+    ['Rank', 'Name', 'ID', 'Total Sessions Attended']);
+}
+
+function showTrainerWiseDistribution() {
+  if (!masterRecords.length) {
+    showAlert('No records available', 'error');
+    return;
+  }
+
+  const trainerMap = {};
+
+  masterRecords.forEach(r => {
+    if (!r.id || !r.trainer) return;
+    
+    const trainer = r.trainer;
+    if (!trainerMap[trainer]) {
+      trainerMap[trainer] = {};
+    }
+    if (!trainerMap[trainer][r.id]) {
+      trainerMap[trainer][r.id] = { name: r.name, present: 0, total: 0 };
+    }
+    
+    trainerMap[trainer][r.id].total++;
+    if (r.present) trainerMap[trainer][r.id].present++;
+  });
+
+  let html = '<div style="background:white; padding:16px; border-radius:8px; margin-top:16px;">';
+  html += '<h3>Trainer-Wise Distribution of Abhyasis</h3>';
+  
+  Object.keys(trainerMap).sort().forEach(trainer => {
+    const abhyasisList = Object.entries(trainerMap[trainer])
+      .map(([id, data]) => ({ id, name: data.name, attended: data.present, total: data.total }))
+      .sort((a, b) => b.attended - a.attended);
+    
+    html += `<div style="margin-bottom:20px; padding:12px; background:#f8f9fa; border-radius:8px;">
+      <h4>${escapeHtml(trainer)} (${abhyasisList.length} abhyasis)</h4>
+      <table class="report-table" style="margin-top:8px;">
+        <thead><tr><th>#</th><th>Name</th><th>ID</th><th>Sessions Attended</th><th>Total Sessions</th><th>Attendance %</th></tr></thead>
+        <tbody>`;
+    
+    abhyasisList.forEach((a, i) => {
+      const pct = a.total ? Math.round((a.attended / a.total) * 100) : 0;
+      html += `<tr>
+        <td>${i + 1}</td>
+        <td>${escapeHtml(a.name)}</td>
+        <td>${escapeHtml(a.id)}</td>
+        <td>${a.attended}</td>
+        <td>${a.total}</td>
+        <td><span class="attendance-badge" style="background:#3498db;">${pct}%</span></td>
+      </tr>`;
+    });
+    
+    html += '</tbody></table></div>';
+  });
+  
+  html += '</div>';
+  
+  const results = document.getElementById('reportResults');
+  results.innerHTML = html;
+  results.style.display = 'block';
+}
+
+// ============ RISK & FOLLOW-UP ============
+
+function showAtRiskAbhyasis() {
+  if (!masterRecords.length) {
+    showAlert('No records available', 'error');
+    return;
+  }
+
+  const attendanceMap = {};
+
+  masterRecords.forEach(r => {
+    if (!r.id) return;
+    
+    if (!attendanceMap[r.id]) {
+      attendanceMap[r.id] = { name: r.name, present: 0, total: 0, contact: abhyasis.find(a => a.id === r.id)?.contact || 'N/A' };
+    }
+    
+    attendanceMap[r.id].total++;
+    if (r.present) attendanceMap[r.id].present++;
+  });
+
+  const atRisk = Object.entries(attendanceMap)
+    .map(([id, data]) => {
+      const percentage = data.total > 0 ? Math.round((data.present / data.total) * 100) : 0;
+      return { id, name: data.name, contact: data.contact, attended: data.present, total: data.total, percentage };
+    })
+    .filter(a => a.percentage > 25 && a.percentage <= 50)
+    .sort((a, b) => a.percentage - b.percentage);
+
+  let html = '<div style="background:white; padding:16px; border-radius:8px; margin-top:16px;">';
+  html += '<h3>At-Risk Abhyasis (25-50% Sporadic Attendance)</h3>';
+  
+  if (atRisk.length === 0) {
+    html += '<p style="color:#666;">No at-risk abhyasis found.</p>';
+  } else {
+    html += `<table class="report-table">
+      <thead><tr><th>Rank</th><th>Name</th><th>ID</th><th>Contact</th><th>Attended</th><th>Total</th><th>Attendance %</th></tr></thead>
+      <tbody>`;
+    
+    atRisk.forEach((a, i) => {
+      html += `<tr>
+        <td><strong>${i + 1}</strong></td>
+        <td>${escapeHtml(a.name)}</td>
+        <td>${escapeHtml(a.id)}</td>
+        <td>${escapeHtml(a.contact)}</td>
+        <td>${a.attended}</td>
+        <td>${a.total}</td>
+        <td><span class="attendance-badge" style="background:#f39c12;">${a.percentage}%</span></td>
+      </tr>`;
+    });
+    
+    html += '</tbody></table>';
+  }
+  html += '</div>';
+  
+  const results = document.getElementById('reportResults');
+  results.innerHTML = html;
+  results.style.display = 'block';
+}
+
+function showZeroAttendanceLastSixty() {
+  if (!masterRecords.length) {
+    showAlert('No records available', 'error');
+    return;
+  }
+
+  const now = new Date();
+  const sixtyDaysAgo = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+
+  const allAbhyasis = new Set();
+  const recentAttendance = new Set();
+
+  masterRecords.forEach(r => {
+    if (!r.id) return;
+    allAbhyasis.add(r.id);
+    if (r.date >= sixtyDaysAgo) {
+      recentAttendance.add(r.id);
+    }
+  });
+
+  const inactive = Array.from(allAbhyasis)
+    .filter(id => !recentAttendance.has(id))
+    .map(id => {
+      const record = masterRecords.find(r => r.id === id);
+      const abhyasi = abhyasis.find(a => a.id === id);
+      const lastRecord = masterRecords.filter(r => r.id === id).sort((a, b) => b.date.localeCompare(a.date))[0];
+      return {
+        id,
+        name: record?.name || id,
+        contact: abhyasi?.contact || 'N/A',
+        lastSeen: lastRecord?.date || 'Unknown',
+        daysSinceActive: lastRecord ? Math.floor((now - new Date(lastRecord.date)) / (24 * 60 * 60 * 1000)) : 999
+      };
+    })
+    .sort((a, b) => a.daysSinceActive - b.daysSinceActive);
+
+  let html = '<div style="background:white; padding:16px; border-radius:8px; margin-top:16px;">';
+  html += '<h3>Zero Attendance (Last 60 Days) - Follow-up Priority</h3>';
+  
+  if (inactive.length === 0) {
+    html += '<p style="color:#27ae60; font-weight:bold;">✅ Excellent! All abhyasis have been active in the last 60 days.</p>';
+  } else {
+    html += `<p style="margin-bottom:12px; color:#666;"><strong>Found ${inactive.length} inactive abhyasi(s)</strong></p>`;
+    html += `<table class="report-table">
+      <thead><tr><th>Rank</th><th>Name</th><th>ID</th><th>Contact</th><th>Last Seen</th><th>Days Inactive</th></tr></thead>
+      <tbody>`;
+    
+    inactive.forEach((a, i) => {
+      const dayColor = a.daysSinceActive > 120 ? '#c0392b' : a.daysSinceActive > 90 ? '#e67e22' : '#f39c12';
+      html += `<tr>
+        <td><strong>${i + 1}</strong></td>
+        <td>${escapeHtml(a.name)}</td>
+        <td>${escapeHtml(a.id)}</td>
+        <td>${escapeHtml(a.contact)}</td>
+        <td>${a.lastSeen}</td>
+        <td><span class="attendance-badge" style="background:${dayColor};">${a.daysSinceActive}d</span></td>
+      </tr>`;
+    });
+    
+    html += '</tbody></table>';
+    html += `<div style="margin-top:16px; padding:12px; background:#fff3cd; border-left:4px solid #ffc107; border-radius:4px;">
+      <strong>📞 Priority Follow-up:</strong> Consider reaching out to these abhyasis to understand if there are barriers to attendance.
+    </div>`;
+  }
+  html += '</div>';
+  
+  const results = document.getElementById('reportResults');
+  results.innerHTML = html;
+  results.style.display = 'block';
+}
+
+function showLowAttendanceAbhyasis() {
+  if (!masterRecords.length) {
+    showAlert('No records available', 'error');
+    return;
+  }
+
+  const attendanceMap = {};
+  
+  masterRecords.forEach(r => {
+    if (!r.id) return;
+    
+    if (!attendanceMap[r.id]) {
+      attendanceMap[r.id] = {
+        name: r.name,
+        id: r.id,
+        totalClasses: 0,
+        attended: 0,
+        contact: abhyasis.find(a => a.id === r.id)?.contact || 'N/A'
+      };
+    }
+    
+    attendanceMap[r.id].totalClasses++;
+    if (r.present) {
+      attendanceMap[r.id].attended++;
+    }
+  });
+
+  const lowAttendance = Object.entries(attendanceMap)
+    .map(([id, data]) => ({
+      ...data,
+      percentage: Math.round((data.attended / data.totalClasses) * 100)
+    }))
+    .filter(a => a.percentage <= 50)
+    .sort((a, b) => a.percentage - b.percentage);
+
+  let html = '<div style="background:white; padding:16px; border-radius:8px; margin-top:16px;">';
+  html += '<h3>Low Attendance (≤50%)</h3>';
+  
+  if (lowAttendance.length === 0) {
+    html += '<p style="color:#27ae60; font-weight:bold;">✅ Great news! All abhyasis have attendance above 50%.</p>';
+  } else {
+    html += `<p style="margin-bottom:12px; color:#666;">Found ${lowAttendance.length} abhyasi(s) with attendance at or below 50%</p>`;
+    html += `<table class="report-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Name</th>
+          <th>ID</th>
+          <th>Contact</th>
+          <th>Total Classes</th>
+          <th>Attended</th>
+          <th>Attendance %</th>
+        </tr>
+      </thead>
+      <tbody>`;
+    
+    lowAttendance.forEach((a, i) => {
+      const statusColor = a.percentage <= 25 ? '#c0392b' : a.percentage <= 40 ? '#e67e22' : '#f39c12';
+      html += `<tr>
+        <td><strong>${i + 1}</strong></td>
+        <td>${escapeHtml(a.name)}</td>
+        <td>${escapeHtml(a.id)}</td>
+        <td>${escapeHtml(a.contact)}</td>
+        <td>${a.totalClasses}</td>
+        <td>${a.attended}</td>
+        <td>
+          <span class="attendance-badge" style="background:${statusColor};">
+            ${a.percentage}%
+          </span>
+        </td>
+      </tr>`;
+    });
+    
+    html += '</tbody></table>';
+    
+    html += `<div style="margin-top:16px; padding:12px; background:#fff3cd; border-left:4px solid #ffc107; border-radius:4px;">
+      <strong>📞 Follow-up Recommended:</strong> Consider reaching out to these abhyasis to understand any challenges they may be facing.
+    </div>`;
+  }
+  
+  html += '</div>';
+
+  const results = document.getElementById('reportResults');
+  results.innerHTML = html;
+  results.style.display = 'block';
+}
+
+// ============ TREND REPORTS - 1, 3, 6 MONTHS ============
+
 function showTrendReport(months) {
   const now = new Date();
   const start = new Date();
@@ -1605,111 +2442,159 @@ function showTrendReport(months) {
   results.innerHTML = html;
   results.style.display = 'block';
 
-  // Group chart
-  const ctxGroup = document.getElementById('groupTrendChart').getContext('2d');
-  new Chart(ctxGroup, {
-    type: 'bar',
-    data: {
-      labels: allDates.map(d => new Date(d).toLocaleDateString('en-US', {month:'short', day:'numeric'})),
-      datasets: [{
-        label: 'Abhyasis Present',
-        data: groupCounts,
-        backgroundColor: '#2ecc71',
-        borderColor: '#27ae60',
-        borderWidth: 1,
-        barThickness: 20
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: true,
-      aspectRatio: 3,
-      plugins: {
-        legend: { display: false }
-      },
-      scales: {
-        y: { 
-          beginAtZero: true,
-          min: 0,
-          max: maxGroup + 2,
-          ticks: { 
-            stepSize: Math.max(1, Math.ceil(maxGroup / 5)),
-            callback: function(value) {
-              if (Number.isInteger(value)) return value;
+  setTimeout(() => {
+    // Group chart
+    const ctxGroup = document.getElementById('groupTrendChart');
+    if (ctxGroup) {
+      new Chart(ctxGroup.getContext('2d'), {
+        type: 'bar',
+        data: {
+          labels: allDates.map(d => new Date(d).toLocaleDateString('en-US', {month:'short', day:'numeric'})),
+          datasets: [{
+            label: 'Abhyasis Present',
+            data: groupCounts,
+            backgroundColor: '#2ecc71',
+            borderColor: '#27ae60',
+            borderWidth: 1,
+            barThickness: 20
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          aspectRatio: 3,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            y: { 
+              beginAtZero: true,
+              min: 0,
+              max: maxGroup + 2,
+              ticks: { 
+                stepSize: Math.max(1, Math.ceil(maxGroup / 5)),
+                callback: function(value) {
+                  if (Number.isInteger(value)) return value;
+                }
+              },
+              grid: { display: true }
+            },
+            x: {
+              ticks: { 
+                maxRotation: 45, 
+                minRotation: 45, 
+                font: { size: 9 },
+                autoSkip: true,
+                maxTicksLimit: 15
+              }
             }
           },
-          grid: { display: true },
-          title: { display: true, text: 'Abhyasis', font: { size: 11 } }
-        },
-        x: {
-          ticks: { 
-            maxRotation: 45, 
-            minRotation: 45, 
-            font: { size: 9 },
-            autoSkip: true,
-            maxTicksLimit: 15
+          layout: {
+            padding: { top: 10, bottom: 0 }
           }
         }
-      },
-      layout: {
-        padding: { top: 10, bottom: 0 }
-      }
+      });
     }
-  });
 
-  // Face-to-face chart
-  const ctxFace = document.getElementById('faceTrendChart').getContext('2d');
-  new Chart(ctxFace, {
-    type: 'bar',
-    data: {
-      labels: allDates.map(d => new Date(d).toLocaleDateString('en-US', {month:'short', day:'numeric'})),
-      datasets: [{
-        label: 'Abhyasis Present',
-        data: faceCounts,
-        backgroundColor: '#3498db',
-        borderColor: '#2980b9',
-        borderWidth: 1,
-        barThickness: 20
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: true,
-      aspectRatio: 3,
-      plugins: {
-        legend: { display: false }
-      },
-      scales: {
-        y: { 
-          beginAtZero: true,
-          min: 0,
-          max: maxFace + 2,
-          ticks: { 
-            stepSize: Math.max(1, Math.ceil(maxFace / 5)),
-            callback: function(value) {
-              if (Number.isInteger(value)) return value;
+    // Face-to-face chart
+    const ctxFace = document.getElementById('faceTrendChart');
+    if (ctxFace) {
+      new Chart(ctxFace.getContext('2d'), {
+        type: 'bar',
+        data: {
+          labels: allDates.map(d => new Date(d).toLocaleDateString('en-US', {month:'short', day:'numeric'})),
+          datasets: [{
+            label: 'Abhyasis Present',
+            data: faceCounts,
+            backgroundColor: '#3498db',
+            borderColor: '#2980b9',
+            borderWidth: 1,
+            barThickness: 20
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          aspectRatio: 3,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            y: { 
+              beginAtZero: true,
+              min: 0,
+              max: maxFace + 2,
+              ticks: { 
+                stepSize: Math.max(1, Math.ceil(maxFace / 5)),
+                callback: function(value) {
+                  if (Number.isInteger(value)) return value;
+                }
+              },
+              grid: { display: true }
+            },
+            x: {
+              ticks: { 
+                maxRotation: 45, 
+                minRotation: 45, 
+                font: { size: 9 },
+                autoSkip: true,
+                maxTicksLimit: 15
+              }
             }
           },
-          grid: { display: true },
-          title: { display: true, text: 'Abhyasis', font: { size: 11 } }
-        },
-        x: {
-          ticks: { 
-            maxRotation: 45, 
-            minRotation: 45, 
-            font: { size: 9 },
-            autoSkip: true,
-            maxTicksLimit: 15
+          layout: {
+            padding: { top: 10, bottom: 0 }
           }
         }
-      },
-      layout: {
-        padding: { top: 10, bottom: 0 }
-      }
+      });
     }
-  });
+  }, 100);
 }
-/////////////////////////End of Show Trend Report/////////////////////////////////////////
+
+// ============ HELPER FUNCTIONS ============
+
+function displayAnalysisResults(data, title, headers) {
+  let html = '<div style="background:white; padding:16px; border-radius:8px; margin-top:16px;">';
+  html += `<h3>${title}</h3>`;
+  
+  if (data.length === 0) {
+    html += '<p style="color:#666;">No data found matching this criteria.</p>';
+  } else {
+    html += `<table class="report-table">
+      <thead><tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr></thead>
+      <tbody>`;
+    
+    data.forEach((row, i) => {
+      html += '<tr>';
+      html += `<td><strong>${i + 1}</strong></td>`;
+      
+      Object.keys(row).forEach(key => {
+        if (key === 'id') return;
+        const value = row[key];
+        
+        if (typeof value === 'number' && (key.includes('percentage') || key.includes('%') || key.includes('balance') || key.includes('Consistency'))) {
+          html += `<td><span class="attendance-badge" style="background:#3498db;">${value}%</span></td>`;
+        } else if (key.includes('contact') && value && value !== 'N/A') {
+          html += `<td>${escapeHtml(value)}</td>`;
+        } else {
+          html += `<td>${escapeHtml(String(value))}</td>`;
+        }
+      });
+      
+      html += '</tr>';
+    });
+    
+    html += '</tbody></table>';
+  }
+  
+  html += '</div>';
+  
+  const results = document.getElementById('reportResults');
+  results.innerHTML = html;
+  results.style.display = 'block';
+}
+
+// ============ COMPREHENSIVE ANALYSIS FILTERS ============
 
 function showTopAbhyasis() {
   if (!masterRecords || masterRecords.length === 0) {
@@ -1748,12 +2633,10 @@ function showTopAbhyasis() {
     .sort((a, b) => b.count - a.count)
     .slice(0, 10);
 
-  // Changed from grid to stacked layout
   let html = '<div style="margin-top:16px;">';
 
-  // Group Sessions
   html += `<div style="background:white; padding:16px; border-radius:8px; margin-bottom:20px;">
-    <h3 style="color:#2ecc71;">🏆 Top 10 - Group Meditation Sessions</h3>`;
+    <h3 style="color:#2ecc71;">Group Meditation Sessions - Top Attendees</h3>`;
   
   if (groupTop.length === 0) {
     html += '<p style="color:#666;">No group session attendance found.</p>';
@@ -1773,9 +2656,8 @@ function showTopAbhyasis() {
   }
   html += '</div>';
 
-  // Face-to-Face Sessions
   html += `<div style="background:white; padding:16px; border-radius:8px;">
-    <h3 style="color:#3498db;">🏆 Top 10 - Face-to-Face Sittings</h3>`;
+    <h3 style="color:#3498db;">Face-to-Face Sittings - Top Attendees</h3>`;
   
   if (faceTop.length === 0) {
     html += '<p style="color:#666;">No face-to-face attendance found.</p>';
@@ -1801,110 +2683,8 @@ function showTopAbhyasis() {
   results.innerHTML = html;
   results.style.display = 'block';
 }
-//////////////////////////////////////////////////////////////////////////////
 
-function showLowAttendanceAbhyasis() {
-  if (!masterRecords || masterRecords.length === 0) {
-    showAlert('No master records available', 'error');
-    return;
-  }
-
-  // Calculate attendance for each abhyasi
-  const attendanceData = {};
-  
-  masterRecords.forEach(r => {
-    if (!r.id) return;
-    
-    if (!attendanceData[r.id]) {
-      attendanceData[r.id] = {
-        name: r.name,
-        id: r.id,
-        totalClasses: 0,
-        attended: 0,
-        contact: '' // We'll fill this from the abhyasis array
-      };
-    }
-    
-    attendanceData[r.id].totalClasses++;
-    if (r.present) {
-      attendanceData[r.id].attended++;
-    }
-  });
-
-  // Add contact information from abhyasis array
-  abhyasis.forEach(a => {
-    if (attendanceData[a.id]) {
-      attendanceData[a.id].contact = a.contact || 'N/A';
-    }
-  });
-
-  // Filter for <= 50% attendance and calculate percentage
-  const lowAttendance = Object.entries(attendanceData)
-    .map(([id, data]) => ({
-      ...data,
-      percentage: Math.round((data.attended / data.totalClasses) * 100)
-    }))
-    .filter(a => a.percentage <= 50)
-    .sort((a, b) => a.percentage - b.percentage); // Sort by lowest attendance first
-
-  let html = '<div style="background:white; padding:16px; border-radius:8px; margin-top:16px;">';
-  html += '<h3 style="color:#e74c3c;">⚠️ Abhyasis with Low Attendance (≤50%)</h3>';
-  
-  if (lowAttendance.length === 0) {
-    html += '<p style="color:#27ae60; font-weight:bold;">✅ Great news! All abhyasis have attendance above 50%.</p>';
-  } else {
-    html += `<p style="margin-bottom:12px; color:#666;">Found ${lowAttendance.length} abhyasi(s) with attendance at or below 50%</p>`;
-    html += `<table class="report-table">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Name</th>
-          <th>ID</th>
-          <th>Contact</th>
-          <th>Total Classes</th>
-          <th>Attended</th>
-          <th>Attendance %</th>
-        </tr>
-      </thead>
-      <tbody>`;
-    
-    lowAttendance.forEach((a, i) => {
-      const statusColor = a.percentage <= 25 ? '#c0392b' : a.percentage <= 40 ? '#e67e22' : '#f39c12';
-      html += `<tr>
-        <td><strong>${i + 1}</strong></td>
-        <td>${escapeHtml(a.name)}</td>
-        <td>${escapeHtml(a.id)}</td>
-        <td>${escapeHtml(a.contact)}</td>
-        <td>${a.totalClasses}</td>
-        <td>${a.attended}</td>
-        <td>
-          <span class="attendance-badge" style="background:${statusColor};">
-            ${a.percentage}%
-          </span>
-        </td>
-      </tr>`;
-    });
-    
-    html += '</tbody></table>';
-    
-    // Add a summary section
-    html += `<div style="margin-top:16px; padding:12px; background:#fff3cd; border-left:4px solid #ffc107; border-radius:4px;">
-      <strong>📞 Follow-up Recommended:</strong> Consider reaching out to these abhyasis to understand any challenges they may be facing.
-    </div>`;
-  }
-  
-  html += '</div>';
-
-  const results = document.getElementById('reportResults');
-  results.innerHTML = html;
-  results.style.display = 'block';
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////
-
-// Add these functions to your JavaScript (after the showLowAttendanceAbhyasis() function)
-
-function showSessionAttendanceFilters() {
+function showComprehensiveAnalysis() {
   if (!masterRecords || masterRecords.length === 0) {
     showAlert('No master records available', 'error');
     return;
@@ -1914,246 +2694,78 @@ function showSessionAttendanceFilters() {
   results.style.display = 'block';
   
   let html = '<div style="background:white; padding:16px; border-radius:8px; margin-top:16px;">';
-  html += '<h3>📊 Filter Abhyasis by Session Attendance</h3>';
-  html += '<div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; margin-bottom:20px;">';
+  html += '<h3>📊 Comprehensive Attendance Analysis</h3>';
+  
+  // Trend Analysis
+  html += '<div style="margin-bottom:20px;">';
+  html += '<h4 style="color:#2c3e50; margin-bottom:12px;">📈 Trend Analysis</h4>';
+  html += '<div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px;">';
+  html += '<button class="btn btn-success" onclick="showTrendReport(1)">📈 1-Month Trend</button>';
+  html += '<button class="btn btn-success" onclick="showTrendReport(3)">📉 3-Month Trend</button>';
+  html += '<button class="btn btn-success" onclick="showTrendReport(6)">📊 6-Month Trend</button>';
+  html += '</div></div>';
+  
+  // Session-Based Filters
+  html += '<div style="margin-bottom:20px;">';
+  html += '<h4 style="color:#2c3e50; margin-bottom:12px;">🎯 Session-Based Filters</h4>';
+  html += '<div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:10px;">';
   html += '<button class="btn btn-success" onclick="showAbhyasisBySessionOnly(\'Wednesday\', \'Group meditation session\')">🧘 Wednesday Group Only</button>';
   html += '<button class="btn btn-success" onclick="showAbhyasisBySessionOnly(\'Sunday\', \'Group meditation session\')">🧘 Sunday Group Only</button>';
-  html += '<button class="btn btn-success" onclick="showAbhyasisBySessionOnly(null, \'Face to face individual sittings\')">👤 Face-to-Face</button>';
+  html += '<button class="btn btn-success" onclick="showAbhyasisBySessionOnly(null, \'Face to face individual sittings\')">👤 Face-to-Face Only</button>';
   html += '<button class="btn btn-warning" onclick="showAbhyasisAttendingAll()">⭐ All Three Sessions</button>';
-  html += '<button class="btn" onclick="showAbhyasisGroupNotFaceToFace()">🧘 Group Sessions (No Face-to-Face)</button>';
-  html += '<button class="btn" onclick="showAbhyasisFaceToFaceNotGroup()">👤 Face-to-Face (No Group)</button>';
-  html += '</div>';
-  html += '<div id="sessionFilterResults"></div>';
+  html += '<button class="btn" onclick="showAbhyasisGroupNotFaceToFace()">🧘 Group Only (No F2F)</button>';
+  html += '<button class="btn" onclick="showAbhyasisFaceToFaceNotGroup()">👤 F2F Only (No Group)</button>';
+  html += '</div></div>';
+  
+  // Top Performers
+  html += '<div style="margin-bottom:20px;">';
+  html += '<h4 style="color:#2c3e50; margin-bottom:12px;">🏆 Top Performers</h4>';
+  html += '<div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:10px;">';
+  html += '<button class="btn btn-success" onclick="showHighestOverallAttendance()">💪 Top Attendance (All-Time)</button>';
+  html += '<button class="btn btn-success" onclick="showMostActiveThisMonth()">🔥 Most Active This Month</button>';
+  html += '<button class="btn btn-success" onclick="showTopAbhyasis()">🏆 Top By Session Type</button>';
+  html += '</div></div>';
+  
+  // Attendance Patterns
+  html += '<div style="margin-bottom:20px;">';
+  html += '<h4 style="color:#2c3e50; margin-bottom:12px;">📈 Attendance Patterns</h4>';
+  html += '<div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:10px;">';
+  html += '<button class="btn btn-success" onclick="showMostConsistentAbhyasis()">👥 Most Consistent (80%+)</button>';
+  html += '<button class="btn btn-success" onclick="showImprovingAttendance()">📈 Improving Attendance</button>';
+  html += '<button class="btn btn-danger" onclick="showDecliningAttendance()">📉 Declining Attendance</button>';
+  html += '<button class="btn" onclick="showReturningAbhyasis()">🔄 Returning Abhyasis</button>';
+  html += '</div></div>';
+  
+  // Loyalty & Engagement
+  html += '<div style="margin-bottom:20px;">';
+  html += '<h4 style="color:#2c3e50; margin-bottom:12px;">⏰ Loyalty & Engagement</h4>';
+  html += '<div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:10px;">';
+  html += '<button class="btn btn-info" onclick="showNewAbhyasis()">🆕 New (Last 30 days)</button>';
+  html += '<button class="btn btn-info" onclick="showLoyalMembers()">⭐ Loyal (3+ months)</button>';
+  html += '<button class="btn btn-info" onclick="showMilestoneAchievers()">🎁 Milestone Achievers</button>';
+  html += '</div></div>';
+  
+  // Risk & Attention Needed
+  html += '<div style="margin-bottom:20px;">';
+  html += '<h4 style="color:#2c3e50; margin-bottom:12px;">⚠️ Risk & Attention Needed</h4>';
+  html += '<div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:10px;">';
+  html += '<button class="btn btn-warning" onclick="showLowAttendanceAbhyasis()">⚠️ Low Attendance (≤50%)</button>';
+  html += '<button class="btn btn-warning" onclick="showAtRiskAbhyasis()">⚠️ At-Risk (25-50%)</button>';
+  html += '<button class="btn btn-danger" onclick="showZeroAttendanceLastSixty()">🆘 Inactive (60+ days)</button>';
+  html += '</div></div>';
+  
+  // Distribution
+  html += '<div style="margin-bottom:20px;">';
+  html += '<h4 style="color:#2c3e50; margin-bottom:12px;">📊 Distribution</h4>';
+  html += '<div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:10px;">';
+  html += '<button class="btn" onclick="showTrainerWiseDistribution()">🎓 Trainer-Wise Distribution</button>';
+  html += '</div></div>';
+  
   html += '</div>';
   
   results.innerHTML = html;
 }
-
-function showAbhyasisBySessionOnly(dayName, sessionType) {
-  const attendanceMap = {};
-
-  // Build comprehensive map of each abhyasi's attendance
-  masterRecords.forEach(r => {
-    if (!r.id || !r.present) return;
-    
-    if (!attendanceMap[r.id]) {
-      attendanceMap[r.id] = {
-        name: r.name,
-        id: r.id,
-        contact: abhyasis.find(a => a.id === r.id)?.contact || 'N/A',
-        attendedSessions: new Set(),
-        count: 0,
-        hasGroupSession: false,
-        hasFaceToFace: false
-      };
-    }
-    
-    // Track unique session combinations
-    const sessionKey = `${r.sessionName}__${r.sessionType}`;
-    attendanceMap[r.id].attendedSessions.add(sessionKey);
-    attendanceMap[r.id].count++;
-    
-    // Track session types for face-to-face filter
-    if (r.sessionType === 'Group meditation session') {
-      attendanceMap[r.id].hasGroupSession = true;
-    } else if (r.sessionType === 'Face to face individual sittings') {
-      attendanceMap[r.id].hasFaceToFace = true;
-    }
-  });
-
-  // Filter: abhyasis who attended face-to-face (regardless of other sessions)
-  if (sessionType === 'Face to face individual sittings' && !dayName) {
-    const filtered = Object.values(attendanceMap).filter(a => {
-      return a.hasFaceToFace;
-    }).sort((a, b) => b.count - a.count);
-    
-    displaySessionFilterResults(filtered, dayName, sessionType, false, 'Abhyasis Attending Face-to-Face Sessions');
-  } else {
-    // Original behavior: ONLY attended this specific session
-    const filtered = Object.values(attendanceMap).filter(a => {
-      const sessions = Array.from(a.attendedSessions);
-      
-      // Check if they attended the target session
-      const attendedTarget = sessions.some(s => {
-        if (dayName && sessionType) {
-          return s.includes(dayName) && s.includes(sessionType);
-        } else if (sessionType) {
-          return s.includes(sessionType);
-        }
-        return false;
-      });
-
-      // Check if they ONLY attended the target session (no other sessions)
-      const onlyTarget = sessions.length === 1 && attendedTarget;
-      
-      return onlyTarget;
-    }).sort((a, b) => b.count - a.count);
-
-    displaySessionFilterResults(filtered, dayName, sessionType);
-  }
-}
-
-function showAbhyasisAttendingAll() {
-  const attendanceMap = {};
-
-  // Build detailed map
-  masterRecords.forEach(r => {
-    if (!r.id || !r.present) return;
-    
-    if (!attendanceMap[r.id]) {
-      attendanceMap[r.id] = {
-        name: r.name,
-        id: r.id,
-        contact: abhyasis.find(a => a.id === r.id)?.contact || 'N/A',
-        sessionTypes: new Set(),
-        dayNames: new Set(),
-        attendedSessions: new Set(),
-        totalCount: 0
-      };
-    }
-    
-    attendanceMap[r.id].totalCount++;
-    if (r.sessionType) attendanceMap[r.id].sessionTypes.add(r.sessionType);
-    if (r.sessionName) attendanceMap[r.id].dayNames.add(r.sessionName);
-    
-    const sessionKey = `${r.sessionName}__${r.sessionType}`;
-    attendanceMap[r.id].attendedSessions.add(sessionKey);
-  });
-
-  // Filter for those attending ALL three types
-  const filtered = Object.values(attendanceMap).filter(a => {
-    const hasWednesdayGroup = a.dayNames.has('Wednesday') && a.sessionTypes.has('Group meditation session');
-    const hasSundayGroup = a.dayNames.has('Sunday') && a.sessionTypes.has('Group meditation session');
-    const hasFaceToFace = a.sessionTypes.has('Face to face individual sittings');
-    
-    return hasWednesdayGroup && hasSundayGroup && hasFaceToFace;
-  }).sort((a, b) => b.totalCount - a.totalCount);
-
-  displaySessionFilterResults(filtered, null, null, true);
-}
-
-function showAbhyasisGroupNotFaceToFace() {
-  const attendanceMap = {};
-
-  // Build comprehensive map
-  masterRecords.forEach(r => {
-    if (!r.id || !r.present) return;
-    
-    if (!attendanceMap[r.id]) {
-      attendanceMap[r.id] = {
-        name: r.name,
-        id: r.id,
-        contact: abhyasis.find(a => a.id === r.id)?.contact || 'N/A',
-        hasGroupSession: false,
-        hasFaceToFace: false,
-        groupCount: 0,
-        faceCount: 0
-      };
-    }
-    
-    if (r.sessionType === 'Group meditation session') {
-      attendanceMap[r.id].hasGroupSession = true;
-      attendanceMap[r.id].groupCount++;
-    } else if (r.sessionType === 'Face to face individual sittings') {
-      attendanceMap[r.id].hasFaceToFace = true;
-      attendanceMap[r.id].faceCount++;
-    }
-  });
-
-  // Filter: attended group sessions but NOT face-to-face
-  const filtered = Object.values(attendanceMap).filter(a => {
-    return a.hasGroupSession && !a.hasFaceToFace;
-  }).sort((a, b) => b.groupCount - a.groupCount);
-
-  displaySessionFilterResults(filtered, 'group', 'notFaceToFace', false, 'Group Sessions (No Face-to-Face)');
-}
-
-function showAbhyasisFaceToFaceNotGroup() {
-  const attendanceMap = {};
-
-  // Build comprehensive map
-  masterRecords.forEach(r => {
-    if (!r.id || !r.present) return;
-    
-    if (!attendanceMap[r.id]) {
-      attendanceMap[r.id] = {
-        name: r.name,
-        id: r.id,
-        contact: abhyasis.find(a => a.id === r.id)?.contact || 'N/A',
-        hasGroupSession: false,
-        hasFaceToFace: false,
-        groupCount: 0,
-        faceCount: 0
-      };
-    }
-    
-    if (r.sessionType === 'Group meditation session') {
-      attendanceMap[r.id].hasGroupSession = true;
-      attendanceMap[r.id].groupCount++;
-    } else if (r.sessionType === 'Face to face individual sittings') {
-      attendanceMap[r.id].hasFaceToFace = true;
-      attendanceMap[r.id].faceCount++;
-    }
-  });
-
-  // Filter: attended face-to-face but NOT group sessions
-  const filtered = Object.values(attendanceMap).filter(a => {
-    return a.hasFaceToFace && !a.hasGroupSession;
-  }).sort((a, b) => b.faceCount - a.faceCount);
-
-  displaySessionFilterResults(filtered, 'faceToFace', 'notGroup', false, 'Face-to-Face (No Group Sessions)');
-}
-
-function displaySessionFilterResults(abhyasisList, dayName, sessionType, isAllThree = false, customTitle = '') {
-  const container = document.getElementById('sessionFilterResults');
-  
-  let title = customTitle;
-  if (!title) {
-    if (isAllThree) {
-      title = '⭐ Abhyasis Attending All Three Session Types';
-    } else if (dayName && sessionType === 'Group meditation session') {
-      title = `🧘 Abhyasis Attending ONLY ${dayName} Group Meditation Sessions`;
-    } else if (sessionType === 'Face to face individual sittings') {
-      title = '👤 Abhyasis Attending ONLY Face-to-Face Sittings';
-    }
-  }
-
-  let html = `<div style="background:#f8f9fa; padding:16px; border-radius:8px;">
-    <h4 style="margin-top:0;">${title}</h4>`;
-
-  if (abhyasisList.length === 0) {
-    html += '<p style="color:#666; font-style:italic;">No abhyasis found matching this criteria.</p>';
-  } else {
-    html += `<p style="color:#666; margin-bottom:12px;"><strong>Total found:</strong> ${abhyasisList.length}</p>`;
-    html += `<table class="report-table">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Name</th>
-          <th>ID</th>
-          <th>Contact</th>
-          <th>Sessions Attended</th>
-        </tr>
-      </thead>
-      <tbody>`;
-
-    abhyasisList.forEach((a, i) => {
-      const sessionCount = a.count || a.totalCount || a.groupCount || a.faceCount || 0;
-      html += `<tr>
-        <td><strong>${i + 1}</strong></td>
-        <td>${escapeHtml(a.name)}</td>
-        <td>${escapeHtml(a.id)}</td>
-        <td>${escapeHtml(a.contact)}</td>
-        <td><span class="attendance-badge" style="background:#3498db;">${sessionCount}</span></td>
-      </tr>`;
-    });
-
-    html += `</tbody></table>`;
-  }
-
-  html += '</div>';
-  container.innerHTML = html;
-}
+////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
 
 // Save locally only (no cloud sync)
@@ -2789,6 +3401,8 @@ function renderStudentChartFromMaster(records, type, group) {
     reportsCurrentChart = new Chart(ctx, cfg);
   }
 }
+
+
 
 /* ---------- Small utilities used above ---------- */
 function escapeHtml(s) {
