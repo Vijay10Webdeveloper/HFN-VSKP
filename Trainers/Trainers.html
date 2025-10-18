@@ -316,15 +316,16 @@
         <div id="attendance-tab" class="tab-content active">
           <div class="section">
             <h2>👥 Manage Abhyasis</h2>
-            <div style="display:flex; gap:8px; align-items:center; margin-bottom:12px; flex-wrap:wrap;">
-              <input id="studentName" type="text" placeholder="Enter Abhyasi name" style="padding:10px; border-radius:6px; border:1px solid #ddd; flex:1;" />
-              <input id="studentId" type="text" placeholder="Enter Abhyasi ID" style="padding:10px; border-radius:6px; border:1px solid #ddd; width:100px;" />
-              <input id="studentContact" type="text" placeholder="Enter Contact number" style="padding:10px; border-radius:6px; border:1px solid #ddd; width:100px;" />
-            <!-- FIXED: call addAbhyasi (was addStudent causing error) -->
-              <button class="btn btn-small" onclick="addAbhyasi()">Add Abhyasi</button>
-                 <button class="btn btn-success" onclick="saveAbhyasisToCloud()" style="margin-left:auto;">💾 Save to Cloud</button>
-                 </div>
-                 <div id="studentsList" style="max-height:400px; overflow-y:auto; border:1px solid #ddd; border-radius:8px; padding:8px; background:white;"></div>
+           <div style="display:flex; gap:8px; align-items:center; margin-bottom:12px; flex-wrap:wrap;">
+                <input id="studentName" type="text" placeholder="Enter Abhyasi name" style="padding:10px; border-radius:6px; border:1px solid #ddd; flex:1;" />
+                <input id="studentId" type="text" placeholder="Enter Abhyasi ID" style="padding:10px; border-radius:6px; border:1px solid #ddd; width:100px;" />
+                <input id="studentContact" type="text" placeholder="Enter Contact number" style="padding:10px; border-radius:6px; border:1px solid #ddd; width:100px;" />
+                <input id="studentDateOfJoining" type="date" placeholder="Date of Joining" style="padding:10px; border-radius:6px; border:1px solid #ddd; width:140px;" />
+                <button class="btn btn-small" onclick="addAbhyasi()">Add Abhyasi</button>
+                <button class="btn btn-success" onclick="saveAbhyasisToCloud()" style="margin-left:auto;">💾 Save to Cloud</button>
+                <button class="btn" onclick="downloadAbhyasiDetailsExcel()" style="margin-left:4px;">⬇️ Download Abhyasis</button>
+            </div>
+          <div id="studentsList" style="max-height:400px; overflow-y:auto; border:1px solid #ddd; border-radius:8px; padding:8px; background:white;"></div>
           </div>
 
           <div class="section">
@@ -457,10 +458,7 @@
     <h2>📊 Generate Reports</h2>
 
     <!-- Range selector: Month or Date range -->
-   <div class="chart-controls" style="margin-top:16px;">
-  <!-- SESSION FILTERS -->
-  <button class="btn" onclick="showComprehensiveAnalysis()">📊 Comprehensive Analysis</button>
-</div>
+   
 <!-- ADD THIS SECTION -->
 <div style="margin-bottom:16px;">
   <label style="font-weight:bold; margin-bottom:8px; display:block;">Select Range Type:</label>
@@ -512,7 +510,10 @@
     <div style="margin-top:12px;">
       <button class="btn" onclick="generateReport()">📊 Generate Report</button>
     </div>
-
+<div class="chart-controls" style="margin-top:16px;">
+  <!-- SESSION FILTERS -->
+  <button class="btn" onclick="showComprehensiveAnalysis()">📊 Comprehensive Analysis</button>
+</div>
     <div id="reportResults" style="display:none; margin-top:12px;"></div>
   </div>
 </div>
@@ -594,35 +595,34 @@ function getNormalizedDateFromInput(inputId) {
 
     function handleLoginKeyPress(e) { if (e.key === 'Enter') authenticateUser(); }
 
-    async function authenticateUser() {
-      const email = document.getElementById('emailInput').value.trim().toLowerCase();
-      const password = document.getElementById('passwordInput').value;
-      const loginError = document.getElementById('loginError');
-      loginError.style.display = 'none'; loginError.textContent = '';
+   async function authenticateUser() {
+  const email = document.getElementById('emailInput').value.trim().toLowerCase();
+  const password = document.getElementById('passwordInput').value;
+  const loginError = document.getElementById('loginError');
+  loginError.style.display = 'none'; loginError.textContent = '';
 
-      if (!email) return showLoginError('Please enter an email address.');
-      if (!password) return showLoginError('Please enter your password.');
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return showLoginError('Please enter a valid email address.');
+  if (!email) return showLoginError('Please enter an email address.');
+  if (!password) return showLoginError('Please enter your password.');
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return showLoginError('Please enter a valid email address.');
 
-      if (!AUTHORIZED_USERS[email]) { recordFailedAttempt(email); return showLoginError(`❌ Access Denied: Email "${email}" is not authorized.`); }
+  if (!AUTHORIZED_USERS[email]) { recordFailedAttempt(email); return showLoginError(`❌ Access Denied: Email "${email}" is not authorized.`); }
 
-      if (AUTHORIZED_USERS[email].password !== password) {
-        recordFailedAttempt(email);
-        const attempts = failedAttempts[email] || 0;
-        const remaining = PASSWORD_SETTINGS.maxAttempts - attempts;
-        if (remaining > 0) return showLoginError(`❌ Incorrect password for "${email}". ${remaining} attempts remaining.`);
-        else return showLoginError(`🔒 Account locked for ${PASSWORD_SETTINGS.lockoutTime} minutes.`);
-      }
+  if (AUTHORIZED_USERS[email].password !== password) {
+    recordFailedAttempt(email);
+    const attempts = failedAttempts[email] || 0;
+    const remaining = PASSWORD_SETTINGS.maxAttempts - attempts;
+    if (remaining > 0) return showLoginError(`❌ Incorrect password for "${email}". ${remaining} attempts remaining.`);
+    else return showLoginError(`🔒 Account locked for ${PASSWORD_SETTINGS.lockoutTime} minutes.`);
+  }
 
-      // after successful login
-       clearFailedAttempts(email);
-       currentUser = email; isAuthenticated = true;
-       localStorage.setItem('authenticatedUser', email);
-       localStorage.setItem('authTime', new Date().toISOString());
-       await fetchFromServer();  // <-- new: sync remote -> local on login//
-       showMainApp();
-
-    }
+  // after successful login
+   clearFailedAttempts(email);
+   currentUser = email; isAuthenticated = true;
+   localStorage.setItem('authenticatedUser', email);
+   localStorage.setItem('authTime', new Date().toISOString());
+   await verifyAbhyasisDataOnLogin();  // CHANGED: Load abhyasis with joining dates
+   showMainApp();
+}
 
     function checkStoredAuthentication() {
       try {
@@ -698,54 +698,123 @@ function getNormalizedDateFromInput(inputId) {
     }
 
     /***** ABHYASIS MANAGEMENT (consistent) *****/
-    function addAbhyasi() {
-      const name = document.getElementById('studentName').value.trim();
-      const id = document.getElementById('studentId').value.trim();
-      const contact = document.getElementById('studentContact').value.trim();
-      if (!name || !id) { showAlert('Please enter Abhyasi name and ID', 'error'); return; }
-      if (abhyasis.find(a => a.id === id)) { showAlert('Abhyasi ID already exists', 'error'); return; }
-      abhyasis.push({ name, id, contact });
-      document.getElementById('studentName').value = '';
-      document.getElementById('studentId').value = '';
-      document.getElementById('studentContact').value = '';
-      updateStudentsList();
-      updateAttendanceList();
-      saveDataLocal();
-      showAlert(`Abhyasi "${name}" added (unsaved to cloud)`, 'success');
-    }
+// ============ CHANGE 1: Update the abhyasis object structure ============
+// In the addAbhyasi() function, change it to include dateOfJoining:
 
-    function editAbhyasi(index) {
-      const a = abhyasis[index];
-      const container = document.getElementById(`student-${index}`);
-      if (!container) return;
-      container.innerHTML = `
-        <div style="flex:1; display:flex; gap:8px; flex-wrap:wrap;">
-          <input id="editName-${index}" value="${a.name}" style="padding:6px; flex:1;" />
-          <input id="editId-${index}" value="${a.id}" style="padding:6px; width:120px;" />
-          <input id="editContact-${index}" value="${a.contact || ''}" style="padding:6px; width:160px;" />
-        </div>
-        <div style="display:flex; gap:6px;">
-          <button class="btn btn-success btn-small" onclick="saveEditAbhyasi(${index})">Save</button>
-          <button class="btn btn-warning btn-small" onclick="updateStudentsList()">Cancel</button>
-        </div>
-      `;
-    }
+function addAbhyasi() {
+  const name = document.getElementById('studentName').value.trim();
+  const id = document.getElementById('studentId').value.trim();
+  const contact = document.getElementById('studentContact').value.trim();
+  const dateOfJoining = document.getElementById('studentDateOfJoining').value; // NEW LINE
+  
+  if (!name || !id) { showAlert('Please enter Abhyasi name and ID', 'error'); return; }
+  if (abhyasis.find(a => a.id === id)) { showAlert('Abhyasi ID already exists', 'error'); return; }
+  
+  abhyasis.push({ name, id, contact, dateOfJoining }); // UPDATED
+  
+  document.getElementById('studentName').value = '';
+  document.getElementById('studentId').value = '';
+  document.getElementById('studentContact').value = '';
+  document.getElementById('studentDateOfJoining').value = ''; // NEW LINE
+  
+  updateStudentsList();
+  updateAttendanceList();
+  saveDataLocal();
+  showAlert(`Abhyasi "${name}" added (unsaved to cloud)`, 'success');
+}
 
-    function saveEditAbhyasi(index) {
-      const name = document.getElementById(`editName-${index}`).value.trim();
-      const id = document.getElementById(`editId-${index}`).value.trim();
-      const contact = document.getElementById(`editContact-${index}`).value.trim();
-      if (!name || !id) { showAlert('Name & ID required', 'error'); return; }
-      // Prevent duplicate ID (unless unchanged)
-      const duplicate = abhyasis.find((a,i) => a.id === id && i !== index);
-      if (duplicate) { showAlert('Another Abhyasi with this ID exists', 'error'); return; }
-      abhyasis[index] = { name, id, contact };
-      saveDataLocal();
-      updateStudentsList();
-      updateAttendanceList();
-      showAlert('Abhyasi updated (unsaved to cloud)', 'success');
-    }
+// ============ CHANGE 2: Update editAbhyasi() ============
+function editAbhyasi(index) {
+  const a = abhyasis[index];
+  const container = document.getElementById(`student-${index}`);
+  if (!container) return;
+  container.innerHTML = `
+    <div style="flex:1; display:flex; gap:8px; flex-wrap:wrap;">
+      <input id="editName-${index}" value="${a.name}" style="padding:6px; flex:1;" />
+      <input id="editId-${index}" value="${a.id}" style="padding:6px; width:120px;" />
+      <input id="editContact-${index}" value="${a.contact || ''}" style="padding:6px; width:160px;" />
+      <input id="editDateOfJoining-${index}" type="date" value="${a.dateOfJoining || ''}" style="padding:6px; width:160px;" />
+    </div>
+    <div style="display:flex; gap:6px;">
+      <button class="btn btn-success btn-small" onclick="saveEditAbhyasi(${index})">Save</button>
+      <button class="btn btn-warning btn-small" onclick="updateStudentsList()">Cancel</button>
+    </div>
+  `;
+}
 
+// ============ CHANGE 3: Update saveEditAbhyasi() ============
+function saveEditAbhyasi(index) {
+  const name = document.getElementById(`editName-${index}`).value.trim();
+  const id = document.getElementById(`editId-${index}`).value.trim();
+  const contact = document.getElementById(`editContact-${index}`).value.trim();
+  const dateOfJoining = document.getElementById(`editDateOfJoining-${index}`).value; // NEW LINE
+  
+  if (!name || !id) { showAlert('Name & ID required', 'error'); return; }
+  const duplicate = abhyasis.find((a,i) => a.id === id && i !== index);
+  if (duplicate) { showAlert('Another Abhyasi with this ID exists', 'error'); return; }
+  
+  abhyasis[index] = { name, id, contact, dateOfJoining }; // UPDATED
+  
+  saveDataLocal();
+  updateStudentsList();
+  updateAttendanceList();
+  showAlert('Abhyasi updated (unsaved to cloud)', 'success');
+}
+
+// ============ CHANGE 4: Update updateStudentsList() ============
+function updateStudentsList() {
+  const container = document.getElementById('studentsList');
+  if (!abhyasis.length) {
+    container.innerHTML = '<p style="color:#666; font-style:italic;">No Abhyasis yet.</p>';
+    return;
+  }
+  container.innerHTML = abhyasis.map((a,i) => `
+    <div class="student-item" id="student-${i}">
+      <div>
+        <div class="student-name">${escapeHtml(a.name)}</div>
+        <div class="student-id">ID: ${escapeHtml(a.id)}${a.contact ? ' | ' + escapeHtml(a.contact) : ''}${a.dateOfJoining ? ' | Joined: ' + a.dateOfJoining : ''}</div>
+      </div>
+      <div style="display:flex; gap:6px;">
+        <button class="btn btn-warning btn-small" onclick="editAbhyasi(${i})">Edit</button>
+        <button class="btn btn-danger btn-small" onclick="removeAbhyasi(${i})">Remove</button>
+      </div>
+    </div>`).join('');
+}
+
+// ============ CHANGE 5: Add new download function ============
+function downloadAbhyasiDetailsExcel() {
+  if (!abhyasis.length) {
+    showAlert('No abhyasis to download', 'error');
+    return;
+  }
+
+  try {
+    const data = [
+      ['Abhyasi Name', 'Abhyasi ID', 'Contact Number', 'Date of Joining']
+    ];
+    
+    abhyasis.forEach(a => {
+      data.push([
+        a.name,
+        a.id,
+        a.contact || '',
+        a.dateOfJoining || ''
+      ]);
+    });
+
+    const ws = XLSX.utils.aoa_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Abhyasis');
+
+    const filename = `abhyasi_details_${new Date().toISOString().slice(0,10)}.xlsx`;
+    XLSX.writeFile(wb, filename);
+    
+    showAlert('Abhyasi details exported successfully', 'success');
+  } catch (err) {
+    console.error('Export error:', err);
+    showAlert('Failed to export: ' + err.message, 'error');
+  }
+}
     function removeAbhyasi(index) {
       const a = abhyasis[index];
       if (!confirm(`Remove ${a.name}?`)) return;
@@ -754,24 +823,7 @@ function getNormalizedDateFromInput(inputId) {
       showAlert(`Abhyasi "${a.name}" removed (unsaved to cloud)`, 'success');
     }
 
-    function updateStudentsList() {
-      const container = document.getElementById('studentsList');
-      if (!abhyasis.length) {
-        container.innerHTML = '<p style="color:#666; font-style:italic;">No Abhyasis yet.</p>';
-        return;
-      }
-      container.innerHTML = abhyasis.map((a,i) => `
-        <div class="student-item" id="student-${i}">
-          <div>
-            <div class="student-name">${escapeHtml(a.name)}</div>
-            <div class="student-id">ID: ${escapeHtml(a.id)}${a.contact ? ' | ' + escapeHtml(a.contact) : ''}</div>
-          </div>
-          <div style="display:flex; gap:6px;">
-            <button class="btn btn-warning btn-small" onclick="editAbhyasi(${i})">Edit</button>
-            <button class="btn btn-danger btn-small" onclick="removeAbhyasi(${i})">Remove</button>
-          </div>
-        </div>`).join('');
-    }
+   
 
     /***** ATTENDANCE UI *****/
     function updateAttendanceList() {
@@ -2043,6 +2095,376 @@ function showMilestoneAchievers() {
   displayAnalysisResults(achievers, 'Milestone Achievers',
     ['Rank', 'Name', 'ID', 'Sessions Attended', 'Milestones']);
 }
+//////////////////////////////////////////////////////////////////////////
+// ============ FUNCTION 1: showEngagementByJoiningDate() ============
+function showEngagementByJoiningDate() {
+  console.log('Starting showEngagementByJoiningDate');
+  console.log('abhyasis count:', abhyasis ? abhyasis.length : 0);
+  console.log('masterRecords count:', masterRecords ? masterRecords.length : 0);
+  
+  if (!abhyasis || abhyasis.length === 0) {
+    showAlert('No abhyasis found', 'error');
+    return;
+  }
+
+  const now = new Date();
+  const engagementData = [];
+
+  abhyasis.forEach(a => {
+    console.log('Processing abhyasi:', a.name, 'joining date:', a.dateOfJoining);
+    
+    if (!a.dateOfJoining) {
+      console.log('  - Skipped: No joining date');
+      return;
+    }
+
+    try {
+      const joinedDate = new Date(a.dateOfJoining);
+      if (isNaN(joinedDate.getTime())) {
+        console.log('  - Skipped: Invalid date format');
+        return;
+      }
+
+      const daysAsMember = Math.floor((now - joinedDate) / (24 * 60 * 60 * 1000));
+      
+      const sessionsAttended = (masterRecords || []).filter(r => 
+        r && r.id === a.id && r.present && r.date && r.date >= a.dateOfJoining
+      ).length;
+
+      const totalSessionsRegistered = (masterRecords || []).filter(r => 
+        r && r.id === a.id && r.date && r.date >= a.dateOfJoining
+      ).length;
+
+      const attendanceRate = totalSessionsRegistered > 0 
+        ? Math.round((sessionsAttended / totalSessionsRegistered) * 100)
+        : 0;
+
+      console.log(`  - ${a.name}: ${sessionsAttended}/${totalSessionsRegistered} sessions, ${attendanceRate}% rate`);
+
+      engagementData.push({
+        id: a.id,
+        name: a.name,
+        contact: a.contact || 'N/A',
+        joinedDate: a.dateOfJoining,
+        daysAsMember,
+        sessionsAttended,
+        totalSessions: totalSessionsRegistered,
+        attendanceRate
+      });
+    } catch (err) {
+      console.error('Error processing abhyasi:', a.name, err);
+    }
+  });
+
+  console.log('Total engagement data:', engagementData.length);
+
+  engagementData.sort((a, b) => b.attendanceRate - a.attendanceRate);
+
+  let html = '<div style="background:white; padding:16px; border-radius:8px; margin-top:16px;">';
+  html += '<h3>Engagement Analysis by Joining Date</h3>';
+  
+  if (engagementData.length === 0) {
+    html += '<p style="color:#666;">No abhyasis with joining date found. Please add joining dates to abhyasis.</p>';
+  } else {
+    html += `<p style="margin-bottom:12px; color:#666;"><strong>Found ${engagementData.length} abhyasi(s)</strong></p>`;
+    html += `<table class="report-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Name</th>
+          <th>ID</th>
+          <th>Contact</th>
+          <th>Joined Date</th>
+          <th>Days as Member</th>
+          <th>Sessions Attended</th>
+          <th>Total Registered</th>
+          <th>Attendance Rate</th>
+        </tr>
+      </thead>
+      <tbody>`;
+    
+    engagementData.forEach((row, i) => {
+      const rateColor = row.attendanceRate >= 80 ? '#27ae60' : 
+                       row.attendanceRate >= 50 ? '#f39c12' : '#e74c3c';
+      html += `<tr>
+        <td><strong>${i + 1}</strong></td>
+        <td>${escapeHtml(row.name)}</td>
+        <td>${escapeHtml(row.id)}</td>
+        <td>${escapeHtml(row.contact)}</td>
+        <td>${row.joinedDate}</td>
+        <td>${row.daysAsMember}</td>
+        <td>${row.sessionsAttended}</td>
+        <td>${row.totalSessions}</td>
+        <td><span class="attendance-badge" style="background:${rateColor};">${row.attendanceRate}%</span></td>
+      </tr>`;
+    });
+    
+    html += '</tbody></table>';
+  }
+  
+  html += '</div>';
+  
+  const results = document.getElementById('reportResults');
+  if (!results) {
+    console.error('reportResults container not found');
+    return;
+  }
+  results.innerHTML = html;
+  results.style.display = 'block';
+}
+
+// ============ FUNCTION 2: showJoiningDateStats() ============
+function showJoiningDateStats() {
+  console.log('Starting showJoiningDateStats');
+  console.log('abhyasis count:', abhyasis ? abhyasis.length : 0);
+  
+  if (!abhyasis || abhyasis.length === 0) {
+    showAlert('No abhyasis found', 'error');
+    return;
+  }
+
+  const now = new Date();
+  const stats = {
+    last7Days: [],
+    last30Days: [],
+    last90Days: [],
+    last6Months: [],
+    older: []
+  };
+
+  const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  const ninetyDaysAgo = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  const sixMonthsAgo = new Date(now.getTime() - 180 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+
+  console.log('Date ranges:');
+  console.log('  Last 7 days:', sevenDaysAgo);
+  console.log('  Last 30 days:', thirtyDaysAgo);
+  console.log('  Last 90 days:', ninetyDaysAgo);
+  console.log('  Last 6 months:', sixMonthsAgo);
+
+  abhyasis.forEach(a => {
+    if (!a.dateOfJoining) {
+      console.log(`${a.name} - No joining date`);
+      return;
+    }
+    
+    console.log(`${a.name} - Joined: ${a.dateOfJoining}`);
+    
+    if (a.dateOfJoining >= sevenDaysAgo) {
+      console.log('  -> Last 7 days');
+      stats.last7Days.push(a);
+    } else if (a.dateOfJoining >= thirtyDaysAgo) {
+      console.log('  -> Last 30 days');
+      stats.last30Days.push(a);
+    } else if (a.dateOfJoining >= ninetyDaysAgo) {
+      console.log('  -> Last 90 days');
+      stats.last90Days.push(a);
+    } else if (a.dateOfJoining >= sixMonthsAgo) {
+      console.log('  -> Last 6 months');
+      stats.last6Months.push(a);
+    } else {
+      console.log('  -> Older');
+      stats.older.push(a);
+    }
+  });
+
+  console.log('Final stats:', {
+    last7: stats.last7Days.length,
+    last30: stats.last30Days.length,
+    last90: stats.last90Days.length,
+    last6m: stats.last6Months.length,
+    older: stats.older.length
+  });
+
+  let html = '<div style="background:white; padding:16px; border-radius:8px; margin-top:16px;">';
+  html += '<h3>Abhyasi Joining Distribution</h3>';
+  html += '<div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-top:12px;">';
+  
+  html += `<div style="background:#d1ecf1; padding:12px; border-radius:8px; border-left:4px solid #17a2b8; text-align:center;">
+    <div style="font-size:24px; font-weight:bold; color:#0c5460;">${stats.last7Days.length}</div>
+    <div style="color:#0c5460; font-size:12px;">Last 7 Days</div>
+  </div>`;
+  
+  html += `<div style="background:#d4edda; padding:12px; border-radius:8px; border-left:4px solid #28a745; text-align:center;">
+    <div style="font-size:24px; font-weight:bold; color:#155724;">${stats.last30Days.length}</div>
+    <div style="color:#155724; font-size:12px;">Last 30 Days</div>
+  </div>`;
+  
+  html += `<div style="background:#fff3cd; padding:12px; border-radius:8px; border-left:4px solid #ffc107; text-align:center;">
+    <div style="font-size:24px; font-weight:bold; color:#856404;">${stats.last90Days.length}</div>
+    <div style="color:#856404; font-size:12px;">Last 90 Days</div>
+  </div>`;
+  
+  html += `<div style="background:#f8d7da; padding:12px; border-radius:8px; border-left:4px solid #dc3545; text-align:center;">
+    <div style="font-size:24px; font-weight:bold; color:#721c24;">${stats.last6Months.length}</div>
+    <div style="color:#721c24; font-size:12px;">6 Months</div>
+  </div>`;
+  
+  html += `<div style="background:#e2e3e5; padding:12px; border-radius:8px; border-left:4px solid #6c757d; text-align:center;">
+    <div style="font-size:24px; font-weight:bold; color:#383d41;">${stats.older.length}</div>
+    <div style="color:#383d41; font-size:12px;">Older</div>
+  </div>`;
+  
+  html += '</div>';
+
+  html += '<div style="margin-top:20px;">';
+  
+  if (stats.last7Days.length > 0) {
+    html += '<h4 style="color:#0c5460;">Last 7 Days (' + stats.last7Days.length + ')</h4>';
+    html += '<ul style="margin:8px 0; padding-left:20px;">';
+    stats.last7Days.forEach(a => {
+      html += `<li>${escapeHtml(a.name)} - ${a.dateOfJoining}</li>`;
+    });
+    html += '</ul>';
+  }
+
+  if (stats.last30Days.length > 0) {
+    html += '<h4 style="color:#155724;">Last 30 Days (' + stats.last30Days.length + ')</h4>';
+    html += '<ul style="margin:8px 0; padding-left:20px;">';
+    stats.last30Days.forEach(a => {
+      html += `<li>${escapeHtml(a.name)} - ${a.dateOfJoining}</li>`;
+    });
+    html += '</ul>';
+  }
+
+  if (stats.last90Days.length > 0) {
+    html += '<h4 style="color:#856404;">Last 90 Days (' + stats.last90Days.length + ')</h4>';
+    html += '<ul style="margin:8px 0; padding-left:20px;">';
+    stats.last90Days.forEach(a => {
+      html += `<li>${escapeHtml(a.name)} - ${a.dateOfJoining}</li>`;
+    });
+    html += '</ul>';
+  }
+
+  if (stats.last6Months.length > 0) {
+    html += '<h4 style="color:#721c24;">Last 6 Months (' + stats.last6Months.length + ')</h4>';
+    html += '<ul style="margin:8px 0; padding-left:20px;">';
+    stats.last6Months.forEach(a => {
+      html += `<li>${escapeHtml(a.name)} - ${a.dateOfJoining}</li>`;
+    });
+    html += '</ul>';
+  }
+
+  if (stats.older.length > 0) {
+    html += '<h4 style="color:#383d41;">Older (' + stats.older.length + ')</h4>';
+    html += '<ul style="margin:8px 0; padding-left:20px;">';
+    stats.older.forEach(a => {
+      html += `<li>${escapeHtml(a.name)} - ${a.dateOfJoining}</li>`;
+    });
+    html += '</ul>';
+  }
+
+  html += '</div></div>';
+  
+  const results = document.getElementById('reportResults');
+  if (!results) {
+    console.error('reportResults container not found');
+    return;
+  }
+  results.innerHTML = html;
+  results.style.display = 'block';
+}
+
+// ============ FUNCTION 3: showAbhyasisByJoiningDate() ============
+function showAbhyasisByJoiningDate() {
+  console.log('Starting showAbhyasisByJoiningDate');
+  console.log('Total abhyasis:', abhyasis ? abhyasis.length : 0);
+  
+  if (!abhyasis || abhyasis.length === 0) {
+    showAlert('No abhyasis found', 'error');
+    return;
+  }
+
+  const withJoiningDate = abhyasis
+    .filter(a => a.dateOfJoining && a.dateOfJoining.trim() !== '')
+    .map(a => {
+      const joinedDate = new Date(a.dateOfJoining);
+      const daysAsMember = Math.floor((new Date() - joinedDate) / (24 * 60 * 60 * 1000));
+      
+      const attendance = (masterRecords || []).filter(r => 
+        r && r.id === a.id && r.present && r.date >= a.dateOfJoining
+      ).length;
+
+      const totalSessions = (masterRecords || []).filter(r => 
+        r && r.id === a.id && r.date >= a.dateOfJoining
+      ).length;
+
+      const attendanceRate = totalSessions > 0 
+        ? Math.round((attendance / totalSessions) * 100)
+        : 0;
+
+      return {
+        name: a.name,
+        id: a.id,
+        contact: a.contact || 'N/A',
+        dateOfJoining: a.dateOfJoining,
+        daysAsMember,
+        sessionsAttended: attendance,
+        totalSessions,
+        attendanceRate
+      };
+    })
+    .sort((a, b) => new Date(b.dateOfJoining) - new Date(a.dateOfJoining));
+
+  console.log('Abhyasis with joining dates:', withJoiningDate.length);
+
+  let html = '<div style="background:white; padding:16px; border-radius:8px; margin-top:16px;">';
+  html += '<h3>Abhyasis Ordered by Joining Date (Newest First)</h3>';
+  
+  if (withJoiningDate.length === 0) {
+    html += '<p style="color:#666;">No abhyasis with joining date found. Please add joining dates in Manage Abhyasis.</p>';
+  } else {
+    html += `<p style="margin-bottom:12px; color:#666;"><strong>Total: ${withJoiningDate.length} abhyasi(s)</strong></p>`;
+    
+    html += `<table class="report-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Name</th>
+          <th>ID</th>
+          <th>Contact</th>
+          <th>Joined Date</th>
+          <th>Days as Member</th>
+          <th>Sessions Attended</th>
+          <th>Total Sessions</th>
+          <th>Attendance %</th>
+        </tr>
+      </thead>
+      <tbody>`;
+    
+    withJoiningDate.forEach((a, i) => {
+      let statusColor = '#27ae60';
+      if (a.attendanceRate < 50) statusColor = '#e74c3c';
+      else if (a.attendanceRate < 75) statusColor = '#f39c12';
+      
+      html += `<tr>
+        <td><strong>${i + 1}</strong></td>
+        <td>${escapeHtml(a.name)}</td>
+        <td>${escapeHtml(a.id)}</td>
+        <td>${escapeHtml(a.contact)}</td>
+        <td style="font-weight:500;">${a.dateOfJoining}</td>
+        <td>${a.daysAsMember}</td>
+        <td>${a.sessionsAttended}</td>
+        <td>${a.totalSessions}</td>
+        <td><span class="attendance-badge" style="background:${statusColor};">${a.attendanceRate}%</span></td>
+      </tr>`;
+    });
+    
+    html += '</tbody></table>';
+  }
+  
+  html += '</div>';
+  
+  const results = document.getElementById('reportResults');
+  if (!results) {
+    console.error('reportResults container not found');
+    return;
+  }
+  results.innerHTML = html;
+  results.style.display = 'block';
+}
+///////////////////////////////////////////////////////////////////////
 
 // ============ ENGAGEMENT METRICS ============
 
@@ -2736,6 +3158,7 @@ function showComprehensiveAnalysis() {
   html += '<button class="btn" onclick="showReturningAbhyasis()">🔄 Returning Abhyasis</button>';
   html += '</div></div>';
   
+
   // Loyalty & Engagement
   html += '<div style="margin-bottom:20px;">';
   html += '<h4 style="color:#2c3e50; margin-bottom:12px;">⏰ Loyalty & Engagement</h4>';
@@ -2743,8 +3166,11 @@ function showComprehensiveAnalysis() {
   html += '<button class="btn btn-info" onclick="showNewAbhyasis()">🆕 New (Last 30 days)</button>';
   html += '<button class="btn btn-info" onclick="showLoyalMembers()">⭐ Loyal (3+ months)</button>';
   html += '<button class="btn btn-info" onclick="showMilestoneAchievers()">🎁 Milestone Achievers</button>';
+  html += '<button class="btn btn-info" onclick="showEngagementByJoiningDate()">📊 Engagement by Joining Date</button>';
+  html += '<button class="btn btn-info" onclick="showJoiningDateStats()">📈 Joining Distribution Stats</button>';
+  html += '<button class="btn btn-info" onclick="showAbhyasisByJoiningDate()">📋 All Abhyasis by Joining Date</button>';
   html += '</div></div>';
-  
+
   // Risk & Attention Needed
   html += '<div style="margin-bottom:20px;">';
   html += '<h4 style="color:#2c3e50; margin-bottom:12px;">⚠️ Risk & Attention Needed</h4>';
@@ -2810,16 +3236,37 @@ async function saveAbhyasisToCloud() {
     return;
   }
   
-  showAlert('Saving to cloud...', 'info');
+  if (!abhyasis.length) {
+    showAlert('No abhyasis to save', 'error');
+    return;
+  }
+  
+  showAlert('Saving abhyasi details to cloud...', 'info');
+  
+  saveDataLocal();
   const result = await syncToServer();
   
   if (result && result.success) {
-    showAlert('✅ Successfully saved to cloud!', 'success');
+    showAlert('✅ Successfully saved ' + abhyasis.length + ' abhyasi(s) to cloud!', 'success');
   } else {
     showAlert('❌ Failed to save to cloud: ' + (result?.error || 'Unknown error'), 'error');
   }
 }
 
+///////////////////////////////////////////////////////////////////////////
+async function verifyAbhyasisDataOnLogin() {
+  console.log('Verifying abhyasi data on login...');
+  console.log('Current abhyasis count:', abhyasis.length);
+  
+  loadSavedData();
+  console.log('After loading local data:', abhyasis.length, 'abhyasis');
+  
+  const cloudResult = await fetchFromServer();
+  console.log('After cloud fetch:', abhyasis.length, 'abhyasis with data:');
+  abhyasis.forEach(a => {
+    console.log(`  - ${a.name} (${a.id}): Joined ${a.dateOfJoining || 'N/A'}`);
+  });
+}
 /////////////////////////////////////////////////////////////////////////////////
 
     function loadSavedData() {
@@ -2901,7 +3348,7 @@ async function syncToServer() {
     
     if (result.error) throw result.error;
     
-    console.log('Sync successful');
+    console.log('Sync successful - abhyasis, attendance, and master records saved');
     return { success: true };
     
   } catch (err) {
@@ -2934,7 +3381,6 @@ async function fetchFromServer() {
     
     if (error) {
       if (error.code === 'PGRST116') {
-        // No data found
         console.info('No remote data found for', currentUser);
         return { success: true, found: false };
       }
@@ -2949,14 +3395,24 @@ async function fetchFromServer() {
     const remote = data.data;
     console.log('Remote data retrieved');
     
-    // Merge abhyasis
+    // ===== MERGE ABHYASIS (with dateOfJoining) =====
     if (remote.abhyasis && Array.isArray(remote.abhyasis)) {
       const localIds = new Set(abhyasis.map(a => a.id));
       let addedCount = 0;
       remote.abhyasis.forEach(r => {
         if (!localIds.has(r.id)) {
-          abhyasis.push(r);
+          abhyasis.push({
+            name: r.name,
+            id: r.id,
+            contact: r.contact || '',
+            dateOfJoining: r.dateOfJoining || ''
+          });
           addedCount++;
+        } else {
+          const existing = abhyasis.find(a => a.id === r.id);
+          if (existing && !existing.dateOfJoining && r.dateOfJoining) {
+            existing.dateOfJoining = r.dateOfJoining;
+          }
         }
       });
       console.log('Added', addedCount, 'new abhyasis');
@@ -2979,14 +3435,12 @@ async function fetchFromServer() {
       console.log('Merged master records:', masterRecords.length - beforeCount, 'new');
     }
     
-    // Save merged data locally
-    // Save merged data locally
-     saveDataLocal(); // Use local save to avoid immediate re-sync
+    saveDataLocal();
     displayAllRecords();
     updateStudentsList();
     updateAttendanceList();
     
-    showAlert('Data synced from cloud (only new items added)', 'success');
+    showAlert('Data synced from cloud (abhyasis with joining dates loaded)', 'success');
     return { success: true, merged: true };
     
   } catch (err) {
