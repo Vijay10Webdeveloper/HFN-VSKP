@@ -2800,7 +2800,8 @@ function showLowAttendanceAbhyasis() {
   results.style.display = 'block';
 }
 
-// ============ TREND REPORTS - 1, 3, 6 MONTHS ============
+// ============ TREND REPORTS - 1, 3, 6 MONTHS (FIXED) ============
+// ============ TREND REPORTS - 1, 3, 6 MONTHS (NO BLANKS) ============
 
 function showTrendReport(months) {
   const now = new Date();
@@ -2810,169 +2811,198 @@ function showTrendReport(months) {
   const startStr = start.toISOString().slice(0, 10);
   const endStr = now.toISOString().slice(0, 10);
 
-  const groupData = {};
-  const faceData = {};
+  // Collect attendance by date and session type
+  const dateAttendance = {};
 
   masterRecords.forEach(record => {
     const date = record.date;
-    if (!date || date < startStr || date > endStr) return;
+    if (!date || date < startStr || date > endStr || !record.present) return;
 
-    if (record.present && record.sessionType?.includes('Group')) {
-      if (!groupData[date]) groupData[date] = new Set();
-      groupData[date].add(record.id);
+    if (!dateAttendance[date]) {
+      dateAttendance[date] = { group: 0, face: 0 };
     }
-    if (record.present && record.sessionType?.includes('Face')) {
-      if (!faceData[date]) faceData[date] = new Set();
-      faceData[date].add(record.id);
+
+    if (record.sessionType?.includes('Group')) {
+      dateAttendance[date].group += 1;
+    }
+    if (record.sessionType?.includes('Face')) {
+      dateAttendance[date].face += 1;
     }
   });
 
-  const allDates = Array.from(new Set([...Object.keys(groupData), ...Object.keys(faceData)])).sort();
-  
-  if (!allDates.length) {
+  // Build separate arrays for each session type (only include dates with attendance for that type)
+  const groupDates = Object.entries(dateAttendance)
+    .filter(([d, data]) => data.group > 0)
+    .sort((a, b) => a[0].localeCompare(b[0]));
+
+  const faceDates = Object.entries(dateAttendance)
+    .filter(([d, data]) => data.face > 0)
+    .sort((a, b) => a[0].localeCompare(b[0]));
+
+  // Render the HTML
+  let html = `<div style="background:white; padding:12px; border-radius:8px; margin-top:16px;">
+                <h3>${months}-Month Attendance Trend</h3>`;
+
+  if (groupDates.length === 0 && faceDates.length === 0) {
+    html += `<p style="color:#666;">No attendance records found in the last ${months} month(s).</p></div>`;
     const results = document.getElementById('reportResults');
-    results.innerHTML = `<div style="color:#666;padding:12px;">No attendance records found in the last ${months} month(s).</div>`;
+    results.innerHTML = html;
     results.style.display = 'block';
     return;
   }
 
-  const groupCounts = allDates.map(d => groupData[d] ? groupData[d].size : 0);
-  const faceCounts = allDates.map(d => faceData[d] ? faceData[d].size : 0);
+  // Group chart
+  if (groupDates.length > 0) {
+    html += `<p style="color:#666; font-size:14px; margin-bottom:16px;">
+              Group Sessions: ${groupDates.length} dates with attendance
+            </p>
+            <div style="margin-bottom:30px;">
+              <h4 style="color:#2ecc71; margin-bottom:12px;">Group Meditation Sessions</h4>
+              <div style="position:relative; height:150px;">
+                <canvas id="groupTrendChart"></canvas>
+              </div>
+            </div>`;
+  } else {
+    html += `<p style="color:#999; font-size:14px; margin-bottom:16px;">📊 No group session attendance in this period</p>`;
+  }
 
-  const maxGroup = Math.max(...groupCounts) || 5;
-  const maxFace = Math.max(...faceCounts) || 5;
+  // Face-to-face chart
+  if (faceDates.length > 0) {
+    html += `<p style="color:#666; font-size:14px; margin-bottom:16px;">
+              Face-to-Face: ${faceDates.length} dates with attendance
+            </p>
+            <div>
+              <h4 style="color:#3498db; margin-bottom:12px;">Face-to-Face Sittings</h4>
+              <div style="position:relative; height:150px;">
+                <canvas id="faceTrendChart"></canvas>
+              </div>
+            </div>`;
+  } else {
+    html += `<p style="color:#999; font-size:14px;">📊 No face-to-face attendance in this period</p>`;
+  }
 
-  let html = `<div style="background:white; padding:12px; border-radius:8px; margin-top:16px;">
-                <h3>${months}-Month Attendance Trend</h3>
-                
-                <div style="margin-bottom:30px;">
-                  <h4 style="color:#2ecc71; margin-bottom:12px;">Group Meditation Sessions</h4>
-                  <div style="position:relative; height:150px;">
-                    <canvas id="groupTrendChart"></canvas>
-                  </div>
-                </div>
-                
-                <div>
-                  <h4 style="color:#3498db; margin-bottom:12px;">Face-to-Face Sittings</h4>
-                  <div style="position:relative; height:150px;">
-                    <canvas id="faceTrendChart"></canvas>
-                  </div>
-                </div>
-              </div>`;
-  
+  html += `</div>`;
+
   const results = document.getElementById('reportResults');
   results.innerHTML = html;
   results.style.display = 'block';
 
   setTimeout(() => {
     // Group chart
-    const ctxGroup = document.getElementById('groupTrendChart');
-    if (ctxGroup) {
-      new Chart(ctxGroup.getContext('2d'), {
-        type: 'bar',
-        data: {
-          labels: allDates.map(d => new Date(d).toLocaleDateString('en-US', {month:'short', day:'numeric'})),
-          datasets: [{
-            label: 'Abhyasis Present',
-            data: groupCounts,
-            backgroundColor: '#2ecc71',
-            borderColor: '#27ae60',
-            borderWidth: 1,
-            barThickness: 20
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: true,
-          aspectRatio: 3,
-          plugins: {
-            legend: { display: false }
+    if (groupDates.length > 0) {
+      const groupLabels = groupDates.map(([d]) => new Date(d).toLocaleDateString('en-US', {month:'short', day:'numeric'}));
+      const groupValues = groupDates.map(([, data]) => data.group);
+      const maxGroup = Math.max(...groupValues, 5);
+
+      const ctxGroup = document.getElementById('groupTrendChart');
+      if (ctxGroup) {
+        new Chart(ctxGroup.getContext('2d'), {
+          type: 'bar',
+          data: {
+            labels: groupLabels,
+            datasets: [{
+              label: 'Abhyasis Present',
+              data: groupValues,
+              backgroundColor: '#2ecc71',
+              borderColor: '#27ae60',
+              borderWidth: 1,
+              barThickness: 'flex',
+              barPercentage: 0.8,
+              categoryPercentage: 0.9
+            }]
           },
-          scales: {
-            y: { 
-              beginAtZero: true,
-              min: 0,
-              max: maxGroup + 2,
-              ticks: { 
-                stepSize: Math.max(1, Math.ceil(maxGroup / 5)),
-                callback: function(value) {
-                  if (Number.isInteger(value)) return value;
-                }
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            aspectRatio: 3,
+            plugins: { legend: { display: false } },
+            scales: {
+              y: {
+                beginAtZero: true,
+                min: 0,
+                max: maxGroup + 2,
+                ticks: {
+                  stepSize: Math.max(1, Math.ceil(maxGroup / 5)),
+                  callback: function(value) {
+                    if (Number.isInteger(value)) return value;
+                  }
+                },
+                grid: { display: true }
               },
-              grid: { display: true }
-            },
-            x: {
-              ticks: { 
-                maxRotation: 45, 
-                minRotation: 45, 
-                font: { size: 9 },
-                autoSkip: true,
-                maxTicksLimit: 15
+              x: {
+                offset: false,
+                ticks: {
+                  maxRotation: 45,
+                  minRotation: 45,
+                  font: { size: 9 },
+                  autoSkip: false
+                }
               }
-            }
-          },
-          layout: {
-            padding: { top: 10, bottom: 0 }
+            },
+            layout: { padding: { top: 10, bottom: 0 } }
           }
-        }
-      });
+        });
+      }
     }
 
     // Face-to-face chart
-    const ctxFace = document.getElementById('faceTrendChart');
-    if (ctxFace) {
-      new Chart(ctxFace.getContext('2d'), {
-        type: 'bar',
-        data: {
-          labels: allDates.map(d => new Date(d).toLocaleDateString('en-US', {month:'short', day:'numeric'})),
-          datasets: [{
-            label: 'Abhyasis Present',
-            data: faceCounts,
-            backgroundColor: '#3498db',
-            borderColor: '#2980b9',
-            borderWidth: 1,
-            barThickness: 20
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: true,
-          aspectRatio: 3,
-          plugins: {
-            legend: { display: false }
+    if (faceDates.length > 0) {
+      const faceLabels = faceDates.map(([d]) => new Date(d).toLocaleDateString('en-US', {month:'short', day:'numeric'}));
+      const faceValues = faceDates.map(([, data]) => data.face);
+      const maxFace = Math.max(...faceValues, 5);
+
+      const ctxFace = document.getElementById('faceTrendChart');
+      if (ctxFace) {
+        new Chart(ctxFace.getContext('2d'), {
+          type: 'bar',
+          data: {
+            labels: faceLabels,
+            datasets: [{
+              label: 'Abhyasis Present',
+              data: faceValues,
+              backgroundColor: '#3498db',
+              borderColor: '#2980b9',
+              borderWidth: 1,
+              barThickness: 'flex',
+              barPercentage: 0.8,
+              categoryPercentage: 0.9
+            }]
           },
-          scales: {
-            y: { 
-              beginAtZero: true,
-              min: 0,
-              max: maxFace + 2,
-              ticks: { 
-                stepSize: Math.max(1, Math.ceil(maxFace / 5)),
-                callback: function(value) {
-                  if (Number.isInteger(value)) return value;
-                }
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            aspectRatio: 3,
+            plugins: { legend: { display: false } },
+            scales: {
+              y: {
+                beginAtZero: true,
+                min: 0,
+                max: maxFace + 2,
+                ticks: {
+                  stepSize: Math.max(1, Math.ceil(maxFace / 5)),
+                  callback: function(value) {
+                    if (Number.isInteger(value)) return value;
+                  }
+                },
+                grid: { display: true }
               },
-              grid: { display: true }
-            },
-            x: {
-              ticks: { 
-                maxRotation: 45, 
-                minRotation: 45, 
-                font: { size: 9 },
-                autoSkip: true,
-                maxTicksLimit: 15
+              x: {
+                offset: false,
+                ticks: {
+                  maxRotation: 45,
+                  minRotation: 45,
+                  font: { size: 9 },
+                  autoSkip: false
+                }
               }
-            }
-          },
-          layout: {
-            padding: { top: 10, bottom: 0 }
+            },
+            layout: { padding: { top: 10, bottom: 0 } }
           }
-        }
-      });
+        });
+      }
     }
   }, 100);
 }
-
 // ============ HELPER FUNCTIONS ============
 
 function displayAnalysisResults(data, title, headers) {
