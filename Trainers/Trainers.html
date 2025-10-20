@@ -369,9 +369,12 @@
                   <strong id="currentDate"></strong>
                   </div>
                <div class="student-list" id="attendanceList" style="max-height:400px; overflow-y:auto; border:1px solid #ddd; border-radius:8px; padding:8px; background:white; margin-bottom:12px;"></div>
-               <div style="text-align:center; padding:16px;">
-               <button class="btn btn-success" onclick="saveAttendance()">💾 Save Today's Attendance</button>
-               </div>
+               <div style="text-align:center; padding:16px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+                   <button class="btn btn-success" onclick="saveAttendance()">💾 Save Today's Attendance</button>
+                   <button class="btn btn-warning" onclick="updateAttendance()">🔄 Update Today's Attendance</button>
+                   <button class="btn" onclick="resetAttendanceForm()">↺ Reset Form</button>
+              </div>
+
              </div>
            </div>
         </div>
@@ -832,21 +835,24 @@ function downloadAbhyasiDetailsExcel() {
     container.innerHTML = '<p style="text-align:center;color:#666;">Add Abhyasis first to mark attendance.</p>'; 
     return; 
   }
+  
   container.innerHTML = abhyasis.map((s,i) => `
     <div class="student-item" id="attendance-row-${i}">
       <div style="flex:1;">
         <div class="student-name">${escapeHtml(s.name)}</div>
         <div class="student-id">ID: ${escapeHtml(s.id)}</div>
       </div>
-      <div style="display:flex; gap:8px; align-items:center;">
-        <label style="display:flex; align-items:center; gap:8px;">
-          <input id="attendance-${i}" type="checkbox" />
-          <span style="font-size:13px; color:#666;">Present</span>
-        </label>
-        <button class="btn btn-danger btn-small" onclick="removeAttendanceRow(${i})">Remove</button>
-      </div>
+      <label style="display:flex; align-items:center; gap:8px;">
+        <input id="attendance-${i}" type="checkbox" />
+        <span style="font-size:13px; color:#666;">Present</span>
+      </label>
     </div>`).join('');
+
+  // Load saved attendance for this date if exists
+  loadTodayAttendance();
 }
+
+
 ////////////05-10-2025//////////////////////////////////
 
 
@@ -865,11 +871,16 @@ function removeAttendanceRow(index) {
 ////////////////////////////////05-10-2025///////////////////////////////////////////////
 
     function updateCurrentDate() {
-      const dateVal = document.getElementById('classDate').value;
-      if (!dateVal) return;
-      const d = new Date(dateVal);
-      document.getElementById('currentDate').textContent = d.toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
-    }
+  const dateVal = document.getElementById('classDate').value;
+  if (!dateVal) return;
+  const d = new Date(dateVal);
+  document.getElementById('currentDate').textContent = d.toLocaleDateString('en-US', { 
+    weekday:'long', year:'numeric', month:'long', day:'numeric' 
+  });
+  
+  // Load saved attendance for the selected date
+  loadTodayAttendance();
+}
 
     /***** SAVE ATTENDANCE & MASTER RECORDS *****/
     function loadMasterRecords() {
@@ -890,23 +901,104 @@ function removeAttendanceRow(index) {
       masterRecords = removeDuplicateRecords(masterRecords);
       saveMasterRecords();
     }
-
+    /////////////////////////////////////Save attendance/////////////////////////
+// REPLACE the saveAttendance() function in your code with this:
 function saveAttendance() {
   if (!checkAuthentication()) return;
 
-  // ✅ normalize date to YYYY-MM-DD
+  // Get normalized date - use the same method as your code
   const date = getNormalizedDateFromInput('classDate');
-  if (!date) { showAlert('Please select a valid date', 'error'); return; }
+  if (!date) {
+    showAlert('Please select a valid date', 'error');
+    return;
+  }
 
-  if (!abhyasis.length) { showAlert('No abhyasis to save attendance for', 'error'); return; }
+  console.log('Saving attendance for date:', date);
+
+  // Validate abhyasis
+  if (!abhyasis || abhyasis.length === 0) {
+    showAlert('No abhyasis added. Add abhyasis first.', 'error');
+    return;
+  }
+
+  // Check if already saved for this date
+  if (attendanceHistory && attendanceHistory[date]) {
+    showAlert('Attendance already saved for this date. Use "Update" button to modify it.', 'info');
+    return;
+  }
+
+  // Get session details
   const sessionName = document.getElementById('sessionName').value || 'Sunday';
   const trainer = document.getElementById('trainer').value || 'Not specified';
   const sessionType = document.getElementById('sessionType').value || '';
 
+  // Build attendance records
   const attendanceData = [];
+  abhyasis.forEach((s, i) => {
+    const checkbox = document.getElementById(`attendance-${i}`);
+    const isPresent = checkbox ? checkbox.checked : false;
+
+    attendanceData.push({
+      date: date,
+      name: s.name,
+      id: s.id,
+      sessionName: sessionName,
+      sessionType: sessionType,
+      trainer: trainer,
+      present: isPresent,
+      savedBy: currentUser
+    });
+  });
+
+  console.log('Created attendance records:', attendanceData.length);
+
+  // Initialize if needed
+  if (!attendanceHistory) {
+    attendanceHistory = {};
+  }
+
+  // Save to local attendance history
+  attendanceHistory[date] = attendanceData;
+
+  // Add to master records (includes deduplication)
+  addNewRecordsToMaster(attendanceData);
+  
+  // Persist everything
+  saveData();
+  
+  // Reload to verify
+  loadMasterRecords();
+  displayAllRecords();
+
+  console.log('Attendance saved. Total master records:', masterRecords.length);
+
+  showAlert('✅ Attendance saved for ' + new Date(date).toLocaleDateString(), 'success');
+}
+    //////////////////////////////Update Attendance////////////////////////////
+
+function updateAttendance() {
+  if (!checkAuthentication()) return;
+
+  const date = getNormalizedDateFromInput('classDate');
+  if (!date) { showAlert('Please select a valid date', 'error'); return; }
+
+  if (!abhyasis.length) { showAlert('No abhyasis to update', 'error'); return; }
+  
+  // Check if exists first
+  if (!attendanceHistory[date]) {
+    showAlert('No saved attendance for this date yet. Use "Save" button first.', 'error');
+    return;
+  }
+
+  const sessionName = document.getElementById('sessionName').value || 'Sunday';
+  const trainer = document.getElementById('trainer').value || 'Not specified';
+  const sessionType = document.getElementById('sessionType').value || '';
+
+  // Create updated records
+  const updatedData = [];
   abhyasis.forEach((s,i) => {
     const checked = document.getElementById(`attendance-${i}`)?.checked ?? false;
-    attendanceData.push({
+    updatedData.push({
       date,
       name: s.name,
       id: s.id,
@@ -918,27 +1010,52 @@ function saveAttendance() {
     });
   });
 
-  // Keep attendanceHistory for backward-compat use
-  attendanceHistory[date] = attendanceData;
+  // Remove old records for this date from master
+  masterRecords = masterRecords.filter(r => r.date !== date);
+  saveMasterRecords();
 
-  // 🔐 Persist app data (and trigger your server sync)
+  // Update local history
+  attendanceHistory[date] = updatedData;
+  
+  // Re-add updated records to master
+  addNewRecordsToMaster(updatedData);
   saveData();
-
-  // 🧱 Master (source of truth for "View All Records")
-  addNewRecordsToMaster(attendanceData);   // merges + dedupes
-  saveMasterRecords();                     // make sure it's flushed
-
-  showAlert('Attendance is saved.', 'success');
-
-  // Reset checkboxes
-  abhyasis.forEach((_,i) => { const cb = document.getElementById(`attendance-${i}`); if (cb) cb.checked = false; });
-
-  // 🔄 Reload masterRecords from storage and display latest
   loadMasterRecords();
   displayAllRecords();
+
+  showAlert('✅ Attendance updated for ' + new Date(date).toLocaleDateString(), 'success');
 }
 
+////////////////////End of Update Attendance///////////////////////////////
+/////////////////////Load Today Attendance///////////////////////////////
+function loadTodayAttendance() {
+  const date = getNormalizedDateFromInput('classDate');
+  if (!date || !attendanceHistory[date]) {
+    // Clear checkboxes if no saved attendance
+    abhyasis.forEach((_,i) => {
+      const cb = document.getElementById(`attendance-${i}`);
+      if (cb) cb.checked = false;
+    });
+    return;
+  }
 
+  // Load previously saved attendance
+  const records = attendanceHistory[date];
+  abhyasis.forEach((a, i) => {
+    const found = records.find(r => r.id === a.id);
+    const cb = document.getElementById(`attendance-${i}`);
+    if (cb) cb.checked = found ? found.present : false;
+  });
+}
+///////////////////////////////////////////////////////////////////
+function resetAttendanceForm() {
+  abhyasis.forEach((_,i) => {
+    const cb = document.getElementById(`attendance-${i}`);
+    if (cb) cb.checked = false;
+  });
+  showAlert('Form cleared', 'info');
+}
+/////////////////////////////////////////////////////
     /***** DISPLAY / DOWNLOAD MASTER *****/
     function showRecords() {
   const container = document.getElementById('allRecordsContainer');
