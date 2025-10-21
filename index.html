@@ -594,6 +594,118 @@
                 flex: 0 0 280px;
             }
         }
+
+        /* Knowledge Base Section */
+.knowledge-notice {
+    background: linear-gradient(135deg, var(--accent-color), #e67e22);
+    color: var(--white);
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    text-align: center;
+    margin-bottom: 2rem;
+    font-weight: 600;
+}
+
+.daily-practices-carousel {
+    display: flex;
+    overflow-x: auto;
+    gap: 1.5rem;
+    padding: 1rem 0;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent-color) var(--light-bg);
+}
+
+.daily-practices-carousel::-webkit-scrollbar {
+    height: 8px;
+}
+
+.daily-practices-carousel::-webkit-scrollbar-track {
+    background: var(--light-bg);
+    border-radius: 4px;
+}
+
+.daily-practices-carousel::-webkit-scrollbar-thumb {
+    background: var(--accent-color);
+    border-radius: 4px;
+}
+
+.daily-practices-carousel::-webkit-scrollbar-thumb:hover {
+    background: var(--secondary-color);
+}
+
+.daily-practices-carousel .video-card {
+    flex: 0 0 320px;
+    min-width: 320px;
+}
+
+.video-card {
+    background: white;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+    cursor: pointer;
+}
+
+.video-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.video-thumbnail {
+    position: relative;
+    width: 100%;
+    height: 180px;
+    overflow: hidden;
+}
+
+.video-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: var(--transition);
+}
+
+.video-card:hover .video-thumbnail img {
+    transform: scale(1.05);
+}
+
+.play-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0,0,0,0.7);
+    color: white;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    transition: var(--transition);
+}
+
+.video-card:hover .play-overlay {
+    background: rgba(231, 76, 60, 0.9);
+    transform: translate(-50%, -50%) scale(1.1);
+}
+
+.video-info {
+    padding: 1rem;
+}
+
+.video-title {
+    font-weight: 600;
+    color: var(--primary-color);
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+/*-----------------------------------------------------------------------------*/
     </style>
 </head>
 <body>
@@ -692,72 +804,218 @@
             </section>
 
     
-    <section class="section fade-in" id="contact">
-            <h2>Testimonial Videos</h2> 
-        <div class="video-scroll-container fade-in">
-            <button class="scroll-nav prev" onclick="scrollVideos('prev')">
-                <i class="fas fa-chevron-left"></i>
-            </button>
-            <button class="scroll-nav next" onclick="scrollVideos('next')">
-                <i class="fas fa-chevron-right"></i>
-            </button>
-
-            <div class="video-carousel" id="videoCarousel">
-                <a href="https://www.youtube.com/embed/N-YVbEWTiPk?si=TvJcC0NBjTzQ1CXl&controls=0" class="video-card" target="_blank">
-                    <img src="./Images/benefits-meditation.jpg" alt="Benefits of Meditation">
-                </a>
-                <a href="https://www.youtube.com/embed/1733Lrhd31s?si=3gjXrjttYW11MlOV&controls=0" class="video-card" target="_blank">
-                    <img src="./Images/HFN_Corporates.jpeg" alt="Transforming Corporate World">
-                </a>
-                <a href="https://www.youtube.com/embed/I37ZFn1-X_s?si=x6jjosW28xZvZehM&controls=0" class="video-card" target="_blank">
-                    <img src="./Images/Heartfulness Movement.jpeg" alt="The Heartfulness Movement">
-                </a>
-                <a href="https://www.youtube.com/embed/f37wdNIPB_g?si=Q0t_z8UV8cOmAjBR&controls=0" class="video-card" target="_blank">
-                    <img src="./Images/Experience Heartfulness.png" alt="Experience Heartfulness">
-                </a>
-                <a href="https://www.youtube.com/embed/jySIXstfJl0?si=nWy9NclwHlxQ9jMB&controls=0" class="video-card" target="_blank">
-                    <img src="./Images/Experience Heartfulness.png" alt="Heartfulness Cleaning">
-                </a>
-                <a href="https://www.youtube.com/embed/v6mqiA5QQyY?si=462g7Jxul-anqoQi&controls=0" class="video-card" target="_blank">
-                    <img src="./Images/Experience Heartfulness.png" alt="Heartfulness Prayer">
-                </a>      
-                <a href="https://www.youtube.com/embed/ho2m406RenE?si=_MKctscmhWXteK4B&controls=0" class="video-card" target="_blank">
-                    <img src="./Images/TEDx Talks-Heartfulness Meditation.png" alt="Outer Chaos Is A Reflection Of Inner Chaos">
-                </a> 
-                <a href="https://www.youtube.com/embed/snkr-1C2e7U?si=7NAnleZt1ZKjvU5h&controls=0" class="video-card" target="_blank">
-                    <img src="./Images/TEDx How Meditation Changed My life.png" alt="How Meditation Changed My Life">
-                </a> 
-                <a href="https://www.youtube.com/embed/U-0eREjDThw?si=1GzcUpjmhv8Dc6JO&controls=0" class="video-card" target="_blank">
-                    <img src="./Images/Meditation with yogic transmission.png" alt="Meditation with Yogic Transmission">
-                </a> 
-                <a href="https://www.youtube.com/embed/h9Cch0Jzib0?si=j3Ph0AaDhPSj5zGm&controls=0" class="video-card" target="_blank">
-                    <img src="./Images/TEDx Screw Happiness.png" alt="Screw happiness">
-                </a> 
-                <a href="https://www.youtube.com/embed/43N-_i1Qzg8?si=aXKAxahUq2ANryfU&controls=0" class="video-card" target="_blank">
-                    <img src="./Images/TEDx Through Meditation,Redefine Conventions.png" alt="Through Meditation,Redefine Conventions">
-                </a>     
-                <a href="https://www.youtube.com/embed/HR5qKG1w3EA?si=cevFeG1uJ94SmzYa&controls=0" class="video-card" target="_blank">
-                    <img src="./Images/TEDx Student Idea.png" alt="Student Idea">
-                </a>  
-                <a href="https://www.youtube.com/embed/s9axbjwaHcM?si=7TKDnQeu9R_oc_6g&controls=0" class="video-card" target="_blank">
-                    <img src="./Images/KSV with Rama Raavi.png" alt="Kanha Shanti Vanam by Rama Raavi">
-                </a> 
-                <a href="https://www.youtube.com/embed/Y9LOVPRZgNo?si=1N4ZMHf0_pFwu8Zc&controls=0" class="video-card" target="_blank">
-                    <img src="./Images/Explore KSV with Devika Bhatnagar.png" alt="Explore Kanha Shanti Vanam with Devika Bhatnagar">
-                </a>
-                <a href="https://www.youtube.com/embed/TTlF_IoBd0M?si=nisW3R7DEUSsNpUF&controls=0" class="video-card" target="_blank">
-                    <img src="./Images/Global Spirituality Mahotsav.png" alt="Global Spirituality Mahotsav Highlights">
-                </a> 
-                <a href="https://www.youtube.com/embed/VIy2btH-PLA?si=1FemsUZIGaSBcaEM&controls=0" class="video-card" target="_blank">
-                    <img src="./Images/Journey Through India's Spiritual Legacy.png" alt="Journey Through India's Spiritual Legacy">
-                </a> 
-                <a href="https://www.youtube.com/embed/videoseries?si=8I5AbHkf9GixT4S1&controls=0&list=PL1QpxVYcCuCa_Dy5CcLKSHWw-03aNPEMW" class="video-card" target="_blank">
-                    <img src="./Images/What Others Say.png" alt="What Others Say about Heartfulness">
-                </a> 
+<!-- Knowledge Base Section -->
+<section class="section fade-in">
+    <h2>Testimonial Videos</h2>
+    <div class="knowledge-notice">
+        Scroll horizontally to explore all video playlists below and explore our comprehensive knowledge base
+    </div>
+    <div class="daily-practices-carousel">
+        <div class="video-card" onclick="openPlaylist('https://www.youtube.com/embed/N-YVbEWTiPk?si=TvJcC0NBjTzQ1CXl&controls=0')">
+            <div class="video-thumbnail">
+                <img src="../Images/benefits-meditation.jpg" alt="Benefits of Meditation" loading="lazy">
+                <div class="play-overlay">
+                    <i class="fas fa-play"></i>
+                </div>
+            </div>
+            <div class="video-info">
+                <p class="video-title">Benefits of Meditation</p>
             </div>
         </div>
-    </section>
-    
+
+        <div class="video-card" onclick="openPlaylist('https://www.youtube.com/embed/1733Lrhd31s?si=3gjXrjttYW11MlOV&controls=0')">
+            <div class="video-thumbnail">
+                <img src="../Images/HFN_Corporates.jpeg" alt="Transforming Corporate World" loading="lazy">
+                <div class="play-overlay">
+                    <i class="fas fa-play"></i>
+                </div>
+            </div>
+            <div class="video-info">
+                <p class="video-title">Transforming Corporate World</p>
+            </div>
+        </div>
+
+        <div class="video-card" onclick="openPlaylist('https://www.youtube.com/embed/I37ZFn1-X_s?si=x6jjosW28xZvZehM&controls=0')">
+            <div class="video-thumbnail">
+                <img src="../Images/Heartfulness Movement.jpeg" alt="The Heartfulness Movement" loading="lazy">
+                <div class="play-overlay">
+                    <i class="fas fa-play"></i>
+                </div>
+            </div>
+            <div class="video-info">
+                <p class="video-title">The Heartfulness Movement</p>
+            </div>
+        </div>
+
+        <div class="video-card" onclick="openPlaylist('https://www.youtube.com/embed/f37wdNIPB_g?si=Q0t_z8UV8cOmAjBR&controls=0')">
+            <div class="video-thumbnail">
+                <img src="../Images/Experience Heartfulness.png" alt="Experience Heartfulness" loading="lazy">
+                <div class="play-overlay">
+                    <i class="fas fa-play"></i>
+                </div>
+            </div>
+            <div class="video-info">
+                <p class="video-title">Experience Heartfulness</p>
+            </div>
+        </div>
+
+        <div class="video-card" onclick="openPlaylist('https://www.youtube.com/embed/jySIXstfJl0?si=nWy9NclwHlxQ9jMB&controls=0')">
+            <div class="video-thumbnail">
+                <img src="../Images/HFN Cleaning.jpeg" alt="Experience Heartfulness Cleaning" loading="lazy">
+                <div class="play-overlay">
+                    <i class="fas fa-play"></i>
+                </div>
+            </div>
+            <div class="video-info">
+                <p class="video-title">Experience Heartfulness Cleaning</p>
+            </div>
+        </div>
+
+        <div class="video-card" onclick="openPlaylist('https://www.youtube.com/embed/v6mqiA5QQyY?si=462g7Jxul-anqoQi&controls=0')">
+            <div class="video-thumbnail">
+                <img src="../Images/Experience Heartfulness.jpeg" alt="Heartfulness Prayer" loading="lazy">
+                <div class="play-overlay">
+                    <i class="fas fa-play"></i>
+                </div>
+            </div>
+            <div class="video-info">
+                <p class="video-title">Experience Heartfulness Prayer</p>
+            </div>
+        </div>
+
+        <div class="video-card" onclick="openPlaylist('https://www.youtube.com/embed/ho2m406RenE?si=_MKctscmhWXteK4B&controls=0')">
+            <div class="video-thumbnail">
+                <img src="../Images/TEDx Talks-Heartfulness Meditation.png" alt="Outer Chaos is a reflection of Inner Chaos" loading="lazy">
+                <div class="play-overlay">
+                    <i class="fas fa-play"></i>
+                </div>
+            </div>
+            <div class="video-info">
+                <p class="video-title">Outer Chaos is a reflection of Inner Chaos</p>
+            </div>
+        </div>
+
+        <div class="video-card" onclick="openPlaylist('https://www.youtube.com/embed/snkr-1C2e7U?si=7NAnleZt1ZKjvU5h&controls=0')">
+            <div class="video-thumbnail">
+                <img src="../Images/TEDx How Meditation Changed My life.png" alt="How Meditation Changed My Life" loading="lazy">
+                <div class="play-overlay">
+                    <i class="fas fa-play"></i>
+                </div>
+            </div>
+            <div class="video-info">
+                <p class="video-title">How Meditation Changed My Life</p>
+            </div>
+        </div>
+
+        <div class="video-card" onclick="openPlaylist('https://www.youtube.com/embed/U-0eREjDThw?si=1GzcUpjmhv8Dc6JO&controls=0')">
+            <div class="video-thumbnail">
+                <img src="../Images/Meditation with yogic transmission.png" alt="Meditation with Yogic Transmission" loading="lazy">
+                <div class="play-overlay">
+                    <i class="fas fa-play"></i>
+                </div>
+            </div>
+            <div class="video-info">
+                <p class="video-title">Meditation with Yogic Transmission</p>
+            </div>
+        </div>
+
+        <div class="video-card" onclick="openPlaylist('https://www.youtube.com/embed/h9Cch0Jzib0?si=j3Ph0AaDhPSj5zGm&controls=0')">
+            <div class="video-thumbnail">
+                <img src="../Images/TEDx Screw Happiness.png" alt="TEDx-Screw Happiness" loading="lazy">
+                <div class="play-overlay">
+                    <i class="fas fa-play"></i>
+                </div>
+            </div>
+            <div class="video-info">
+                <p class="video-title">TEDx-Screw Happiness</p>
+            </div>
+        </div>
+
+        <div class="video-card" onclick="openPlaylist('https://www.youtube.com/embed/43N-_i1Qzg8?si=aXKAxahUq2ANryfU&controls=0')">
+            <div class="video-thumbnail">
+                <img src="../Images/TEDx Through Meditation,Redefine Conventions.png" alt="TEDx-Through Meditation Redefine Conventions" loading="lazy">
+                <div class="play-overlay">
+                    <i class="fas fa-play"></i>
+                </div>
+            </div>
+            <div class="video-info">
+                <p class="video-title">TEDx-Through Meditation Redefine Conventions</p>
+            </div>
+        </div>
+
+        <div class="video-card" onclick="openPlaylist('https://www.youtube.com/embed/HR5qKG1w3EA?si=cevFeG1uJ94SmzYa&controls=0')">
+            <div class="video-thumbnail">
+                <img src="../Images/TEDx Student Idea.png" alt="TEDx-Student Idea" loading="lazy">
+                <div class="play-overlay">
+                    <i class="fas fa-play"></i>
+                </div>
+            </div>
+            <div class="video-info">
+                <p class="video-title">TEDx-Student Idea</p>
+            </div>
+        </div>
+
+        <div class="video-card" onclick="openPlaylist('https://www.youtube.com/embed/s9axbjwaHcM?si=7TKDnQeu9R_oc_6g&controls=0')">
+            <div class="video-thumbnail">
+                <img src="../Images/KSV with Rama Raavi.png" alt="Kanha Shanti Vanam by Rama Raavi" loading="lazy">
+                <div class="play-overlay">
+                    <i class="fas fa-play"></i>
+                </div>
+            </div>
+            <div class="video-info">
+                <p class="video-title">Kanha Shanti Vanam by Rama Raavi</p>
+            </div>
+        </div>
+
+        <div class="video-card" onclick="openPlaylist('https://www.youtube.com/embed/Y9LOVPRZgNo?si=1N4ZMHf0_pFwu8Zc&controls=0')">
+            <div class="video-thumbnail">
+                <img src="../Images/Explore KSV with Devika Bhatnagar.png" alt="Explore KSV with Devika" loading="lazy">
+                <div class="play-overlay">
+                    <i class="fas fa-play"></i>
+                </div>
+            </div>
+            <div class="video-info">
+                <p class="video-title">Explore with Devika Bhatnagar</p>
+            </div>
+        </div>
+
+        <div class="video-card" onclick="openPlaylist('https://www.youtube.com/embed/TTlF_IoBd0M?si=nisW3R7DEUSsNpUF&controls=0')">
+            <div class="video-thumbnail">
+                <img src="../Images/Global Spirituality Mahotsav.png" alt="GSM Highlights" loading="lazy">
+                <div class="play-overlay">
+                    <i class="fas fa-play"></i>
+                </div>
+            </div>
+            <div class="video-info">
+                <p class="video-title">Global Spirituality Mahotsav Highlights</p>
+            </div>
+        </div>
+
+        <div class="video-card" onclick="openPlaylist('https://www.youtube.com/embed/VIy2btH-PLA?si=1FemsUZIGaSBcaEM&controls=0')">
+            <div class="video-thumbnail">
+                <img src="../Images/Journey Through India's Spiritual Legacy.png" alt="India's Spiritual Legacy" loading="lazy">
+                <div class="play-overlay">
+                    <i class="fas fa-play"></i>
+                </div>
+            </div>
+            <div class="video-info">
+                <p class="video-title">Journey through Indias Spiritual Legacy</p>
+            </div>
+        </div>
+
+        <div class="video-card" onclick="openPlaylist('https://www.youtube.com/embed/videoseries?si=8I5AbHkf9GixT4S1&controls=0&list=PL1QpxVYcCuCa_Dy5CcLKSHWw-03aNPEMW')">
+            <div class="video-thumbnail">
+                <img src="../Images/What Others Say.png" alt="What Others say" loading="lazy">
+                <div class="play-overlay">
+                    <i class="fas fa-play"></i>
+                </div>
+            </div>
+            <div class="video-info">
+                <p class="video-title">What Others say about Heartfulness</p>
+            </div>
+        </div>
+    </div>
+</section>
         
 <footer class="footer">
     <div class="container">
