@@ -2108,42 +2108,37 @@ function showReturningAbhyasis() {
 // ============ TIME-BASED ANALYSIS ============
 
 function showNewAbhyasis() {
-  if (!masterRecords.length) {
-    showAlert('No records available', 'error');
+  if (!abhyasis.length) {
+    showAlert('No abhyasis found', 'error');
     return;
   }
 
   const now = new Date();
   const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
 
-  const firstAppearance = {};
-
-  masterRecords.forEach(r => {
-    if (!r.id) return;
-    
-    if (!firstAppearance[r.id] || r.date < firstAppearance[r.id].date) {
-      firstAppearance[r.id] = { name: r.name, date: r.date, contact: abhyasis.find(a => a.id === r.id)?.contact || 'N/A' };
-    }
-  });
-
-  const newMembers = Object.entries(firstAppearance)
-    .filter(([id, data]) => data.date >= thirtyDaysAgo)
-    .map(([id, data]) => ({
-      id,
-      name: data.name,
-      contact: data.contact,
-      joinedDate: data.date,
-      daysAsMember: Math.floor((now - new Date(data.date)) / (24 * 60 * 60 * 1000))
-    }))
+  const newMembers = abhyasis
+    .filter(a => a.dateOfJoining && a.dateOfJoining >= thirtyDaysAgo)
+    .map(a => {
+      const joinedDate = new Date(a.dateOfJoining);
+      const daysAsMember = Math.floor((now - joinedDate) / (24 * 60 * 60 * 1000));
+      
+      return {
+        id: a.id,
+        name: a.name,
+        contact: a.contact || 'N/A',
+        joinedDate: a.dateOfJoining,
+        daysAsMember
+      };
+    })
     .sort((a, b) => b.joinedDate.localeCompare(a.joinedDate));
 
   displayAnalysisResults(newMembers, 'New Abhyasis (Last 30 days)',
     ['Rank', 'Name', 'ID', 'Contact', 'Joined Date', 'Days as Member']);
 }
-
+/////////////////////////////////////////////////////////////////////////////////////////
 function showLoyalMembers() {
-  if (!masterRecords.length) {
-    showAlert('No records available', 'error');
+  if (!abhyasis.length) {
+    showAlert('No abhyasis found', 'error');
     return;
   }
 
@@ -2152,33 +2147,42 @@ function showLoyalMembers() {
 
   const consistentMembers = {};
 
+  // Count sessions attended for each abhyasi
   masterRecords.forEach(r => {
     if (!r.id || !r.present) return;
     
     if (!consistentMembers[r.id]) {
-      consistentMembers[r.id] = { name: r.name, count: 0, dateRange: { first: r.date, last: r.date } };
+      const abhyasi = abhyasis.find(a => a.id === r.id);
+      consistentMembers[r.id] = { 
+        name: r.name, 
+        count: 0, 
+        dateOfJoining: abhyasi?.dateOfJoining || null
+      };
     }
     
     consistentMembers[r.id].count++;
-    if (r.date < consistentMembers[r.id].dateRange.first) consistentMembers[r.id].dateRange.first = r.date;
-    if (r.date > consistentMembers[r.id].dateRange.last) consistentMembers[r.id].dateRange.last = r.date;
   });
 
   const loyal = Object.entries(consistentMembers)
-    .filter(([id, data]) => data.dateRange.first <= threeMonthsAgo && data.count >= 10)
-    .map(([id, data]) => ({
-      id,
-      name: data.name,
-      sessionsAttended: data.count,
-      memberSince: data.dateRange.first,
-      monthsActive: Math.floor((new Date(data.dateRange.last) - new Date(data.dateRange.first)) / (30 * 24 * 60 * 60 * 1000))
-    }))
+    .filter(([id, data]) => data.dateOfJoining && data.dateOfJoining <= threeMonthsAgo && data.count >= 10)
+    .map(([id, data]) => {
+      const memberSince = new Date(data.dateOfJoining);
+      const monthsActive = Math.floor((now - memberSince) / (30 * 24 * 60 * 60 * 1000));
+      
+      return {
+        id,
+        name: data.name,
+        sessionsAttended: data.count,
+        memberSince: data.dateOfJoining,
+        monthsActive
+      };
+    })
     .sort((a, b) => b.sessionsAttended - a.sessionsAttended);
 
   displayAnalysisResults(loyal, 'Loyal Members (3+ months, 10+ sessions)',
     ['Rank', 'Name', 'ID', 'Sessions Attended', 'Member Since', 'Months Active']);
 }
-
+////////////////////////////////////////////////////////////////////////////////////////
 function showMilestoneAchievers() {
   if (!masterRecords.length) {
     showAlert('No records available', 'error');
@@ -2191,7 +2195,12 @@ function showMilestoneAchievers() {
     if (!r.id || !r.present) return;
     
     if (!attendanceMap[r.id]) {
-      attendanceMap[r.id] = { name: r.name, count: 0 };
+      const abhyasi = abhyasis.find(a => a.id === r.id);
+      attendanceMap[r.id] = { 
+        name: r.name, 
+        count: 0,
+        dateOfJoining: abhyasi?.dateOfJoining || null
+      };
     }
     attendanceMap[r.id].count++;
   });
@@ -2204,13 +2213,129 @@ function showMilestoneAchievers() {
       if (data.count >= 50) milestones.push('50');
       if (data.count >= 100) milestones.push('100');
       
-      return { id, name: data.name, sessionsAttended: data.count, milestones: milestones.join(', ') + ' sessions' };
+      return { 
+        id, 
+        name: data.name, 
+        sessionsAttended: data.count, 
+        memberSince: data.dateOfJoining || 'N/A',
+        milestones: milestones.length > 0 ? milestones.join(', ') + ' sessions' : 'None' 
+      };
     })
-    .filter(a => a.milestones.length > 0)
+    .filter(a => a.milestones !== 'None')
     .sort((a, b) => b.sessionsAttended - a.sessionsAttended);
 
   displayAnalysisResults(achievers, 'Milestone Achievers',
-    ['Rank', 'Name', 'ID', 'Sessions Attended', 'Milestones']);
+    ['Rank', 'Name', 'ID', 'Sessions Attended', 'Member Since', 'Milestones']);
+}
+
+// ============ FUNCTION 4: Returning Abhyasis ============
+function showReturningAbhyasis() {
+  if (!masterRecords.length) {
+    showAlert('No records available', 'error');
+    return;
+  }
+
+  const now = new Date();
+  const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  const sixtyDaysAgo = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  const ninetyDaysAgo = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+
+  const recentlyReturned = {};
+
+  masterRecords.forEach(r => {
+    if (!r.id) return;
+    
+    const isRecent = r.date >= thirtyDaysAgo;
+    const wasAbsent = r.date < sixtyDaysAgo && r.date >= ninetyDaysAgo;
+    
+    if (isRecent && wasAbsent) {
+      if (!recentlyReturned[r.id]) {
+        const abhyasi = abhyasis.find(a => a.id === r.id);
+        recentlyReturned[r.id] = {
+          name: r.name,
+          contact: abhyasi?.contact || 'N/A',
+          lastSeen: r.date,
+          recentCount: 0
+        };
+      }
+      if (r.present) recentlyReturned[r.id].recentCount++;
+    }
+  });
+
+  const returning = Object.entries(recentlyReturned)
+    .map(([id, data]) => ({
+      id,
+      name: data.name,
+      contact: data.contact,
+      daysSinceReturn: Math.floor((new Date() - new Date(data.lastSeen)) / (24 * 60 * 60 * 1000)),
+      recentAttendance: data.recentCount
+    }))
+    .sort((a, b) => a.daysSinceReturn - b.daysSinceReturn);
+
+  displayAnalysisResults(returning, 'Returning Abhyasis (Absent 60-90d, Now Active)',
+    ['Rank', 'Name', 'ID', 'Contact', 'Days Since Return', 'Recent Sessions']);
+}
+
+// ============ FUNCTION 5: Trainer-Wise Distribution ============
+function showTrainerWiseDistribution() {
+  if (!masterRecords.length) {
+    showAlert('No records available', 'error');
+    return;
+  }
+
+  const trainerMap = {};
+
+  masterRecords.forEach(r => {
+    if (!r.id || !r.trainer || !r.present) return;  // Only include attended sessions
+    
+    const trainer = r.trainer;
+    if (!trainerMap[trainer]) {
+      trainerMap[trainer] = {};
+    }
+    if (!trainerMap[trainer][r.id]) {
+      const abhyasi = abhyasis.find(a => a.id === r.id);
+      trainerMap[trainer][r.id] = { 
+        name: r.name, 
+        contact: abhyasi?.contact || 'N/A',
+        sessionsAttended: 0 
+      };
+    }
+    
+    trainerMap[trainer][r.id].sessionsAttended++;
+  });
+
+  let html = '<div style="background:white; padding:16px; border-radius:8px; margin-top:16px;">';
+  html += '<h3>Trainer-Wise Distribution of Abhyasis</h3>';
+  
+  Object.keys(trainerMap).sort().forEach(trainer => {
+    const abhyasisList = Object.entries(trainerMap[trainer])
+      .map(([id, data]) => ({ id, name: data.name, contact: data.contact, sessionsAttended: data.sessionsAttended }))
+      .sort((a, b) => b.sessionsAttended - a.sessionsAttended);
+    
+    html += `<div style="margin-bottom:20px; padding:12px; background:#f8f9fa; border-radius:8px;">
+      <h4>${escapeHtml(trainer)} (${abhyasisList.length} abhyasis)</h4>
+      <table class="report-table" style="margin-top:8px;">
+        <thead><tr><th>#</th><th>Name</th><th>ID</th><th>Contact</th><th>Sessions Attended</th></tr></thead>
+        <tbody>`;
+    
+    abhyasisList.forEach((a, i) => {
+      html += `<tr>
+        <td>${i + 1}</td>
+        <td>${escapeHtml(a.name)}</td>
+        <td>${escapeHtml(a.id)}</td>
+        <td>${escapeHtml(a.contact)}</td>
+        <td><span class="attendance-badge" style="background:#3498db;">${a.sessionsAttended}</span></td>
+      </tr>`;
+    });
+    
+    html += '</tbody></table></div>';
+  });
+  
+  html += '</div>';
+  
+  const results = document.getElementById('reportResults');
+  results.innerHTML = html;
+  results.style.display = 'block';
 }
 //////////////////////////////////////////////////////////////////////////
 // ============ FUNCTION 1: showEngagementByJoiningDate() ============
@@ -2649,18 +2774,22 @@ function showTrainerWiseDistribution() {
   const trainerMap = {};
 
   masterRecords.forEach(r => {
-    if (!r.id || !r.trainer) return;
+    if (!r.id || !r.trainer || !r.present) return;  // Only include attended sessions
     
     const trainer = r.trainer;
     if (!trainerMap[trainer]) {
       trainerMap[trainer] = {};
     }
     if (!trainerMap[trainer][r.id]) {
-      trainerMap[trainer][r.id] = { name: r.name, present: 0, total: 0 };
+      const abhyasi = abhyasis.find(a => a.id === r.id);
+      trainerMap[trainer][r.id] = { 
+        name: r.name, 
+        contact: abhyasi?.contact || 'N/A',
+        sessionsAttended: 0 
+      };
     }
     
-    trainerMap[trainer][r.id].total++;
-    if (r.present) trainerMap[trainer][r.id].present++;
+    trainerMap[trainer][r.id].sessionsAttended++;
   });
 
   let html = '<div style="background:white; padding:16px; border-radius:8px; margin-top:16px;">';
@@ -2668,24 +2797,22 @@ function showTrainerWiseDistribution() {
   
   Object.keys(trainerMap).sort().forEach(trainer => {
     const abhyasisList = Object.entries(trainerMap[trainer])
-      .map(([id, data]) => ({ id, name: data.name, attended: data.present, total: data.total }))
-      .sort((a, b) => b.attended - a.attended);
+      .map(([id, data]) => ({ id, name: data.name, contact: data.contact, sessionsAttended: data.sessionsAttended }))
+      .sort((a, b) => b.sessionsAttended - a.sessionsAttended);
     
     html += `<div style="margin-bottom:20px; padding:12px; background:#f8f9fa; border-radius:8px;">
       <h4>${escapeHtml(trainer)} (${abhyasisList.length} abhyasis)</h4>
       <table class="report-table" style="margin-top:8px;">
-        <thead><tr><th>#</th><th>Name</th><th>ID</th><th>Sessions Attended</th><th>Total Sessions</th><th>Attendance %</th></tr></thead>
+        <thead><tr><th>#</th><th>Name</th><th>ID</th><th>Contact</th><th>Sessions Attended</th></tr></thead>
         <tbody>`;
     
     abhyasisList.forEach((a, i) => {
-      const pct = a.total ? Math.round((a.attended / a.total) * 100) : 0;
       html += `<tr>
         <td>${i + 1}</td>
         <td>${escapeHtml(a.name)}</td>
         <td>${escapeHtml(a.id)}</td>
-        <td>${a.attended}</td>
-        <td>${a.total}</td>
-        <td><span class="attendance-badge" style="background:#3498db;">${pct}%</span></td>
+        <td>${escapeHtml(a.contact)}</td>
+        <td><span class="attendance-badge" style="background:#3498db;">${a.sessionsAttended}</span></td>
       </tr>`;
     });
     
@@ -2698,7 +2825,6 @@ function showTrainerWiseDistribution() {
   results.innerHTML = html;
   results.style.display = 'block';
 }
-
 // ============ RISK & FOLLOW-UP ============
 
 function showAtRiskAbhyasis() {
@@ -2928,39 +3054,46 @@ function showTrendReport(months) {
   const startStr = start.toISOString().slice(0, 10);
   const endStr = now.toISOString().slice(0, 10);
 
-  // Collect attendance by date and session type
-  const dateAttendance = {};
+  // Collect attendance by date and session
+  const wednesdayData = {};
+  const sundayData = {};
+  const faceData = {};
 
   masterRecords.forEach(record => {
     const date = record.date;
     if (!date || date < startStr || date > endStr || !record.present) return;
 
-    if (!dateAttendance[date]) {
-      dateAttendance[date] = { group: 0, face: 0 };
-    }
-
     if (record.sessionType?.includes('Group')) {
-      dateAttendance[date].group += 1;
+      if (record.sessionName === 'Wednesday') {
+        if (!wednesdayData[date]) wednesdayData[date] = 0;
+        wednesdayData[date]++;
+      } else if (record.sessionName === 'Sunday') {
+        if (!sundayData[date]) sundayData[date] = 0;
+        sundayData[date]++;
+      }
     }
+    
     if (record.sessionType?.includes('Face')) {
-      dateAttendance[date].face += 1;
+      if (!faceData[date]) faceData[date] = 0;
+      faceData[date]++;
     }
   });
 
-  // Build separate arrays for each session type (only include dates with attendance for that type)
-  const groupDates = Object.entries(dateAttendance)
-    .filter(([d, data]) => data.group > 0)
+  // Build arrays for each session type (only dates with data)
+  const wednesdayDates = Object.entries(wednesdayData)
     .sort((a, b) => a[0].localeCompare(b[0]));
 
-  const faceDates = Object.entries(dateAttendance)
-    .filter(([d, data]) => data.face > 0)
+  const sundayDates = Object.entries(sundayData)
+    .sort((a, b) => a[0].localeCompare(b[0]));
+
+  const faceDates = Object.entries(faceData)
     .sort((a, b) => a[0].localeCompare(b[0]));
 
   // Render the HTML
   let html = `<div style="background:white; padding:12px; border-radius:8px; margin-top:16px;">
                 <h3>${months}-Month Attendance Trend</h3>`;
 
-  if (groupDates.length === 0 && faceDates.length === 0) {
+  if (wednesdayDates.length === 0 && sundayDates.length === 0 && faceDates.length === 0) {
     html += `<p style="color:#666;">No attendance records found in the last ${months} month(s).</p></div>`;
     const results = document.getElementById('reportResults');
     results.innerHTML = html;
@@ -2968,19 +3101,30 @@ function showTrendReport(months) {
     return;
   }
 
-  // Group chart
-  if (groupDates.length > 0) {
+  // Wednesday chart
+  if (wednesdayDates.length > 0) {
     html += `<p style="color:#666; font-size:14px; margin-bottom:16px;">
-              Group Sessions: ${groupDates.length} dates with attendance
+              Wednesday Group Sessions: ${wednesdayDates.length} dates with attendance
             </p>
             <div style="margin-bottom:30px;">
-              <h4 style="color:#2ecc71; margin-bottom:12px;">Group Meditation Sessions</h4>
+              <h4 style="color:#9b59b6; margin-bottom:12px;">Wednesday Group Meditation</h4>
               <div style="position:relative; height:150px;">
-                <canvas id="groupTrendChart"></canvas>
+                <canvas id="wednesdayTrendChart"></canvas>
               </div>
             </div>`;
-  } else {
-    html += `<p style="color:#999; font-size:14px; margin-bottom:16px;">📊 No group session attendance in this period</p>`;
+  }
+
+  // Sunday chart
+  if (sundayDates.length > 0) {
+    html += `<p style="color:#666; font-size:14px; margin-bottom:16px;">
+              Sunday Group Sessions: ${sundayDates.length} dates with attendance
+            </p>
+            <div style="margin-bottom:30px;">
+              <h4 style="color:#2ecc71; margin-bottom:12px;">Sunday Group Meditation</h4>
+              <div style="position:relative; height:150px;">
+                <canvas id="sundayTrendChart"></canvas>
+              </div>
+            </div>`;
   }
 
   // Face-to-face chart
@@ -2994,8 +3138,6 @@ function showTrendReport(months) {
                 <canvas id="faceTrendChart"></canvas>
               </div>
             </div>`;
-  } else {
-    html += `<p style="color:#999; font-size:14px;">📊 No face-to-face attendance in this period</p>`;
   }
 
   html += `</div>`;
@@ -3004,22 +3146,80 @@ function showTrendReport(months) {
   results.innerHTML = html;
   results.style.display = 'block';
 
+  // Render charts after a short delay
   setTimeout(() => {
-    // Group chart
-    if (groupDates.length > 0) {
-      const groupLabels = groupDates.map(([d]) => new Date(d).toLocaleDateString('en-US', {month:'short', day:'numeric'}));
-      const groupValues = groupDates.map(([, data]) => data.group);
-      const maxGroup = Math.max(...groupValues, 5);
+    // Wednesday chart
+    if (wednesdayDates.length > 0) {
+      const wedLabels = wednesdayDates.map(([d]) => new Date(d).toLocaleDateString('en-US', {month:'short', day:'numeric'}));
+      const wedValues = wednesdayDates.map(([, count]) => count);
+      const maxWed = Math.max(...wedValues, 5);
 
-      const ctxGroup = document.getElementById('groupTrendChart');
-      if (ctxGroup) {
-        new Chart(ctxGroup.getContext('2d'), {
+      const ctxWed = document.getElementById('wednesdayTrendChart');
+      if (ctxWed) {
+        new Chart(ctxWed.getContext('2d'), {
           type: 'bar',
           data: {
-            labels: groupLabels,
+            labels: wedLabels,
             datasets: [{
               label: 'Abhyasis Present',
-              data: groupValues,
+              data: wedValues,
+              backgroundColor: '#9b59b6',
+              borderColor: '#8e44ad',
+              borderWidth: 1,
+              barThickness: 'flex',
+              barPercentage: 0.8,
+              categoryPercentage: 0.9
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            aspectRatio: 3,
+            plugins: { legend: { display: false } },
+            scales: {
+              y: {
+                beginAtZero: true,
+                min: 0,
+                max: maxWed + 2,
+                ticks: {
+                  stepSize: Math.max(1, Math.ceil(maxWed / 5)),
+                  callback: function(value) {
+                    if (Number.isInteger(value)) return value;
+                  }
+                },
+                grid: { display: true }
+              },
+              x: {
+                offset: false,
+                ticks: {
+                  maxRotation: 45,
+                  minRotation: 45,
+                  font: { size: 9 },
+                  autoSkip: false
+                }
+              }
+            },
+            layout: { padding: { top: 10, bottom: 0 } }
+          }
+        });
+      }
+    }
+
+    // Sunday chart
+    if (sundayDates.length > 0) {
+      const sunLabels = sundayDates.map(([d]) => new Date(d).toLocaleDateString('en-US', {month:'short', day:'numeric'}));
+      const sunValues = sundayDates.map(([, count]) => count);
+      const maxSun = Math.max(...sunValues, 5);
+
+      const ctxSun = document.getElementById('sundayTrendChart');
+      if (ctxSun) {
+        new Chart(ctxSun.getContext('2d'), {
+          type: 'bar',
+          data: {
+            labels: sunLabels,
+            datasets: [{
+              label: 'Abhyasis Present',
+              data: sunValues,
               backgroundColor: '#2ecc71',
               borderColor: '#27ae60',
               borderWidth: 1,
@@ -3037,9 +3237,9 @@ function showTrendReport(months) {
               y: {
                 beginAtZero: true,
                 min: 0,
-                max: maxGroup + 2,
+                max: maxSun + 2,
                 ticks: {
-                  stepSize: Math.max(1, Math.ceil(maxGroup / 5)),
+                  stepSize: Math.max(1, Math.ceil(maxSun / 5)),
                   callback: function(value) {
                     if (Number.isInteger(value)) return value;
                   }
@@ -3065,7 +3265,7 @@ function showTrendReport(months) {
     // Face-to-face chart
     if (faceDates.length > 0) {
       const faceLabels = faceDates.map(([d]) => new Date(d).toLocaleDateString('en-US', {month:'short', day:'numeric'}));
-      const faceValues = faceDates.map(([, data]) => data.face);
+      const faceValues = faceDates.map(([, count]) => count);
       const maxFace = Math.max(...faceValues, 5);
 
       const ctxFace = document.getElementById('faceTrendChart');
