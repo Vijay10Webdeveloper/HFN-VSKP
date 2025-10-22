@@ -380,17 +380,21 @@
         </div>
 
         <!-- Records -->
-        <!-- Records -->
+       <!-- In the "View All Records" tab -->
 <div id="records-tab" class="tab-content">
   <div class="section">
     <h2>📂 All Attendance Records (Master)</h2>
 
     <div style="margin-bottom:12px; display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-  <button class="btn btn-success" onclick="showRecords()">📋 Show All Records</button>
-  <button class="btn" onclick="downloadMasterCSV()">⬇️ Download CSV</button>
-  <button class="btn" onclick="downloadMasterExcel()">⬇️ Download Excel</button>
-  <button class="btn btn-danger" onclick="clearMasterRecords()">🗑️ Clear Master Records</button>
-      <!-- NEW: bulk actions -->
+      <button class="btn btn-success" onclick="showRecords()">📋 Show All Records</button>
+      <button class="btn" onclick="downloadMasterCSV()">⬇️ Download CSV</button>
+      <button class="btn" onclick="downloadMasterExcel()">⬇️ Download Excel</button>
+      
+      <!-- THIS BUTTON CALLS THE FUNCTION -->
+      <button class="btn btn-warning" onclick="cleanupStaleRecords()">🧹 Clean Up Stale Records</button>
+      
+      <button class="btn btn-danger" onclick="clearMasterRecords()">🗑️ Clear Master Records</button>
+      
       <label style="margin-left:auto; display:flex; align-items:center; gap:6px;">
         <input type="checkbox" id="mr-select-all" onchange="toggleSelectAll(this.checked)" />
         <span>Select All</span>
@@ -400,16 +404,9 @@
       </button>
     </div>
 
-    <!-- ADD THIS CONTAINER: -->
     <div id="allRecordsContainer" class="data-preview"></div>
-
   </div>
 </div>
-
-          </div>
-        </div>
-
-        <!-- Import -->
         <!-- Import -->
 <div id="import-tab" class="tab-content">
   <div class="section">
@@ -2885,77 +2882,8 @@ function showAtRiskAbhyasis() {
   results.style.display = 'block';
 }
 
-function showZeroAttendanceLastSixty() {
-  if (!masterRecords.length) {
-    showAlert('No records available', 'error');
-    return;
-  }
 
-  const now = new Date();
-  const sixtyDaysAgo = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
-
-  const allAbhyasis = new Set();
-  const recentAttendance = new Set();
-
-  masterRecords.forEach(r => {
-    if (!r.id) return;
-    allAbhyasis.add(r.id);
-    if (r.date >= sixtyDaysAgo) {
-      recentAttendance.add(r.id);
-    }
-  });
-
-  const inactive = Array.from(allAbhyasis)
-    .filter(id => !recentAttendance.has(id))
-    .map(id => {
-      const record = masterRecords.find(r => r.id === id);
-      const abhyasi = abhyasis.find(a => a.id === id);
-      const lastRecord = masterRecords.filter(r => r.id === id).sort((a, b) => b.date.localeCompare(a.date))[0];
-      return {
-        id,
-        name: record?.name || id,
-        contact: abhyasi?.contact || 'N/A',
-        lastSeen: lastRecord?.date || 'Unknown',
-        daysSinceActive: lastRecord ? Math.floor((now - new Date(lastRecord.date)) / (24 * 60 * 60 * 1000)) : 999
-      };
-    })
-    .sort((a, b) => a.daysSinceActive - b.daysSinceActive);
-
-  let html = '<div style="background:white; padding:16px; border-radius:8px; margin-top:16px;">';
-  html += '<h3>Zero Attendance (Last 60 Days) - Follow-up Priority</h3>';
-  
-  if (inactive.length === 0) {
-    html += '<p style="color:#27ae60; font-weight:bold;">✅ Excellent! All abhyasis have been active in the last 60 days.</p>';
-  } else {
-    html += `<p style="margin-bottom:12px; color:#666;"><strong>Found ${inactive.length} inactive abhyasi(s)</strong></p>`;
-    html += `<table class="report-table">
-      <thead><tr><th>Rank</th><th>Name</th><th>ID</th><th>Contact</th><th>Last Seen</th><th>Days Inactive</th></tr></thead>
-      <tbody>`;
-    
-    inactive.forEach((a, i) => {
-      const dayColor = a.daysSinceActive > 120 ? '#c0392b' : a.daysSinceActive > 90 ? '#e67e22' : '#f39c12';
-      html += `<tr>
-        <td><strong>${i + 1}</strong></td>
-        <td>${escapeHtml(a.name)}</td>
-        <td>${escapeHtml(a.id)}</td>
-        <td>${escapeHtml(a.contact)}</td>
-        <td>${a.lastSeen}</td>
-        <td><span class="attendance-badge" style="background:${dayColor};">${a.daysSinceActive}d</span></td>
-      </tr>`;
-    });
-    
-    html += '</tbody></table>';
-    html += `<div style="margin-top:16px; padding:12px; background:#fff3cd; border-left:4px solid #ffc107; border-radius:4px;">
-      <strong>📞 Priority Follow-up:</strong> Consider reaching out to these abhyasis to understand if there are barriers to attendance.
-    </div>`;
-  }
-  html += '</div>';
-  
-  const results = document.getElementById('reportResults');
-  results.innerHTML = html;
-  results.style.display = 'block';
-}
-
+// ============ FUNCTION 1: Low Attendance (≤50%) - FIXED ============
 function showLowAttendanceAbhyasis() {
   if (!masterRecords.length) {
     showAlert('No records available', 'error');
@@ -2964,6 +2892,7 @@ function showLowAttendanceAbhyasis() {
 
   const attendanceMap = {};
   
+  // Count attendance from masterRecords
   masterRecords.forEach(r => {
     if (!r.id) return;
     
@@ -2971,13 +2900,13 @@ function showLowAttendanceAbhyasis() {
       attendanceMap[r.id] = {
         name: r.name,
         id: r.id,
-        totalClasses: 0,
+        totalRegistered: 0,
         attended: 0,
         contact: abhyasis.find(a => a.id === r.id)?.contact || 'N/A'
       };
     }
     
-    attendanceMap[r.id].totalClasses++;
+    attendanceMap[r.id].totalRegistered++;
     if (r.present) {
       attendanceMap[r.id].attended++;
     }
@@ -2986,16 +2915,17 @@ function showLowAttendanceAbhyasis() {
   const lowAttendance = Object.entries(attendanceMap)
     .map(([id, data]) => ({
       ...data,
-      percentage: Math.round((data.attended / data.totalClasses) * 100)
+      percentage: data.totalRegistered > 0 ? Math.round((data.attended / data.totalRegistered) * 100) : 0
     }))
     .filter(a => a.percentage <= 50)
     .sort((a, b) => a.percentage - b.percentage);
 
   let html = '<div style="background:white; padding:16px; border-radius:8px; margin-top:16px;">';
   html += '<h3>Low Attendance (≤50%)</h3>';
+  html += '<p style="color:#666; font-size:13px; margin-bottom:12px;"><em>Based on attendance records from "View All Records"</em></p>';
   
   if (lowAttendance.length === 0) {
-    html += '<p style="color:#27ae60; font-weight:bold;">✅ Great news! All abhyasis have attendance above 50%.</p>';
+    html += '<p style="color:#27ae60; font-weight:bold;">✅ Great news! All abhyasis with records have attendance above 50%.</p>';
   } else {
     html += `<p style="margin-bottom:12px; color:#666;">Found ${lowAttendance.length} abhyasi(s) with attendance at or below 50%</p>`;
     html += `<table class="report-table">
@@ -3005,7 +2935,7 @@ function showLowAttendanceAbhyasis() {
           <th>Name</th>
           <th>ID</th>
           <th>Contact</th>
-          <th>Total Classes</th>
+          <th>Registered</th>
           <th>Attended</th>
           <th>Attendance %</th>
         </tr>
@@ -3013,13 +2943,15 @@ function showLowAttendanceAbhyasis() {
       <tbody>`;
     
     lowAttendance.forEach((a, i) => {
-      const statusColor = a.percentage <= 25 ? '#c0392b' : a.percentage <= 40 ? '#e67e22' : '#f39c12';
+      const statusColor = a.percentage === 0 ? '#95a5a6' : 
+                         a.percentage <= 25 ? '#c0392b' : 
+                         a.percentage <= 40 ? '#e67e22' : '#f39c12';
       html += `<tr>
         <td><strong>${i + 1}</strong></td>
         <td>${escapeHtml(a.name)}</td>
         <td>${escapeHtml(a.id)}</td>
         <td>${escapeHtml(a.contact)}</td>
-        <td>${a.totalClasses}</td>
+        <td>${a.totalRegistered}</td>
         <td>${a.attended}</td>
         <td>
           <span class="attendance-badge" style="background:${statusColor};">
@@ -3043,6 +2975,122 @@ function showLowAttendanceAbhyasis() {
   results.style.display = 'block';
 }
 
+// ============ FUNCTION 2: Inactive (60+ days) - FIXED ============
+function showZeroAttendanceLastSixty() {
+  if (!masterRecords.length && !abhyasis.length) {
+    showAlert('No records or abhyasis available', 'error');
+    return;
+  }
+
+  const now = new Date();
+  const sixtyDaysAgo = new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+
+  // Track all abhyasis who have any attendance record
+  const allTrackedAbhyasis = new Set();
+  const recentActivity = new Set();
+  const lastSeenMap = {};
+
+  masterRecords.forEach(r => {
+    if (!r.id) return;
+    
+    allTrackedAbhyasis.add(r.id);
+    
+    // Track last seen date for each abhyasi
+    if (!lastSeenMap[r.id] || r.date > lastSeenMap[r.id]) {
+      lastSeenMap[r.id] = r.date;
+    }
+    
+    // Check if they were active in last 60 days
+    if (r.date >= sixtyDaysAgo) {
+      recentActivity.add(r.id);
+    }
+  });
+
+  // Find inactive abhyasis (either no records at all, or no activity in 60 days)
+  const inactive = [];
+
+  // Add abhyasis from the main list who have never attended
+  abhyasis.forEach(a => {
+    if (!allTrackedAbhyasis.has(a.id)) {
+      // Never attended any session
+      inactive.push({
+        id: a.id,
+        name: a.name,
+        contact: a.contact || 'N/A',
+        lastSeen: 'Never attended',
+        daysSinceActive: 999,
+        status: 'Never attended'
+      });
+    }
+  });
+
+  // Add abhyasis who have records but no recent activity
+  allTrackedAbhyasis.forEach(id => {
+    if (!recentActivity.has(id)) {
+      const record = masterRecords.find(r => r.id === id);
+      const abhyasi = abhyasis.find(a => a.id === id);
+      const lastSeen = lastSeenMap[id] || 'Unknown';
+      const daysSinceActive = lastSeen !== 'Unknown' 
+        ? Math.floor((now - new Date(lastSeen)) / (24 * 60 * 60 * 1000))
+        : 999;
+      
+      inactive.push({
+        id,
+        name: record?.name || abhyasi?.name || id,
+        contact: abhyasi?.contact || 'N/A',
+        lastSeen,
+        daysSinceActive,
+        status: `Inactive ${daysSinceActive}+ days`
+      });
+    }
+  });
+
+  // Sort by days inactive (highest first)
+  inactive.sort((a, b) => b.daysSinceActive - a.daysSinceActive);
+
+  let html = '<div style="background:white; padding:16px; border-radius:8px; margin-top:16px;">';
+  html += '<h3>Inactive Abhyasis (No Attendance in Last 60 Days)</h3>';
+  html += '<p style="color:#666; font-size:13px; margin-bottom:12px;"><em>Includes abhyasis with no attendance records or no activity in 60+ days</em></p>';
+  
+  if (inactive.length === 0) {
+    html += '<p style="color:#27ae60; font-weight:bold;">✅ Excellent! All abhyasis have been active in the last 60 days.</p>';
+  } else {
+    html += `<p style="margin-bottom:12px; color:#666;"><strong>Found ${inactive.length} inactive abhyasi(s)</strong></p>`;
+    html += `<table class="report-table">
+      <thead><tr><th>Rank</th><th>Name</th><th>ID</th><th>Contact</th><th>Last Seen</th><th>Status</th></tr></thead>
+      <tbody>`;
+    
+    inactive.forEach((a, i) => {
+      const dayColor = a.daysSinceActive === 999 ? '#7f8c8d' :
+                       a.daysSinceActive > 180 ? '#c0392b' : 
+                       a.daysSinceActive > 120 ? '#e67e22' : 
+                       a.daysSinceActive > 90 ? '#f39c12' : '#95a5a6';
+      
+      const lastSeenDisplay = a.lastSeen === 'Never attended' ? 
+        '<span style="color:#7f8c8d; font-style:italic;">Never attended</span>' : 
+        a.lastSeen;
+      
+      html += `<tr>
+        <td><strong>${i + 1}</strong></td>
+        <td>${escapeHtml(a.name)}</td>
+        <td>${escapeHtml(a.id)}</td>
+        <td>${escapeHtml(a.contact)}</td>
+        <td>${lastSeenDisplay}</td>
+        <td><span class="attendance-badge" style="background:${dayColor};">${a.status}</span></td>
+      </tr>`;
+    });
+    
+    html += '</tbody></table>';
+    html += `<div style="margin-top:16px; padding:12px; background:#fff3cd; border-left:4px solid #ffc107; border-radius:4px;">
+      <strong>📞 Priority Follow-up:</strong> Consider reaching out to these abhyasis to understand if there are barriers to attendance.
+    </div>`;
+  }
+  html += '</div>';
+  
+  const results = document.getElementById('reportResults');
+  results.innerHTML = html;
+  results.style.display = 'block';
+}
 // ============ TREND REPORTS - 1, 3, 6 MONTHS (FIXED) ============
 // ============ TREND REPORTS - 1, 3, 6 MONTHS (NO BLANKS) ============
 
@@ -4230,6 +4278,56 @@ function escapeHtml(s) {
 /////////////////////////////////////////////////////////////////////
 
     /***** Load & initial setup done at top *****/
+    ////////////////Clean stale records////////////////////////////
+
+    /***** CLEANUP STALE RECORDS *****/
+function cleanupStaleRecords() {
+  if (!masterRecords.length) {
+    showAlert('No master records to clean', 'info');
+    return;
+  }
+
+  // Get current valid abhyasi IDs from Manage Abhyasis
+  const validIds = new Set(abhyasis.map(a => a.id));
+  
+  const beforeCount = masterRecords.length;
+  
+  // Filter out records for abhyasis that no longer exist
+  masterRecords = masterRecords.filter(r => validIds.has(r.id));
+  
+  const afterCount = masterRecords.length;
+  const removedCount = beforeCount - afterCount;
+  
+  if (removedCount === 0) {
+    showAlert('✅ No stale records found. All records are valid!', 'success');
+    return;
+  }
+  
+  // Save cleaned records
+  saveMasterRecords();
+  
+  // Update attendance history to remove stale records
+  Object.keys(attendanceHistory).forEach(date => {
+    attendanceHistory[date] = attendanceHistory[date].filter(r => validIds.has(r.id));
+    if (attendanceHistory[date].length === 0) {
+      delete attendanceHistory[date];
+    }
+  });
+  
+  saveData();
+  displayAllRecords();
+  
+  showAlert(`🧹 Cleaned up ${removedCount} stale record(s). ${afterCount} valid records remain.`, 'success');
+  
+  // Show detailed report
+  setTimeout(() => {
+    if (confirm(`Cleanup complete!\n\nRemoved: ${removedCount} stale records\nRemaining: ${afterCount} valid records\n\nWould you like to see the updated records?`)) {
+      switchTab('records');
+      displayAllRecords();
+    }
+  }, 500);
+}
+/////////////////////////////////////////////////////////////////////////////////////////
   </script>
 
   </body>
