@@ -1184,6 +1184,22 @@ function confirmImport() {
   showAlert('Imported records added to master', 'success');
 }
 
+function cancelImport() {
+  // Clear the import data
+  importData = [];
+  
+  // Hide the preview
+  document.getElementById('importPreview').style.display = 'none';
+  
+  // Clear the file input
+  document.getElementById('csvFileInput').value = '';
+  
+  // Clear the preview table
+  document.getElementById('importPreviewBody').innerHTML = '';
+  document.getElementById('importSummary').textContent = '';
+  
+  showAlert('Import cancelled', 'info');
+}
 /////////////////////////////////////////////////////////////////
 
 // === REPLACE your existing displayAllRecords() with the version below ===
