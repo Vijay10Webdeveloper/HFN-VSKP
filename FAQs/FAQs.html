@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Google tag (gtag.js) -->
+        <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-KCHKY3W2QV"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -14,11 +14,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Heartfulness Vizag - FAQs</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <style>
         :root {
-            --primary-color: #487bae;
+            --primary-color: #2c3e50;
             --secondary-color: #e74c3c;
             --accent-color: #f39c12;
             --light-bg: #ecf0f1;
@@ -44,26 +42,6 @@
             color: var(--text-color);
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             min-height: 100vh;
-        }
-
-        /* Google Translate Styling */
-        .translate-container {
-            display: flex;
-            justify-content: flex-end;
-            padding: 0.5rem 2rem;
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(10px);
-        }
-
-        #google_translate_element {
-            font-size: 14px;
-        }
-
-        #google_translate_element select {
-            border: 1px solid var(--accent-color);
-            border-radius: 4px;
-            padding: 4px 8px;
-            background: var(--white);
         }
 
         /* Header Styles */
@@ -191,10 +169,10 @@
 
         /* Enhanced FAQ Items */
         .faq-item {
-           background: var(--white);
+            background: var(--white);
             border-radius: var(--border-radius);
             margin-bottom: 1.5rem;
-           box-shadow: var(--shadow);
+            box-shadow: var(--shadow);
             overflow: hidden;
             transition: var(--transition);
         }
@@ -205,7 +183,7 @@
         }
 
         .collapsible {
-            background: linear-gradient(135deg, var(--primary-color));
+            background: var(--primary-color);
             color: var(--white);
             cursor: pointer;
             padding: 1.5rem 2rem;
@@ -259,12 +237,13 @@
         .content {
             max-height: 0;
             overflow: hidden;
-            transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+            transition: max-height 0.5s ease-out, padding 0.3s ease-out;
             background: var(--white);
         }
 
         .content.active {
             padding: 2rem;
+            max-height: 2000px !important;
         }
 
         .content p {
@@ -370,21 +349,6 @@
             animation: fadeInUp 0.6s ease-out;
         }
 
-        /* Loading States */
-        .skeleton {
-            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-            background-size: 200% 100%;
-            animation: loading 1.5s infinite;
-            border-radius: var(--border-radius);
-            height: 60px;
-            margin-bottom: 1rem;
-        }
-
-        @keyframes loading {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
-
         /* Scroll to Top Button */
         .scroll-top {
             position: fixed;
@@ -457,7 +421,7 @@
             }
 
             .footer-links {
-                flex-direction: horizontal;
+                flex-direction: column;
                 align-items: center;
                 gap: 0.5rem;
             }
@@ -471,48 +435,16 @@
                 height: 30vh;
             }
         }
-
-        /* Dark mode support */
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --light-bg: #2c3e50;
-                --white: #34495e;
-                --text-color: #ecf0f1;
-            }
-        }
-
-        /* Print styles */
-        @media print {
-            .header, .footer, .scroll-top, .search-container {
-                display: none;
-            }
-            
-            .faq-item {
-                break-inside: avoid;
-                box-shadow: none;
-                border: 1px solid #ccc;
-            }
-            
-            .content {
-                max-height: none !important;
-                padding: 0.5rem !important;
-            }
-        }
     </style>
 </head>
 <body>
-    <!-- Google Translate -->
-    <div class="translate-container">
-        <div id="google_translate_element"></div>
-    </div>
-
     <!-- Header -->
     <header class="header">
         <div class="header-container">
             <img src="../Images/advancing-in-love-black.png" alt="Heartfulness" class="logo">     
             <nav>
                 <ul class="nav-menu" id="nav-menu">
-                    <li><a href="../Home/Home.html" class="active">HOME</a></li>
+                    <li><a href="../Home/Home.html">HOME</a></li>
                     <li><a href="../NewSeeker/Newseekers.html">NEW SEEKERS</a></li>
                     <li><a href="../Abhyasi/Abhyasi.html">ABHYASIS</a></li>
                     <li><a href="../Trainers/Trainers.html">TRAINERS</a></li>
@@ -549,11 +481,10 @@
                 What is Meditation?
                 <i class="fas fa-chevron-down collapsible-icon"></i>
             </button>
-            <div class="content"> <strong>
-                <p>Meditation is a simple way of freeing your mind, forgetting about daily anxieties and focusing on mental relaxation. Going into a meditative state involves learning to become a passive observer of one's thoughts. It does not mean suppressing them or attempting to force them to disappear.</p>
-                <p>Meditation is the process of continuous focus on one object for a prolonged period of time. It is a gentle, subtle method which does not require any force or pressure on the mind. The result you gain out of the practice is increased concentration and focus.</p>
-                <p>Just like developing any other skill, meditation requires regularity of practice. There are common misconceptions that meditation is something difficult, which requires years of practice to achieve any kind of result. This is simply untrue. People often report feeling the benefits of meditation immediately after their first session.</p>
-            </strong>
+            <div class="content">
+                <p><strong>Meditation is a simple way of freeing your mind, forgetting about daily anxieties and focusing on mental relaxation. Going into a meditative state involves learning to become a passive observer of one's thoughts. It does not mean suppressing them or attempting to force them to disappear.</strong></p>
+                <p><strong>Meditation is the process of continuous focus on one object for a prolonged period of time. It is a gentle, subtle method which does not require any force or pressure on the mind. The result you gain out of the practice is increased concentration and focus.</strong></p>
+                <p><strong>Just like developing any other skill, meditation requires regularity of practice. There are common misconceptions that meditation is something difficult, which requires years of practice to achieve any kind of result. This is simply untrue. People often report feeling the benefits of meditation immediately after their first session.</strong></p>
             </div>
         </div>
 
@@ -563,14 +494,14 @@
                 <i class="fas fa-chevron-down collapsible-icon"></i>
             </button>
             <div class="content">
-                <p>Here are five tips for beginners to learn how to meditate:</p> <strong>
+                <p>Here are five tips for beginners to learn how to meditate:</p>
                 <ol>
-                    <li>Find a quiet, peaceful place.</li>
-                    <li>Sit comfortably, with eyes closed and focus on the heart.</li>
-                    <li>Begin with a suggestion that the source of light is within my heart and it is attracting me inwards.</li>
-                    <li>Meditate for 10 minutes, or until you feel ready to come out of the meditation.</li>
-                    <li>Repeat it every day, in the morning and the evening. Incorporating this time for quiet contemplation and reflection can bring you enormous mental and physical benefits.</li>
-                </ol> </strong>
+                    <li><strong>Find a quiet, peaceful place.</strong></li>
+                    <li><strong>Sit comfortably, with eyes closed and focus on the heart.</strong></li>
+                    <li><strong>Begin with a suggestion that the source of light is within my heart and it is attracting me inwards.</strong></li>
+                    <li><strong>Meditate for 10 minutes, or until you feel ready to come out of the meditation.</strong></li>
+                    <li><strong>Repeat it every day, in the morning and the evening. Incorporating this time for quiet contemplation and reflection can bring you enormous mental and physical benefits.</strong></li>
+                </ol>
             </div>
         </div>
 
@@ -579,15 +510,14 @@
                 What are the benefits of Meditation?
                 <i class="fas fa-chevron-down collapsible-icon"></i>
             </button>
-            <div class="content"> <strong>
-                <p>How many times have you felt that 24 hours are not enough in a day? Whether you're a student or a professional, you are trapped in this fast-moving world, where it is increasingly more difficult to find time for oneself.</p>
-                <p>Usually, when we take a break from our busy schedules, we spend time on our mobile phones or laptops. It is harmful not only for the eyes but also for the mind. The mind is like a pendulum. It keeps swinging from one extremity to another. What we require is centeredness. To regulate the mind and give it some rest, the best medicine you can give it is meditation.</p>
+            <div class="content">
+                <p><strong>How many times have you felt that 24 hours are not enough in a day? Whether you're a student or a professional, you are trapped in this fast-moving world, where it is increasingly more difficult to find time for oneself.</strong></p>
+                <p><strong>Usually, when we take a break from our busy schedules, we spend time on our mobile phones or laptops. It is harmful not only for the eyes but also for the mind. The mind is like a pendulum. It keeps swinging from one extremity to another. What we require is centeredness. To regulate the mind and give it some rest, the best medicine you can give it is meditation.</strong></p>
                 <p><strong>Reduces stress and bring peace:</strong> Most people understand that meditation reduces stress and promotes peace of mind. As you allow your mind to settle on one continuous thought, instead of being pulled in all directions, your stress level reduces. Other health problems like high blood pressure, irregular or high heartbeat, high pulse rate, abnormal breathing patterns, and anxiety also are regulated.</p>
                 <p><strong>Helps in concentration:</strong> Meditation is a great aid in regulating your mind. The mind's tendency is to think a lot and to be easily pulled in different directions depending on our personal likes and dislikes. When you pay attention to every unnecessary thought, you are drawn away from what is truly important. Practicing meditation helps you to gently ignore what is unnecessary and focus more on what is important.</p>
                 <p><strong>Helps you sleep better:</strong> If you have ever laid your head on a pillow and then struggled for hours to sleep because of thoughts racing through your mind, then meditation is ideal for you! We are often stuck in limbo, worrying about the past and the future which interferes with our sleep at night.</p>
                 <p><strong>Makes you emotionally stronger:</strong> During the meditation process, where we are constantly focusing our attention on one thing, we learn to let go of unnecessary thoughts. Meditation is a process of spending time with yourself and is a journey of self-discovery.</p>
                 <p><strong>Keeps you active throughout the day:</strong> One who is committed to balancing their mental energies is also a lot more energized. The positivity that you develop in your mind will give you the zest and enthusiasm to maximize your productivity throughout the day.</p>
-            </strong>
             </div>
         </div>
 
@@ -596,9 +526,8 @@
                 How should we meditate?
                 <i class="fas fa-chevron-down collapsible-icon"></i>
             </button>
-            <div class="content"> <strong>
-                <p>In Heartfulness meditation, we meditate upon the source of divine light within our heart. On its own, the source is so subtle that it is incomprehensible to us. Light from the source is the closest idea that we can have to take as our object. But there is no need to see any light. We can call it "light without luminosity." Simply put, we meditate on the idea and not on the light.</p>
-            </strong>
+            <div class="content">
+                <p><strong>In Heartfulness meditation, we meditate upon the source of divine light within our heart. On its own, the source is so subtle that it is incomprehensible to us. Light from the source is the closest idea that we can have to take as our object. But there is no need to see any light. We can call it "light without luminosity." Simply put, we meditate on the idea and not on the light.</strong></p>
             </div>
         </div>
 
@@ -608,12 +537,11 @@
                 <i class="fas fa-chevron-down collapsible-icon"></i>
             </button>
             <div class="content">
-                <ul> <strong>
-                    <li>The heart is pumping station of the blood and it supplies purified blood to all body cells, so the system takes heart as the object of meditation. This way, we can set our individual mind on the right path.</li>
-                    <li>The heart is the only point at which the connecting link between the animate and the inanimate is clearly felt.</li>
-                    <li>It is the field of action of our mind.</li>
-                    <li>Heart is the seat of Soul.</li>
-                </strong>
+                <ul>
+                    <li><strong>The heart is pumping station of the blood and it supplies purified blood to all body cells, so the system takes heart as the object of meditation. This way, we can set our individual mind on the right path.</strong></li>
+                    <li><strong>The heart is the only point at which the connecting link between the animate and the inanimate is clearly felt.</strong></li>
+                    <li><strong>It is the field of action of our mind.</strong></li>
+                    <li><strong>Heart is the seat of Soul.</strong></li>
                 </ul>
             </div>
         </div>
@@ -623,9 +551,8 @@
                 Why was meditation necessary for a physically healthy individual?
                 <i class="fas fa-chevron-down collapsible-icon"></i>
             </button>
-            <div class="content"> <strong>
-                <p>The nutritional needs differ for physical body (sthul sharir), our mind (sukshma sharir), and our soul (karan sharir). While the physical body is nourished through food, at a higher/subtle level, we enrich our minds by education. For the soul, the scriptures say that one has to nourish one's own prana with Divine energy. Due to grossness in thoughts and actions, we spoil our sense of discrimination & right cognition, but when one meditates, confusions disappear and one feels lightness.</p>
-            </strong>
+            <div class="content">
+                <p><strong>The nutritional needs differ for physical body (sthul sharir), our mind (sukshma sharir), and our soul (karan sharir). While the physical body is nourished through food, at a higher/subtle level, we enrich our minds by education. For the soul, the scriptures say that one has to nourish one's own prana with Divine energy. Due to grossness in thoughts and actions, we spoil our sense of discrimination & right cognition, but when one meditates, confusions disappear and one feels lightness.</strong></p>
             </div>
         </div>
 
@@ -634,9 +561,8 @@
                 What was the Scientific rationale behind transmission?
                 <i class="fas fa-chevron-down collapsible-icon"></i>
             </button>
-            <div class="content"><strong>
-                <p>Heartfulness uses the system of transmission and focuses on heart along with a method of cleaning taking care of an overall process of purity that weaves destiny through meditation. Heart is the seat of soul/life. If we focus on our heart and purify this, its effect will reach the entire body with the blood pumped.</p>
-            </strong>
+            <div class="content">
+                <p><strong>Heartfulness uses the system of transmission and focuses on heart along with a method of cleaning taking care of an overall process of purity that weaves destiny through meditation. Heart is the seat of soul/life. If we focus on our heart and purify this, its effect will reach the entire body with the blood pumped.</strong></p>
             </div>
         </div>
 
@@ -645,10 +571,9 @@
                 What is happening in us during Heartfulness Meditation?
                 <i class="fas fa-chevron-down collapsible-icon"></i>
             </button>
-            <div class="content"><strong>
-                <p>In Heartfulness meditation we are evoking the subtlest notion of this deepest Self. The only way yogis over the centuries have been able to put that into words is to use the word 'light', as light has no apparent material qualities – you can't touch it, or see it, or taste it or smell it or hear it. We do not take anything gross to meditate upon.</p>
-                <p>In this meditation, we ask abhyasis to gently bring our attention to the Source of Light or Divine Light in the heart in meditation. We aim to experience a superfine and finer consciousness of this light within our hearts- "light without luminosity". Just have the idea that there is Divine Light in your heart.</p>
-            </strong>
+            <div class="content">
+                <p><strong>In Heartfulness meditation we are evoking the subtlest notion of this deepest Self. The only way yogis over the centuries have been able to put that into words is to use the word 'light', as light has no apparent material qualities – you can't touch it, or see it, or taste it or smell it or hear it. We do not take anything gross to meditate upon.</strong></p>
+                <p><strong>In this meditation, we ask abhyasis to gently bring our attention to the Source of Light or Divine Light in the heart in meditation. We aim to experience a superfine and finer consciousness of this light within our hearts- "light without luminosity". Just have the idea that there is Divine Light in your heart.</strong></p>
             </div>
         </div>
 
@@ -657,9 +582,8 @@
                 Whether experience of all individuals are same or different?
                 <i class="fas fa-chevron-down collapsible-icon"></i>
             </button>
-            <div class="content"><strong>
-                <p>Each person will have their own way of experiencing inner states, which become more recognizable as we become more familiar with meditating. Some people do not feel anything much, and that is normal and that is absolutely okay. Many notice changes in their daily lives and their behavior. Often, it is others around us who notice changes in us.</p>
-            </strong>
+            <div class="content">
+                <p><strong>Each person will have their own way of experiencing inner states, which become more recognizable as we become more familiar with meditating. Some people do not feel anything much, and that is normal and that is absolutely okay. Many notice changes in their daily lives and their behavior. Often, it is others around us who notice changes in us.</strong></p>
             </div>
         </div>
 
@@ -668,9 +592,8 @@
                 What is the feedback from those who did Heartfulness?
                 <i class="fas fa-chevron-down collapsible-icon"></i>
             </button>
-            <div class="content"><strong>
-                <p>All those who practiced felt peaceful and energized after practicing relaxation and meditation. We have different programmes for universities, corporate & other groups. Meditation is constant remembrance. It is a complete thought. What happens when we dig a well? A lot of things come out before finding water. In meditation too, many things come to the surface before the essential thing is found. We require patience, without patience there will be no success.</p>
-            </strong>
+            <div class="content">
+                <p><strong>All those who practiced felt peaceful and energized after practicing relaxation and meditation. We have different programmes for universities, corporate & other groups. Meditation is constant remembrance. It is a complete thought. What happens when we dig a well? A lot of things come out before finding water. In meditation too, many things come to the surface before the essential thing is found. We require patience, without patience there will be no success.</strong></p>
             </div>
         </div>
 
@@ -679,9 +602,8 @@
                 What do you mean by Masters? Who were they?
                 <i class="fas fa-chevron-down collapsible-icon"></i>
             </button>
-            <div class="content"><strong>
-                <p>Masters are the guides and official presidents of the organization who gained mastery over their self. They help us in meditation through yogic transmission to attain the same state of self mastery. My master, Sri Ramchandra had started the Sahaj Marg seventy years ago and that practices go on.</p>
-            </strong>
+            <div class="content">
+                <p><strong>Masters are the guides and official presidents of the organization who gained mastery over their self. They help us in meditation through yogic transmission to attain the same state of self mastery. My master, Sri Ramchandra had started the Sahaj Marg seventy years ago and that practices go on.</strong></p>
             </div>
         </div>
 
@@ -690,9 +612,8 @@
                 You insist on Group meditation. Is it necessary?
                 <i class="fas fa-chevron-down collapsible-icon"></i>
             </button>
-            <div class="content"><strong>
-                <p>When we meditate in a group, the effect of transmission increases due to a collection of energies from each soul/human being. Whole environment gets charged with positive energy and lightness percolates down on the entire assembly and at times, neighbors, too, experience emanating positive vibes.</p>
-            </strong>
+            <div class="content">
+                <p><strong>When we meditate in a group, the effect of transmission increases due to a collection of energies from each soul/human being. Whole environment gets charged with positive energy and lightness percolates down on the entire assembly and at times, neighbors, too, experience emanating positive vibes.</strong></p>
             </div>
         </div>
 
@@ -701,9 +622,8 @@
                 What is cleaning and how does it work?
                 <i class="fas fa-chevron-down collapsible-icon"></i>
             </button>
-            <div class="content"><strong>
-                <p>Cleaning helps us in removal of thoughts and impressions. It also makes us feel lighter in our daily lives. Cleaning is needed to remove the thoughts that interfere with our meditation and cause grossness on ourselves. Thoughts form impressions which later become habits and act as realms or interference when we try to connect with our higher self which is subtle, peaceful and silent.</p>
-           </strong>
+            <div class="content">
+                <p><strong>Cleaning helps us in removal of thoughts and impressions. It also makes us feel lighter in our daily lives. Cleaning is needed to remove the thoughts that interfere with our meditation and cause grossness on ourselves. Thoughts form impressions which later become habits and act as realms or interference when we try to connect with our higher self which is subtle, peaceful and silent.</strong></p>
             </div>
         </div>
 
@@ -712,9 +632,8 @@
                 Why do we need to get rid of thoughts?
                 <i class="fas fa-chevron-down collapsible-icon"></i>
             </button>
-            <div class="content"><strong>
-                <p>Every thought or action performed with a feeling or consciousness of self leaves a trail of subtle impressions in the heart which become the seed for future thoughts and actions. When we meditate there is a delusion of our awareness. The thoughts/impressions that have accumulated and solidified over years find space to surface in our awareness. They tend to drop away after a while as we meditate and we gradually develop a state of thoughtlessness.</p>
-            </strong>
+            <div class="content">
+                <p><strong>Every thought or action performed with a feeling or consciousness of self leaves a trail of subtle impressions in the heart which become the seed for future thoughts and actions. When we meditate there is a delusion of our awareness. The thoughts/impressions that have accumulated and solidified over years find space to surface in our awareness. They tend to drop away after a while as we meditate and we gradually develop a state of thoughtlessness.</strong></p>
             </div>
         </div>
     </div>
@@ -727,30 +646,20 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="footer-links">
-            <a href="../HFNContactUs/HFNContactUs.html">
+            <a href="#contact">
                 <i class="fas fa-envelope"></i> Contact Us
             </a>
-            <a href="../FAQs/FAQs.html">
+            <a href="#faqs">
                 <i class="fas fa-question-circle"></i> FAQs
             </a>
         </div>
         <div style="margin-top: 1rem; color: rgba(255,255,255,0.8);">
-            <p style="text-align: center" >&copy; 2024 Heartfulness Vizag. All rights reserved.</p>
+            <p style="text-align: center">&copy; 2024 Heartfulness Vizag. All rights reserved.</p>
         </div>
     </footer>
 
-    <!-- Google Translate Script -->
-    <script type="text/javascript">
-        function googleTranslateElementInit() {
-            new google.translate.TranslateElement({
-                pageLanguage: 'en', 
-                includedLanguages: 'en,hi,te', 
-                autoDisplay: false,
-                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
-            }, 'google_translate_element');
-        }
-
-          // Mobile menu toggle
+    <script>
+        // Mobile menu toggle
         const menuToggle = document.getElementById('menu-toggle');
         const navMenu = document.getElementById('nav-menu');
         const menuIcon = menuToggle.querySelector('i');
@@ -761,33 +670,62 @@
             menuIcon.classList.toggle('fa-times');
         });
 
-        // Lazy loading for videos
-        const observerOptions = {
-            root: null,
-            rootMargin: '0px 0px 50px 0px',
-            threshold: 0.1
-        };
-
-        const videoObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const iframe = entry.target.querySelector('iframe[data-src]');
-                    if (iframe) {
-                        iframe.src = iframe.dataset.src;
-                        iframe.removeAttribute('data-src');
-                    }
-                    entry.target.classList.add('loaded');
-                    videoObserver.unobserve(entry.target);
+        // FAQ Collapsible
+        const collapsibles = document.getElementsByClassName("collapsible");
+        
+        for (let i = 0; i < collapsibles.length; i++) {
+            collapsibles[i].addEventListener("click", function() {
+                this.classList.toggle("active");
+                const content = this.nextElementSibling;
+                
+                if (content.classList.contains("active")) {
+                    content.style.maxHeight = null;
+                    content.classList.remove("active");
+                } else {
+                    content.style.maxHeight = content.scrollHeight + 100 + "px";
+                    content.classList.add("active");
                 }
             });
-        }, observerOptions);
+        }
 
-        // Observe all lazy-load elements
-        document.querySelectorAll('.lazy-load').forEach(el => {
-            videoObserver.observe(el);
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        const faqItems = document.querySelectorAll('.faq-item');
+
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            
+            faqItems.forEach(item => {
+                const question = item.querySelector('.collapsible').textContent.toLowerCase();
+                const answer = item.querySelector('.content').textContent.toLowerCase();
+                
+                if (question.includes(searchTerm) || answer.includes(searchTerm)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
         });
 
-        // Smooth scrolling
+        // Scroll to top button
+        const scrollTopBtn = document.getElementById('scrollTop');
+
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                scrollTopBtn.classList.add('visible');
+            } else {
+                scrollTopBtn.classList.remove('visible');
+            }
+        });
+
+        scrollTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        // Smooth scrolling for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
@@ -800,20 +738,6 @@
                 }
             });
         });
-
-        var coll = document.getElementsByClassName("collapsible");
-var i;
-
-for (i = 0; i < coll.length; i++) {
-  coll[i].addEventListener("click", function() {
-    this.classList.toggle("active");
-    var content = this.nextElementSibling;
-    if (content.style.maxHeight){
-      content.style.maxHeight = null;
-    } else {
-      content.style.maxHeight = content.scrollHeight + "px";
-    } 
-  });
-}
-</script>
+    </script>
 </body>
+</html>
