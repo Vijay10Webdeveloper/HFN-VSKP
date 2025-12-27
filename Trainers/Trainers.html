@@ -522,6 +522,7 @@
     const AUTHORIZED_USERS = {
       'admin@sundayclass.com': { password: 'aDMin890', name: 'System Administrator', role: 'Admin' },
       'mvijay108@gmail.com': { password: 'mycall10', name: 'Trainer', role: 'Trainer' },
+      'trainer2@gmail.com': { password: 'tr2pwd', name: 'Trainer', role: 'Trainer' },
       };
 
     const PASSWORD_SETTINGS = { minLength: 6, maxAttempts: 6, lockoutTime: 1 };
@@ -594,6 +595,22 @@
     });
   }
 });
+
+///////////////////////////Supabase Config///////////////////////////////////
+
+const SUPABASE_URL = 'https://ldzarjlzzecqneofhirg.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxkemFyamx6emVjcW5lb2ZoaXJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk0NzEzNTQsImV4cCI6MjA3NTA0NzM1NH0.PmgjRhA8XIOlGmjDV-As5EHNjl4ctebD5FfgYOo1d2g';
+
+// Initialize Supabase
+let supabaseClient = null;  // ← Change from 'const' to 'let' and make sure it's named supabaseClient
+try {
+  supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  console.log('Supabase initialized successfully');
+} catch (err) {
+  console.error('Supabase initialization error:', err);
+}
+////////////////////////////////////////////////////////////////////////////
+
 // Always return YYYY-MM-DD no matter the browser/timezone
 function getNormalizedDateFromInput(inputId) {
   const input = document.getElementById(inputId);
@@ -621,9 +638,9 @@ function getNormalizedDateFromInput(inputId) {
       else { pw.type = 'password'; btn.textContent = '👁️'; }
     }
 
-    
+    /////////////////////////////////27-Dec-2025//////////////////////////////////////
 
-    function authenticateUser() {
+  function authenticateUser() {
   const email = document.getElementById('emailInput').value.trim().toLowerCase();
   const password = document.getElementById('passwordInput').value;
   const loginError = document.getElementById('loginError');
@@ -648,22 +665,27 @@ function getNormalizedDateFromInput(inputId) {
   }
 
   // Successful login
+
   clearFailedAttempts(email);
   currentUser = email; 
   isAuthenticated = true;
   localStorage.setItem('authenticatedUser', email);
   localStorage.setItem('authTime', new Date().toISOString());
   
-  // Load all data before showing main app
-  loadSavedData();  // Load from localStorage first
-  loadMasterRecords();  // Load master records
-  //await fetchFromServer();  // Then sync from cloud
+  // Clear any previous user's data
+  abhyasis = [];
+  attendanceHistory = {};
+  masterRecords = [];
+  localStorage.removeItem(APP_DATA_KEY);
+  localStorage.removeItem(MASTER_KEY);
   
-  // Now show the main app
-  showMainApp();
+  // Load this user's data from cloud
+  fetchFromServer().then(() => {
+    showMainApp();
+  });
 }
-
-   async function checkStoredAuthentication() {
+////////////////////////////27-Dec-2025////////////////////////////////////////////
+  async function checkStoredAuthentication() {
   try {
     const storedUser = localStorage.getItem('authenticatedUser');
     const time = localStorage.getItem('authTime');
@@ -673,19 +695,25 @@ function getNormalizedDateFromInput(inputId) {
         currentUser = storedUser; 
         isAuthenticated = true;
         
-        // Load data before showing app
-        loadSavedData();
-        loadMasterRecords();
+        // Clear any old data first
+        abhyasis = [];
+        attendanceHistory = {};
+        masterRecords = [];
+        
+        // Load user-specific data from cloud
         await fetchFromServer();
         
         showMainApp();
         return;
       }
     }
-  } catch (err) { console.error(err); }
+  } catch (err) { 
+    console.error(err); 
+  }
   showLoginScreen();
 }
 
+////////////////////////////////////////////////////////////////////////////////////////
     function recordFailedAttempt(email) {
       if (!failedAttempts[email]) failedAttempts[email] = 0;
       failedAttempts[email]++;
@@ -736,14 +764,27 @@ function getNormalizedDateFromInput(inputId) {
       document.getElementById('loginScreen').style.display = 'block';
       document.getElementById('mainApp').classList.remove('authenticated');
     }
-
-    function logout() {
-      if (!confirm('Are you sure you want to logout?')) return;
-      currentUser = null; isAuthenticated = false;
-      localStorage.removeItem('authenticatedUser');
-      localStorage.removeItem('authTime');
-      showLoginScreen();
-    }
+/////////////////////////////////27-Dec-2025/////////////////////////////////////////
+   function logout() {
+  if (!confirm('Are you sure you want to logout?')) return;
+  
+  // Clear all data when logging out
+  abhyasis = [];
+  attendanceHistory = {};
+  masterRecords = [];
+  
+  // Clear localStorage
+  localStorage.removeItem(APP_DATA_KEY);
+  localStorage.removeItem(MASTER_KEY);
+  
+  currentUser = null;
+  isAuthenticated = false;
+  localStorage.removeItem('authenticatedUser');
+  localStorage.removeItem('authTime');
+  
+  showLoginScreen();
+  showAlert('Logged out successfully', 'info');
+}
 
     /***** ABHYASIS MANAGEMENT (consistent) *****/
 // ============ CHANGE 1: Update the abhyasis object structure ============
@@ -3778,19 +3819,6 @@ async function verifyAbhyasisDataOnLogin() {
     console.log(`  - ${a.name} (${a.id}): Joined ${a.dateOfJoining || 'N/A'}`);
   });
 }
-/////////////////////////////////////////////////////////////////////////////////
-
-    function loadSavedData() {
-      try {
-       const raw = localStorage.getItem(APP_DATA_KEY);
-        if (!raw) { abhyasis = []; attendanceHistory = {}; return; }
-        const obj = JSON.parse(raw);
-        abhyasis = obj.abhyasis || [];
-        attendanceHistory = obj.attendanceHistory || {};
-        updateStudentsList();
-        updateAttendanceList();
-      } catch (err) { console.error('loadSavedData', err); abhyasis = []; attendanceHistory = {}; }
-    }
     ///////////////////////////////////////////////////////////////////////////////////
 // ---- CONFIG: update these ----
 ///////////////////////////////////////////////////////////////////////////////////
@@ -3807,18 +3835,8 @@ function loadSavedData() {
     updateAttendanceList();
   } catch (err) { console.error('loadSavedData', err); abhyasis = []; attendanceHistory = {}; }
 }
+///////////////////////////////////////////////////////////////////////////////////////
 
-const SUPABASE_URL = 'https://ldzarjlzzecqneofhirg.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxkemFyamx6emVjcW5lb2ZoaXJnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk0NzEzNTQsImV4cCI6MjA3NTA0NzM1NH0.PmgjRhA8XIOlGmjDV-As5EHNjl4ctebD5FfgYOo1d2g';
-
-// Initialize Supabase
-//let supabase = null;
-try {
-  supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-  console.log('Supabase initialized successfully');
-} catch (err) {
-  console.error('Supabase initialization error:', err);
-}
 
 // Sync to Supabase
 async function syncToServer() {
@@ -3883,13 +3901,14 @@ async function syncToServer() {
 }
 
 // Fetch from Supabase
+/////////////////////////////27-Dec-2025/////////////////////////////////////
 async function fetchFromServer() {
   if (!currentUser) {
     console.warn('fetchFromServer: no currentUser');
     return { success: false, error: 'No user' };
   }
   
-  if (!supabase) {
+  if (!supabaseClient) {
     console.warn('Supabase not initialized');
     return { success: false, error: 'Database not available' };
   }
@@ -3897,7 +3916,7 @@ async function fetchFromServer() {
   try {
     console.log('Fetching from Supabase for user:', currentUser);
     
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from('meditation_data')
       .select('data')
       .eq('user_email', currentUser)
@@ -3917,55 +3936,41 @@ async function fetchFromServer() {
     }
     
     const remote = data.data;
-    console.log('Remote data retrieved');
+    console.log('Remote data retrieved for', currentUser);
     
-    // ===== MERGE ABHYASIS (with dateOfJoining) =====
+    // ===== REPLACE (don't merge) - Each user has their own data =====
     if (remote.abhyasis && Array.isArray(remote.abhyasis)) {
-      const localIds = new Set(abhyasis.map(a => a.id));
-      let addedCount = 0;
-      remote.abhyasis.forEach(r => {
-        if (!localIds.has(r.id)) {
-          abhyasis.push({
-            name: r.name,
-            id: r.id,
-            contact: r.contact || '',
-            dateOfJoining: r.dateOfJoining || ''
-          });
-          addedCount++;
-        } else {
-          const existing = abhyasis.find(a => a.id === r.id);
-          if (existing && !existing.dateOfJoining && r.dateOfJoining) {
-            existing.dateOfJoining = r.dateOfJoining;
-          }
-        }
-      });
-      console.log('Added', addedCount, 'new abhyasis');
+      abhyasis = remote.abhyasis;  // REPLACE completely
+      console.log('Loaded', abhyasis.length, 'abhyasis for', currentUser);
+    } else {
+      abhyasis = [];  // Start fresh if no data
     }
     
-    // Merge attendanceHistory
+    // Replace attendanceHistory
     if (remote.attendanceHistory && typeof remote.attendanceHistory === 'object') {
-      Object.keys(remote.attendanceHistory).forEach(d => {
-        attendanceHistory[d] = remote.attendanceHistory[d];
-      });
-      console.log('Merged attendance history');
+      attendanceHistory = remote.attendanceHistory;  // REPLACE completely
+      console.log('Loaded attendance history for', currentUser);
+    } else {
+      attendanceHistory = {};
     }
     
-    // Merge masterRecords
+    // Replace masterRecords
     if (remote.masterRecords && Array.isArray(remote.masterRecords)) {
-      const beforeCount = masterRecords.length;
-      masterRecords = masterRecords.concat(remote.masterRecords);
-      masterRecords = removeDuplicateRecords(masterRecords);
-      saveMasterRecords();
-      console.log('Merged master records:', masterRecords.length - beforeCount, 'new');
+      masterRecords = remote.masterRecords;  // REPLACE completely
+      console.log('Loaded', masterRecords.length, 'master records for', currentUser);
+    } else {
+      masterRecords = [];
     }
     
+    // Save to localStorage and update UI
     saveDataLocal();
+    saveMasterRecords();
     displayAllRecords();
     updateStudentsList();
     updateAttendanceList();
     
-    showAlert('Data synced from cloud (abhyasis with joining dates loaded)', 'success');
-    return { success: true, merged: true };
+    showAlert(`Data loaded for ${currentUser}`, 'success');
+    return { success: true, loaded: true };
     
   } catch (err) {
     console.error('fetchFromServer error:', err);
