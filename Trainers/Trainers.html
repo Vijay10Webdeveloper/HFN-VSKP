@@ -790,7 +790,7 @@ function getNormalizedDateFromInput(inputId) {
 // ============ CHANGE 1: Update the abhyasis object structure ============
 // In the addAbhyasi() function, change it to include dateOfJoining:
 
-function addAbhyasi() {
+async function addAbhyasi() {
   const name = document.getElementById('studentName').value.trim();
   const id = document.getElementById('studentId').value.trim();
   const contact = document.getElementById('studentContact').value.trim();
@@ -813,7 +813,7 @@ function addAbhyasi() {
 }
 
 // ============ CHANGE 2: Update editAbhyasi() ============
-function editAbhyasi(index) {
+async function editAbhyasi(index) {
   const a = abhyasis[index];
   const container = document.getElementById(`student-${index}`);
   if (!container) return;
@@ -832,7 +832,7 @@ function editAbhyasi(index) {
 }
 
 // ============ CHANGE 3: Update saveEditAbhyasi() ============
-function saveEditAbhyasi(index) {
+async function saveEditAbhyasi(index) {
   const name = document.getElementById(`editName-${index}`).value.trim();
   const id = document.getElementById(`editId-${index}`).value.trim();
   const contact = document.getElementById(`editContact-${index}`).value.trim();
@@ -851,7 +851,7 @@ function saveEditAbhyasi(index) {
 }
 
 // ============ CHANGE 4: Update updateStudentsList() ============
-function updateStudentsList() {
+async function updateStudentsList() {
   const container = document.getElementById('studentsList');
   if (!abhyasis.length) {
     container.innerHTML = '<p style="color:#666; font-style:italic;">No Abhyasis yet.</p>';
@@ -870,7 +870,7 @@ function updateStudentsList() {
     </div>`).join('');
 }
 ////////////////////////24-12-2025///////////////////////////////////////
-function updateStudentsFromImported(normalized) {
+async function updateStudentsFromImported(normalized) {
   const localIds = new Set(abhyasis.map(a => a.id));
   let added = 0;
   
@@ -1041,7 +1041,7 @@ function removeAttendanceRow(index) {
     }
     /////////////////////////////////////Save attendance/////////////////////////
 // REPLACE the saveAttendance() function in your code with this:
-function saveAttendance() {
+async function saveAttendance() {
   if (!checkAuthentication()) return;
 
   // Get normalized date - use the same method as your code
@@ -1114,7 +1114,7 @@ function saveAttendance() {
 }
     //////////////////////////////Update Attendance////////////////////////////
 
-function updateAttendance() {
+async function updateAttendance() {
   if (!checkAuthentication()) return;
 
   const date = getNormalizedDateFromInput('classDate');
@@ -1271,7 +1271,7 @@ function onToggleRowSelect(cb) {
   refreshDeleteButtonState();
 }
 
-function deleteSelectedMaster() {
+async function deleteSelectedMaster() {
   if (masterSelectedKeys.size === 0) return;
   const count = masterSelectedKeys.size;
   if (!confirm(`Delete ${count} selected record(s) from master? This cannot be undone.`)) return;
@@ -3845,7 +3845,7 @@ async function syncToServer() {
     return { success: false, error: 'No user' };
   }
   
-  if (!supabase) {
+  if (!supabaseClient) {  // ✅ Changed from 'supabase'
     console.warn('Supabase not initialized');
     return { success: false, error: 'Database not available' };
   }
@@ -3864,7 +3864,7 @@ async function syncToServer() {
     console.log('Syncing to Supabase for user:', currentUser);
     
     // Check if record exists
-    const { data: existing, error: fetchError } = await supabase
+    const { data: existing, error: fetchError } = await supabaseClient  // ✅ Changed
       .from('meditation_data')
       .select('id')
       .eq('user_email', currentUser)
@@ -3877,13 +3877,13 @@ async function syncToServer() {
     let result;
     if (existing) {
       // Update existing record
-      result = await supabase
+      result = await supabaseClient  // ✅ Changed
         .from('meditation_data')
         .update(payload)
         .eq('user_email', currentUser);
     } else {
       // Insert new record
-      result = await supabase
+      result = await supabaseClient  // ✅ Changed
         .from('meditation_data')
         .insert([payload]);
     }
@@ -3899,7 +3899,6 @@ async function syncToServer() {
     return { success: false, error: String(err) };
   }
 }
-
 // Fetch from Supabase
 /////////////////////////////27-Dec-2025/////////////////////////////////////
 async function fetchFromServer() {
